@@ -4,7 +4,7 @@
 #'
 #' @param scCNA scCNA object.
 #' @param seed Sets a seed for the pseudorandom number generator.
-#' @param ... Parameters passed to uwot::umap.
+#' @param ... Additional parameters passed to \code{uwot::umap}.
 #'
 #' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object.
 #' @export
