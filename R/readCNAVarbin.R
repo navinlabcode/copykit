@@ -25,4 +25,6 @@ readCNAVarbin <- function(dir) {
 
   cna_obj <- scCNA(list(segment_ratios = seg_data))
 
+  return(cna_obj)
+
 }
