@@ -1,0 +1,5 @@
+destination: docs
+template:
+  bootswatch: spacelab
+
+title: CopyKit
