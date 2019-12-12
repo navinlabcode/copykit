@@ -4,7 +4,7 @@
 \alias{readCNAVarbin}
 \title{Load data from Copy Number Experiment}
 \usage{
-readCNAVarbin(dir)
+readCNAVarbin(dir, remove_Y = FALSE)
 }
 \arguments{
 \item{dir}{A path for the output of the copy number pipeline.}
@@ -14,4 +14,7 @@ A S4 class object containing the segment ratios for each bin (rows) and each sam
 }
 \description{
 Creates an S4 class scCNA from the output directory of the copy number pipeline.
+}
+\examples{
+
 }
