@@ -3,8 +3,11 @@
 #' Creates an S4 class scCNA from the output directory of the copy number pipeline.
 #'
 #' @param dir A path for the output of the copy number pipeline.
+#' @param remove_Y (default == FALSE) If set to TRUE, removes information from the chrY from the dataset.
 #'
 #' @return A S4 class object containing the segment ratios for each bin (rows) and each sample (columns).
+#' @return data can be acessed with \code{segment_ratios} and genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
+#'
 #' @export
 #'
 #' @examples
