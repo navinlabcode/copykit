@@ -20,5 +20,7 @@ Imports:
     ggplot2,
     uwot,
     magrittr,
-    SingleCellExperiment
+    SingleCellExperiment,
+    GenomicRanges,
+    SummarizedExperiment
 RoxygenNote: 6.1.1
