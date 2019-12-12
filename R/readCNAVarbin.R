@@ -17,18 +17,17 @@ readCNAVarbin <- function(dir,
   # Reads a copy number directory and produces
   # a scCNA object as output
 
-  dat <- readr::read_tsv(fs::dir_ls(
+  dat <- suppressMessages(readr::read_tsv(fs::dir_ls(
     path = dir,
     recurse = T,
     glob = "*uber*seg.txt"
   )) %>%
-    janitor::clean_names()
+    janitor::clean_names())
 
   if (remove_Y == TRUE) {
+    message("Removed chrY.")
     dat <- dat %>%
       dplyr::filter(chrom != 24)
-    message("Removed chrY.")
-    return(dat)
   }
 
   #saving data

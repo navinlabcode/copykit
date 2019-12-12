@@ -7,5 +7,5 @@
 #' export
 setMethod("segment_ratios", "scCNA", function(x, withDimnames = TRUE) {
   # accessor for the segment_ratios data within the assay slot
-  assay(x, "segment_ratios")
+  SummarizedExperiment::assay(x, "segment_ratios")
 })
