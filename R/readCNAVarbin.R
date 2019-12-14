@@ -5,8 +5,11 @@
 #' @param dir A path for the output of the copy number pipeline.
 #' @param remove_Y (default == FALSE) If set to TRUE, removes information from the chrY from the dataset.
 #'
-#' @return A S4 class object containing the segment ratios for each bin (rows) and each sample (columns).
-#' @return data can be acessed with \code{segment_ratios} and genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
+#' @return A S4 class object containing the segment ratios, ratios and bincounts within the assay slot. Sample format follows each bin is row and each sample (cell) is a column.
+#' @return Segment ratios can be acessed with \code{copykit::segment_ratios}.
+#' @return Ratios can be acessed with \code{copykit::ratios}.
+#' @return Bin counts can be acessed with \code{copykit::bin_counts}.
+#' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 #'
 #' @export
 #'
@@ -17,24 +20,70 @@ readCNAVarbin <- function(dir,
   # Reads a copy number directory and produces
   # a scCNA object as output
 
-  dat <- suppressMessages(readr::read_tsv(fs::dir_ls(
+  # reading segment ratios
+  message("Importing segment ratios.")
+  dat <- readr::read_tsv(fs::dir_ls(
     path = dir,
     recurse = T,
     glob = "*uber*seg.txt"
-  )) %>%
-    janitor::clean_names())
+  ),
+  col_types = readr::cols()) %>%
+    janitor::clean_names()
 
   if (remove_Y == TRUE) {
-    message("Removed chrY.")
     dat <- dat %>%
       dplyr::filter(chrom != 24)
   }
 
-  #saving data
+  #saving segment data
   seg_data <- dat %>%
     dplyr::select(-c(chrom,
                      chrompos,
                      abspos))
+
+  # reading ratios
+  message("Importing ratios.")
+  dat_rat <- readr::read_tsv(fs::dir_ls(
+    path = dir,
+    recurse = T,
+    glob = "*uber*ratio.txt"
+  ),
+  col_types = readr::cols()) %>%
+    janitor::clean_names()
+
+  if (remove_Y == TRUE) {
+    dat_rat <- dat_rat %>%
+      dplyr::filter(chrom != 24)
+  }
+
+  dat_rat <- dat_rat %>%
+    dplyr::select(-c(chrom,
+                     chrompos,
+                     abspos))
+
+  # reading bin counts
+  message("Importing bin counts.")
+  dat_bin <- readr::read_tsv(fs::dir_ls(
+    path = dir,
+    recurse = T,
+    glob = "*uber*bin.txt"
+  ),
+  col_types = readr::cols()) %>%
+    janitor::clean_names()
+
+  if (remove_Y == TRUE) {
+    dat_bin <- dat_bin %>%
+      dplyr::filter(chrom != 24)
+  }
+
+  dat_bin <- dat_bin %>%
+    dplyr::select(-c(chrom,
+                     chrompos,
+                     abspos))
+
+  if (remove_Y == TRUE) {
+    message("Removed ChrY information.")
+  }
 
   # saving ranges, generating start and end
   # Unfortunately, varbin does not output start and end position, so it has to be derived from the data
@@ -59,14 +108,14 @@ readCNAVarbin <- function(dir,
   ranges_end <- rg %>%
     dplyr::group_by(chrom) %>%
     dplyr::mutate(end = dplyr::lead(chrompos) - 1) %>%
-    dplyr::filter(row_number() == n()) %>%
+    dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(end = chrompos + mean_bin_sizes) %>%
     dplyr::pull(end)
 
   ranges <- rg %>%
     dplyr::group_by(chrom) %>%
-    dplyr::mutate(end = lead(chrompos) - 1) %>%
+    dplyr::mutate(end = dplyr::lead(chrompos) - 1) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
       chr = chrom,
@@ -89,8 +138,12 @@ readCNAVarbin <- function(dir,
                                                ignore.strand = T)
 
   # creating scCNA object
-  cna_obj <- scCNA(list(segment_ratios = seg_data),
-                   rowRanges = g)
+  cna_obj <- scCNA(
+    segment_ratios = seg_data,
+    ratios = dat_rat,
+    bin_counts = dat_bin,
+    rowRanges = g
+  )
 
   return(cna_obj)
 

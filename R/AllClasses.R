@@ -12,8 +12,13 @@
 
 .scCNA <- setClass("scCNA", contains = "SingleCellExperiment")
 
-scCNA <- function(segment_ratios, ...) {
+scCNA <- function(segment_ratios,
+                  ratios,
+                  bin_counts,
+                  ...) {
   cna <-
-    SingleCellExperiment::SingleCellExperiment(list(segment_ratios = segment_ratios), ...)
+    SingleCellExperiment::SingleCellExperiment(list(segment_ratios = segment_ratios,
+                                                    ratios = ratios,
+                                                    bin_counts = bin_counts), ...)
   .scCNA(cna)
 }

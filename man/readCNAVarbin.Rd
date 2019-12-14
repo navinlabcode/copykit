@@ -8,9 +8,19 @@ readCNAVarbin(dir, remove_Y = FALSE)
 }
 \arguments{
 \item{dir}{A path for the output of the copy number pipeline.}
+
+\item{remove_Y}{(default == FALSE) If set to TRUE, removes information from the chrY from the dataset.}
 }
 \value{
-A S4 class object containing the segment ratios for each bin (rows) and each sample (columns).
+A S4 class object containing the segment ratios, ratios and bincounts within the assay slot. Sample format follows each bin is row and each sample (cell) is a column.
+
+Segment ratios can be acessed with \code{copykit::segment_ratios}.
+
+Ratios can be acessed with \code{copykit::ratios}.
+
+Bin counts can be acessed with \code{copykit::bin_counts}.
+
+Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 }
 \description{
 Creates an S4 class scCNA from the output directory of the copy number pipeline.

@@ -22,5 +22,7 @@ Imports:
     magrittr,
     SingleCellExperiment,
     GenomicRanges,
-    SummarizedExperiment
+    SummarizedExperiment,
+    readr,
+    fs
 RoxygenNote: 6.1.1

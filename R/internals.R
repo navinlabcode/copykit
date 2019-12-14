@@ -9,3 +9,17 @@ setMethod("segment_ratios", "scCNA", function(x, withDimnames = TRUE) {
   # accessor for the segment_ratios data within the assay slot
   SummarizedExperiment::assay(x, "segment_ratios")
 })
+
+
+#' export
+setMethod("ratios", "scCNA", function(x, withDimnames = TRUE) {
+  # accessor for the ratios data slot
+  SummarizedExperiment::assay(x, "ratios")
+})
+
+#' export
+setMethod("bin_counts", "scCNA", function(x, withDimnames = TRUE) {
+  # accessor for the bin_counts data slot
+  SummarizedExperiment::assay(x, "bin_counts")
+})
+
