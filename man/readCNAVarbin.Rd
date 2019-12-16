@@ -12,8 +12,6 @@ readCNAVarbin(dir, remove_Y = FALSE)
 \item{remove_Y}{(default == FALSE) If set to TRUE, removes information from the chrY from the dataset.}
 }
 \value{
-A S4 class object containing the segment ratios, ratios and bincounts within the assay slot. Sample format follows each bin is row and each sample (cell) is a column.
-
 Segment ratios can be acessed with \code{copykit::segment_ratios}.
 
 Ratios can be acessed with \code{copykit::ratios}.
@@ -24,6 +22,8 @@ Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 }
 \description{
 Creates an S4 class scCNA from the output directory of the copy number pipeline.
+The scCNA object contains the segment ratios, ratios and bincounts within the assay slot. where each bin is row and each sample (cell) is a column.
+Genomic ranges are stored in a GRanges object containing chromosome number, start coordinate, end cordinate and absolute genomic position. Each row represents the coordinates for one bin.
 }
 \examples{
 

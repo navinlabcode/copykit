@@ -39,7 +39,7 @@ filterCells <- function(scCNA,
   message(
     "Adding information to metadata. Access with SummarizedExperiment::colData(scCNA)."
   )
-  if (identical(colData(scCNA)$sample, names(dst_knn))) {
+  if (identical(colData(scCNA)$sample, dst_knn_df$sample)) {
     colData(scCNA)$filtered <- dst_knn_df$filtered
   } else
     stop("Sample names do not match metadata sample info. Check colData(scCNA).")
@@ -61,7 +61,7 @@ filterCells <- function(scCNA,
                                   )))
 
   # Heatmap
-  ComplexHeatmap::Heatmap(
+  ht <- ComplexHeatmap::Heatmap(
     t(seg),
     cluster_rows = function(x) {
       fastcluster::hclust(amap::Dist(x, method = "manhattan", nbproc = n_threads),
@@ -75,6 +75,7 @@ filterCells <- function(scCNA,
     left_annotation = filter_anno
   )
 
+  print(ht)
 
   message("Done.")
   return(scCNA)

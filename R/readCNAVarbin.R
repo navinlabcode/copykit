@@ -148,7 +148,7 @@ readCNAVarbin <- function(dir,
   )
 
   #sample name to metadata
-  colData(cna_obj)$sample <- names(seg_data)
+  SummarizedExperiment::colData(cna_obj)$sample <- names(seg_data)
 
   return(cna_obj)
 
