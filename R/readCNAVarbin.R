@@ -138,6 +138,7 @@ readCNAVarbin <- function(dir,
                                                keep.extra.columns = TRUE,
                                                ignore.strand = T)
 
+
   # creating scCNA object
   cna_obj <- scCNA(
     segment_ratios = seg_data,
@@ -145,6 +146,9 @@ readCNAVarbin <- function(dir,
     bin_counts = dat_bin,
     rowRanges = g
   )
+
+  #sample name to metadata
+  colData(cna_obj)$sample <- names(seg_data)
 
   return(cna_obj)
 
