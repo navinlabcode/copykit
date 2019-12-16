@@ -25,5 +25,7 @@ Imports:
     SummarizedExperiment,
     readr,
     fs,
-    ComplexHeatmap
+    ComplexHeatmap,
+    fastcluster,
+    amap
 RoxygenNote: 6.1.1
