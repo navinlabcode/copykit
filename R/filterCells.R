@@ -1,9 +1,9 @@
 #' Filter noise cells
 #'
 #' filterCells uses a k-nearest-neighbor approach to remove cells with random CNA profiles, largely due to noise data. It calculates a correlation matrix and sets a resolution below which non neighbors will be classified as noise cells.
-#' Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #'
 #' @author Hua-Jun Wu
+#' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
 #' @param k K-nearest-neighbor, defaults to 5.
@@ -11,6 +11,7 @@
 #' @param n_threads Number of parallel threads to calculate distances with \code{amap::Dist()}. Defaults to 1
 #'
 #' @return Adds a filtered cells label to the scCNA metadata. Cells that pass the filtering criteria receive the label "kept", whereas cells that do not pass the filtering criteria receive the label "removed".
+#' @return Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #' @export
 #'
 #' @examples
@@ -69,6 +70,7 @@ filterCells <- function(scCNA,
     },
     cluster_columns = FALSE,
     use_raster = TRUE,
+    border = TRUE,
     show_row_names = FALSE,
     show_column_names = FALSE,
     row_split = dplyr::pull(dst_knn_df, filtered),

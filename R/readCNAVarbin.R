@@ -4,6 +4,8 @@
 #' The scCNA object contains the segment ratios, ratios and bincounts within the assay slot. where each bin is row and each sample (cell) is a column.
 #' Genomic ranges are stored in a GRanges object containing chromosome number, start coordinate, end cordinate and absolute genomic position. Each row represents the coordinates for one bin.
 #'
+#' @author Darlan Conterno Minussi
+#'
 #' @param dir A path for the output of the copy number pipeline.
 #' @param remove_Y (default == FALSE) If set to TRUE, removes information from the chrY from the dataset.
 #'

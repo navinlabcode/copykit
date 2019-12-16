@@ -2,6 +2,8 @@
 #'
 #' Creates a umap embedding using the package uwot from the segment ratios values
 #'
+#' @author Darlan Conterno Minussi
+#'
 #' @param scCNA scCNA object.
 #' @param seed Sets a seed for the pseudorandom number generator.
 #' @param ... Additional parameters passed to \code{uwot::umap}.
