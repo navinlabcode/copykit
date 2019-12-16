@@ -8,6 +8,7 @@
 #' @param scCNA scCNA object.
 #' @param k K-nearest-neighbor, defaults to 5.
 #' @param resolution Set's how strict the correlation cut off will be. Defaults to 0.8.
+#' @param n_threads Number of parallel threads to calculate distances with \code{amap::Dist()}. Defaults to 1
 #'
 #' @return Adds a filtered cells label to the scCNA metadata. Cells that pass the filtering criteria receive the label "kept", whereas cells that do not pass the filtering criteria receive the label "removed".
 #' @export
@@ -18,31 +19,64 @@
 
 filterCells <- function(scCNA,
                         k = 5,
-                        resolution = 0.8) {
+                        resolution = 0.8,
+                        n_threads = 1) {
   k = k
   seg <- copykit::segment_ratios(scCNA)
 
   message("Calculating correlation matrix.")
   dst = cor(seg)
-  dst_knn_df = apply(as.matrix(dst), 1, function(x){
-    mean(sort(x, decreasing=T)[2:(k+1)])
+  dst_knn_df = apply(as.matrix(dst), 1, function(x) {
+    mean(sort(x, decreasing = T)[2:(k + 1)])
   }) %>%
     tibble::enframe(name = "sample",
                     value = "cor")
 
   dst_knn_df <- dst_knn_df %>%
-    dplyr::mutate(filtered = dplyr::case_when(
-      cor >= resolution ~ "kept",
-      cor < resolution ~ "removed"
-    ))
+    dplyr::mutate(filtered = dplyr::case_when(cor >= resolution ~ "kept",
+                                              cor < resolution ~ "removed"))
 
-  message("Adding information to metadata. Access with SummarizedExperiment::colData(scCNA).")
+  message(
+    "Adding information to metadata. Access with SummarizedExperiment::colData(scCNA)."
+  )
   if (identical(colData(scCNA)$sample, names(dst_knn))) {
     colData(scCNA)$filtered <- dst_knn_df$filtered
-  } else stop("Sample names do not match metadata sample info. Check colData(scCNA).")
+  } else
+    stop("Sample names do not match metadata sample info. Check colData(scCNA).")
+
+  message("Plotting heatmap.")
+
+  if (nrow(dst_knn_df) > 800) {
+    message(
+      "Plotting heatmap may take a while with large number of cells. Set number of threads with n_threads to speed up."
+    )
+  }
+
+  # filtered annotation
+  filter_anno <-
+    ComplexHeatmap::rowAnnotation(filtered = dplyr::pull(dst_knn_df, filtered),
+                                  col = list(filtered = c(
+                                    "kept" = "green2",
+                                    "removed" = "firebrick3"
+                                  )))
+
+  # Heatmap
+  ComplexHeatmap::Heatmap(
+    t(seg),
+    cluster_rows = function(x) {
+      fastcluster::hclust(amap::Dist(x, method = "manhattan", nbproc = n_threads),
+                          method = "ward.D2")
+    },
+    cluster_columns = FALSE,
+    use_raster = TRUE,
+    show_row_names = FALSE,
+    show_column_names = FALSE,
+    row_split = dplyr::pull(dst_knn_df, filtered),
+    left_annotation = filter_anno
+  )
+
 
   message("Done.")
   return(scCNA)
 
 }
-
