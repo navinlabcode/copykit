@@ -24,5 +24,6 @@ Imports:
     GenomicRanges,
     SummarizedExperiment,
     readr,
-    fs
+    fs,
+    ComplexHeatmap
 RoxygenNote: 6.1.1
