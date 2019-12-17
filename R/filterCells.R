@@ -40,16 +40,21 @@ filterCells <- function(scCNA,
   message(
     "Adding information to metadata. Access with SummarizedExperiment::colData(scCNA)."
   )
-  if (identical(colData(scCNA)$sample, dst_knn_df$sample)) {
-    colData(scCNA)$filtered <- dst_knn_df$filtered
+  if (identical(SummarizedExperiment::colData(scCNA)$sample,
+                dst_knn_df$sample)) {
+    SummarizedExperiment::colData(scCNA)$filtered <- dst_knn_df$filtered
   } else
     stop("Sample names do not match metadata sample info. Check colData(scCNA).")
 
   message("Plotting heatmap.")
 
-  if (nrow(dst_knn_df) > 800) {
+  if (nrow(dst_knn_df) > 500) {
     message(
-      "Plotting heatmap may take a while with large number of cells. Set number of threads with n_threads to speed up."
+      paste(
+        "Your dataset has:",
+        nrow(dst_knn_df),
+        "Cells. Plotting heatmap may take a long time with large number of cells. Set number of threads with n_threads for parallel processing if possible to speed up."
+      )
     )
   }
 
