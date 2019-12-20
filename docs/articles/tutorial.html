@@ -93,10 +93,21 @@
 <p>Datasets generated with the varbin pipeline can be read with the function <code><a href="../reference/readVarbinCNA.html">readVarbinCNA()</a></code>. It creates an S4 class <code>scCNA</code> from the output directory of the copy number pipeline. <code><a href="../reference/readVarbinCNA.html">readVarbinCNA()</a></code> searches for the uber*.seg uber.bin and uber.ratio files in the provided directory.</p>
 <p>The scCNA object will contain 3 different assays: <strong>segment ratios</strong>, <strong>ratios</strong> and <strong>bincounts</strong> where each bin is row and each sample (cell) is a column.</p>
 <p>CopyKit stores the genomic ranges as a GRanges object containing chromosome number, start coordinate, end coordinate and absolute genomic position. Each row represents the coordinates for one bin.</p>
+<p><code>{ eval = FALSE} breast_tumor &lt;- copykit::readVarbinCNA("~/path_to_varbin_output/")</code></p>
+<p><code>{ echo = FALSE} dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/" breast_tumor &lt;- copykit::readVarbinCNA(dir)</code></p>
+<pre><code>breast_tumor</code></pre>
 </div>
 <div id="filtercells" class="section level2">
 <h2 class="hasAnchor">
 <a href="#filtercells" class="anchor"></a>filterCells</h2>
+<p>Cells with low quality can be easily filtered with <code><a href="../reference/filterCells.html">filterCells()</a></code>.</p>
+<p><code><a href="../reference/filterCells.html">filterCells()</a></code> uses a k-nearest-neighbor approach to remove cells with random CNA profiles, largely due to noise.</p>
+<p><strong>CopyKit</strong> automatically outputs a heatmap so you can visually assess if the filtering performed as expected</p>
+<p>It is possible to control how strict the filtering will be by changing the argument <code>resolution</code>. Ex: <code><a href="../reference/filterCells.html">filterCells(resolution = 0.9)</a></code></p>
+<pre><code>breast_tumor &lt;- filterCells(breast_tumor,
+                            resolution = 0.8)</code></pre>
+<p>The information is store as metadata and can be accessed with <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">SummarizedExperiment::colData()</a></code>.</p>
+<pre><code><a href="https://rdrr.io/r/utils/head.html">head(SummarizedExperiment::colData(breast_tumor))</a></code></pre>
 </div>
 <div id="runumap" class="section level2">
 <h2 class="hasAnchor">

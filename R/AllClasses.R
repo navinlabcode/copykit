@@ -4,12 +4,13 @@
 # defining scCNA class
 #'
 #'  @export
-#'  @import methods
+#'  @import methods SingleCellExperiment
 #'  @importClassesFrom SummarizedExperiment RangedSummarizedExperiment SingleCellExperiment
 #'  @importClassesFrom S4Vectors DataFrame SimpleList
 #'
-#'
 
+#' @export
+#' @importClassesFrom S4Vectors DataFrame SimpleList
 .scCNA <- setClass("scCNA", contains = "SingleCellExperiment")
 
 scCNA <- function(segment_ratios,
