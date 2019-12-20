@@ -9,5 +9,4 @@
 }
 \description{
 Methods to get or set internal fields from the scCNA class
-export
 }

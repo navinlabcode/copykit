@@ -10,11 +10,11 @@
 #'
 
 #' @export
-#' @importClassesFrom S4Vectors DataFrame SimpleList
+#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment SingleCellExperiment
 .scCNA <- setClass("scCNA", contains = "SingleCellExperiment")
 
 #' @export
-#' @importClassesFrom S4Vectors DataFrame SimpleList
+#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment SingleCellExperiment
 scCNA <- function(segment_ratios,
                   ratios,
                   bin_counts,
