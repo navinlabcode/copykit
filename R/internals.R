@@ -28,7 +28,7 @@ setMethod("bin_counts", "scCNA", function(x, withDimnames = TRUE) {
 setMethod("show", "scCNA", function(object) {
   callNextMethod()
   cat(
-    "rowRanges has: ", length(SummarizedExperiment::rowRanges(cna_obj)), " ranges",
+    "rowRanges has: ", length(SummarizedExperiment::rowRanges(object)), " ranges",
     sep = ""
   )
 })
