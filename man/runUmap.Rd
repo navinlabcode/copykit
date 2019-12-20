@@ -14,8 +14,11 @@ runUmap(scCNA, seed = 17, ...)
 \item{...}{Additional parameters passed to \code{uwot::umap}.}
 }
 \value{
-A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object.
+A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDims(scCNA, 'umap')}
 }
 \description{
 Creates a umap embedding using the package uwot from the segment ratios values
+}
+\author{
+Darlan Conterno Minussi
 }
