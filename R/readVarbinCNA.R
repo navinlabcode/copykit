@@ -1,6 +1,7 @@
 #' Load data from Copy Number Experiment
 #'
 #' Creates an S4 class scCNA from the output directory of the copy number pipeline.
+#' readVarbinCNA searches for the uber*.seg uber.bin and uber.ratio files resulting from the Varbin copy number pipeline in the provided directory.
 #' The scCNA object contains the segment ratios, ratios and bincounts within the assay slot. where each bin is row and each sample (cell) is a column.
 #' Genomic ranges are stored in a GRanges object containing chromosome number, start coordinate, end cordinate and absolute genomic position. Each row represents the coordinates for one bin.
 #'
@@ -22,6 +23,27 @@ readVarbinCNA <- function(dir,
                           remove_Y = FALSE) {
   # Reads a copy number directory and produces
   # a scCNA object as output
+
+  # checks
+  if (fs::file_exists(fs::dir_ls(
+    path = dir,
+    recurse = T,
+    glob = "*uber*seg.txt"
+  )) == FALSE) {
+    stop(
+      "Segment ratio matrix can't be found in the provided directory. Please make sure uber.seg file can be found."
+    )
+  }
+
+  if (length(fs::dir_ls(
+    path = dir,
+    recurse = T,
+    glob = "*uber*seg.txt"
+  )) > 1) {
+    stop(
+      "More than one uber.seg file can be found at the provided directory. Please make sure to only have one sample at that location."
+    )
+  }
 
   # reading segment ratios
   message("Importing segment ratios.")

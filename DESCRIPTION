@@ -27,5 +27,6 @@ Imports:
     fs,
     ComplexHeatmap,
     fastcluster,
-    amap
+    amap,
+    janitor
 RoxygenNote: 6.1.1
