@@ -13,6 +13,8 @@
 #' @importClassesFrom S4Vectors DataFrame SimpleList
 .scCNA <- setClass("scCNA", contains = "SingleCellExperiment")
 
+#' @export
+#' @importClassesFrom S4Vectors DataFrame SimpleList
 scCNA <- function(segment_ratios,
                   ratios,
                   bin_counts,
