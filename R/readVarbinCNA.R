@@ -18,7 +18,7 @@
 #'
 #' @examples
 #'
-readCNAVarbin <- function(dir,
+readVarbinCNA <- function(dir,
                           remove_Y = FALSE) {
   # Reads a copy number directory and produces
   # a scCNA object as output
