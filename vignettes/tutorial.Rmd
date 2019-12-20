@@ -25,16 +25,16 @@ editor_options:
   CopyKit stores the genomic ranges as a GRanges object containing chromosome number, start coordinate, end coordinate and absolute genomic position. 
   Each row represents the coordinates for one bin.
 
-``` { eval = FALSE}
+``` { eval = FALSE, warning=FALSE}
 breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/")
 ```
 
-```{ echo = FALSE}
+```{ echo = FALSE, warning=FALSE}
 dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/"
 breast_tumor <- copykit::readVarbinCNA(dir)
 ```
 
-```{}
+```{ }
 breast_tumor
 ```
 
@@ -48,8 +48,8 @@ Cells with low quality can be easily filtered with `filterCells()`.
 
 It is possible to control how strict the filtering will be by changing the argument `resolution`. Ex: `filterCells(resolution = 0.9)`
 
-```{}
-breast_tumor <- filterCells(breast_tumor,
+```{ }
+breast_tumor <- copykit::filterCells(breast_tumor,
                             resolution = 0.8)
 ```
 

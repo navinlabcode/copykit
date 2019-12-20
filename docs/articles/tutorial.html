@@ -93,9 +93,24 @@
 <p>Datasets generated with the varbin pipeline can be read with the function <code><a href="../reference/readVarbinCNA.html">readVarbinCNA()</a></code>. It creates an S4 class <code>scCNA</code> from the output directory of the copy number pipeline. <code><a href="../reference/readVarbinCNA.html">readVarbinCNA()</a></code> searches for the uber*.seg uber.bin and uber.ratio files in the provided directory.</p>
 <p>The scCNA object will contain 3 different assays: <strong>segment ratios</strong>, <strong>ratios</strong> and <strong>bincounts</strong> where each bin is row and each sample (cell) is a column.</p>
 <p>CopyKit stores the genomic ranges as a GRanges object containing chromosome number, start coordinate, end coordinate and absolute genomic position. Each row represents the coordinates for one bin.</p>
-<p><code>{ eval = FALSE} breast_tumor &lt;- copykit::readVarbinCNA("~/path_to_varbin_output/")</code></p>
-<p><code>{ echo = FALSE} dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/" breast_tumor &lt;- copykit::readVarbinCNA(dir)</code></p>
-<pre><code>breast_tumor</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">breast_tumor &lt;-<span class="st"> </span>copykit<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/copykit/man/readVarbinCNA.html">readVarbinCNA</a></span>(<span class="st">"~/path_to_varbin_output/"</span>)</a></code></pre></div>
+<pre><code>## Importing segment ratios.</code></pre>
+<pre><code>## Importing ratios.</code></pre>
+<pre><code>## Importing bin counts.</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">breast_tumor</a></code></pre></div>
+<pre><code>## class: scCNA 
+## dim: 12205 1442 
+## metadata(0):
+## assays(3): segment_ratios ratios bin_counts
+## rownames(12205): 1 2 ... 12204 12205
+## rowData names(1): abspos
+## colnames(1442): tn20_2_s2_c10_s394_r1_001
+##   tn20_2_s2_c11_s395_r1_001 ... tn20_s6_c382_s2302_r1_001
+##   tn20_s6_c383_s2303_r1_001
+## colData names(1): sample
+## reducedDimNames(0):
+## spikeNames(0):
+## rowRanges has: 12205 ranges</code></pre>
 </div>
 <div id="filtercells" class="section level2">
 <h2 class="hasAnchor">
@@ -104,10 +119,30 @@
 <p><code><a href="../reference/filterCells.html">filterCells()</a></code> uses a k-nearest-neighbor approach to remove cells with random CNA profiles, largely due to noise.</p>
 <p><strong>CopyKit</strong> automatically outputs a heatmap so you can visually assess if the filtering performed as expected</p>
 <p>It is possible to control how strict the filtering will be by changing the argument <code>resolution</code>. Ex: <code><a href="../reference/filterCells.html">filterCells(resolution = 0.9)</a></code></p>
-<pre><code>breast_tumor &lt;- filterCells(breast_tumor,
-                            resolution = 0.8)</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">breast_tumor &lt;-<span class="st"> </span>copykit<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/copykit/man/filterCells.html">filterCells</a></span>(breast_tumor,</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">                            <span class="dt">resolution =</span> <span class="fl">0.8</span>)</a></code></pre></div>
+<pre><code>## Warning: Setting row names on a tibble is deprecated.
+
+## Warning: Setting row names on a tibble is deprecated.
+
+## Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre><code>## Calculating correlation matrix.</code></pre>
+<pre><code>## Adding information to metadata. Access with SummarizedExperiment::colData(scCNA).</code></pre>
+<pre><code>## Plotting heatmap.</code></pre>
+<pre><code>## Your dataset has: 1442 Cells. Plotting heatmap may take a long time with large number of cells. Set number of threads with n_threads for parallel processing if possible to speed up.</code></pre>
+<pre><code>## Done.</code></pre>
+<p><img src="tutorial_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 <p>The information is store as metadata and can be accessed with <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">SummarizedExperiment::colData()</a></code>.</p>
-<pre><code><a href="https://rdrr.io/r/utils/head.html">head(SummarizedExperiment::colData(breast_tumor))</a></code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(SummarizedExperiment<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(breast_tumor))</a></code></pre></div>
+<pre><code>## DataFrame with 6 rows and 2 columns
+##                                              sample    filtered
+##                                         &lt;character&gt; &lt;character&gt;
+## tn20_2_s2_c10_s394_r1_001 tn20_2_s2_c10_s394_r1_001        kept
+## tn20_2_s2_c11_s395_r1_001 tn20_2_s2_c11_s395_r1_001        kept
+## tn20_2_s2_c12_s396_r1_001 tn20_2_s2_c12_s396_r1_001     removed
+## tn20_2_s2_c13_s397_r1_001 tn20_2_s2_c13_s397_r1_001     removed
+## tn20_2_s2_c14_s398_r1_001 tn20_2_s2_c14_s398_r1_001     removed
+## tn20_2_s2_c19_s403_r1_001 tn20_2_s2_c19_s403_r1_001        kept</code></pre>
 </div>
 <div id="runumap" class="section level2">
 <h2 class="hasAnchor">
@@ -137,7 +172,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by First Last.</p>
+  <p>Developed by Darlan Conterno Minussi.</p>
 </div>
 
 <div class="pkgdown">
