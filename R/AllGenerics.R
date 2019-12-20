@@ -1,12 +1,12 @@
 ###################################################################
 # Getters/setters for scCNA
 
-#' export
+#' @export
 setGeneric("segment_ratios", function(x, ...) standardGeneric("segment_ratios"))
 
-#' export
+#' @export
 setGeneric("ratios", function(x, ...) standardGeneric("ratios"))
 
-#' export
+#' @export
 setGeneric("bin_counts", function(x, ...) standardGeneric("bin_counts"))
 

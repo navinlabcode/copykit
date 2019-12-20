@@ -1,5 +1,26 @@
-destination: docs
-template:
-  bootswatch: spacelab
-
+author:
+  Darlan Conterno Minussi
 title: CopyKit
+destination: docs
+templates:
+  params:
+    bootswatch: simplex
+
+navbar:
+  type: invert
+  structure:
+    left:
+    - home
+    - reference
+    - tutorial
+    - news
+    right: github
+  components:
+    home:
+      icon: fas fa-home fa-lg
+      href: index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+
+

@@ -1,0 +1,35 @@
+---
+title: "tutorial"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# CopyKit
+
+  **CopyKit** provides a toolkit for the analysis of single-cell copy number datasets. It includes functions to read data from [Varbin](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4417119/) or [10X CNA datasets](https://www.10xgenomics.com/solutions/single-cell-cnv/).
+  
+  A common workflow with **CopyKit** consists in reading the dataset and using to filter the noisy cells out, clustering and plotting heatmaps for further analysis.
+
+## readVarbinCNA
+
+  Datasets generated with the varbin pipeline can be read with the function `readVarbinCNA()`. It creates an S4 class `scCNA` from the output directory of the copy number pipeline.
+  `readVarbinCNA()` searches for the uber*.seg uber.bin and uber.ratio files in the provided directory.
+  
+  The scCNA object will contain 3 different assays: **segment ratios**, **ratios** and **bincounts** where each bin is row and each sample (cell) is a column.
+  
+  CopyKit stores the genomic ranges as a GRanges object containing chromosome number, start coordinate, end coordinate and absolute genomic position. 
+  Each row represents the coordinates for one bin.
+
+``` {r}
+
+```
+
+## filterCells
+
+
+
+
+## runUmap

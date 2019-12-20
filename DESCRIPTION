@@ -13,7 +13,9 @@ Encoding: UTF-8
 LazyData: true
 Suggests: 
     testthat,
-    spelling
+    spelling,
+    knitr,
+    rmarkdown
 Language: en-US
 Imports: 
     dplyr,
@@ -30,3 +32,4 @@ Imports:
     amap,
     janitor
 RoxygenNote: 6.1.1
+VignetteBuilder: knitr
