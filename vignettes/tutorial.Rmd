@@ -71,4 +71,32 @@ breast_tumor <- copykit::runUmap(breast_tumor,
                                  n_neighbors = 30)
 ```
 
+It is possivel to visualize the results with the function `copykit::plotUmap()`.
+
+```{  warning=FALSE}
+copykit::plotUmap(breast_tumor)
+```
+
+# Finding clusters
+
+**CopyKit** uses a graph based approacht to search for clusters in the scCNA dataset. `copykit::findClusters()` builds an SNN graph of the k-nearest neighbors and attempts to find two different level of clustering: Major and minor subpopulations.
+Major clusters are found by looking at the graph connected components, whereas minor clusters uses the Leiden algorithm to detect connected communities within the major clusters.
+To run `copykit::findClusters()` you first need to run `copykit::runUmap()` since **CopyKit** applies the clustering on top of the UMAP embedding.
+
+```{ warning=FALSE}
+breast_tumor <- findClusters(breast_tumor)
+```
+
+Clustering information is stored as metadata and can be accessed with `SummarizedExperiment::colData(scCNA).
+
+```{ warning=FALSE}
+head(SummarizedExperiment::colData(breast_tumor))
+```
+
+`copykit::plotUmap()` can look for the cluster information and display it.
+
+```{  warning=FALSE}
+copykit::plotUmap(breast_tumor)
+```
+
 
