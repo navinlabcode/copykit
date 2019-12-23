@@ -8,11 +8,13 @@
 
 <title>Load data from Copy Number Experiment — readVarbinCNA • CopyKit</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -32,13 +34,14 @@
 
 
 
-<meta property="og:title" content="Load data from Copy Number Experiment — readVarbinCNA" />
 
+<meta property="og:title" content="Load data from Copy Number Experiment — readVarbinCNA" />
 <meta property="og:description" content="Creates an S4 class scCNA from the output directory of the copy number pipeline.
 readVarbinCNA searches for the uber*.seg uber.bin and uber.ratio files resulting from the Varbin copy number pipeline in the provided directory.
 The scCNA object contains the segment ratios, ratios and bincounts within the assay slot. where each bin is row and each sample (cell) is a column.
 Genomic ranges are stored in a GRanges object containing chromosome number, start coordinate, end cordinate and absolute genomic position. Each row represents the coordinates for one bin." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -97,7 +100,6 @@ Genomic ranges are stored in a GRanges object containing chromosome number, star
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -119,16 +121,14 @@ Genomic ranges are stored in a GRanges object containing chromosome number, star
     </div>
 
     <div class="ref-description">
-    
     <p>Creates an S4 class scCNA from the output directory of the copy number pipeline.
 readVarbinCNA searches for the uber*.seg uber.bin and uber.ratio files resulting from the Varbin copy number pipeline in the provided directory.
 The scCNA object contains the segment ratios, ratios and bincounts within the assay slot. where each bin is row and each sample (cell) is a column.
 Genomic ranges are stored in a GRanges object containing chromosome number, start coordinate, end cordinate and absolute genomic position. Each row represents the coordinates for one bin.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>readVarbinCNA</span>(<span class='no'>dir</span>, <span class='kw'>remove_Y</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -141,14 +141,13 @@ Genomic ranges are stored in a GRanges object containing chromosome number, star
       <td><p>(default == FALSE) If set to TRUE, removes information from the chrY from the dataset.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Segment ratios can be acessed with <code><a href='segment_ratios.html'>copykit::segment_ratios</a></code>.</p>
-<p>Ratios can be acessed with <code><a href='ratios.html'>copykit::ratios</a></code>.</p>
-<p>Bin counts can be acessed with <code><a href='bin_counts.html'>copykit::bin_counts</a></code>.</p>
+    <p>Segment ratios can be acessed with <code>copykit::segment_ratios</code>.</p>
+<p>Ratios can be acessed with <code>copykit::ratios</code>.</p>
+<p>Bin counts can be acessed with <code>copykit::bin_counts</code>.</p>
 <p>Genomic ranges can be acessed with <code><a href='https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html'>SummarizedExperiment::rowRanges()</a></code></p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
@@ -158,9 +157,7 @@ Genomic ranges are stored in a GRanges object containing chromosome number, star
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
@@ -172,7 +169,7 @@ Genomic ranges are stored in a GRanges object containing chromosome number, star
 
       <footer>
       <div class="copyright">
-  <p>Developed by First Last.</p>
+  <p>Developed by Darlan Conterno Minussi.</p>
 </div>
 
 <div class="pkgdown">

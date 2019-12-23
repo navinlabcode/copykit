@@ -2,9 +2,9 @@
 title: "tutorial"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{tutorial}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{  tutorial}
+  %\VignetteEncoding{  UTF-8}
+  %\VignetteEngine{  knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
 ---
@@ -15,7 +15,7 @@ editor_options:
   
   A common workflow with **CopyKit** consists in reading the dataset and using to filter the noisy cells out, clustering and plotting heatmaps for further analysis.
 
-## readVarbinCNA
+## Reading Varbin dataset
 
   Datasets generated with the varbin pipeline can be read with the function `readVarbinCNA()`. It creates an S4 class `scCNA` from the output directory of the copy number pipeline.
   `readVarbinCNA()` searches for the uber*.seg uber.bin and uber.ratio files in the provided directory.
@@ -25,20 +25,20 @@ editor_options:
   CopyKit stores the genomic ranges as a GRanges object containing chromosome number, start coordinate, end coordinate and absolute genomic position. 
   Each row represents the coordinates for one bin.
 
-``` { eval = FALSE, warning=FALSE}
+``` {   eval = FALSE, warning=FALSE}
 breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/")
 ```
 
-```{ echo = FALSE, warning=FALSE}
+```{   echo = FALSE, warning=FALSE}
 dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/"
 breast_tumor <- copykit::readVarbinCNA(dir)
 ```
 
-```{ }
+```{   }
 breast_tumor
 ```
 
-## filterCells
+## Filtering cells.
 
 Cells with low quality can be easily filtered with `filterCells()`.
 
@@ -48,17 +48,27 @@ Cells with low quality can be easily filtered with `filterCells()`.
 
 It is possible to control how strict the filtering will be by changing the argument `resolution`. Ex: `filterCells(resolution = 0.9)`
 
-```{ }
+```{   warning=FALSE}
 breast_tumor <- copykit::filterCells(breast_tumor,
                             resolution = 0.8)
 ```
 
 The information is store as metadata and can be accessed with `SummarizedExperiment::colData()`.
 
-```{}
+```{  warning=FALSE}
 head(SummarizedExperiment::colData(breast_tumor))
 ```
 
-## runUmap
+## Non-linear dimension reduction
+
+We can explore the sample organization at reduced dimensions with `runUmap()`. The goal is to explore the dataset for the presence of different subpopulations.
+`runUmap()` stores the generated embedding into the `scCNA` object and can be accessed with `SingleCellExperiment::reducedDim(scCNA, 'umap')`.
+**CopyKit** uses the package `uwot` to generate the umap embedding, this means that additional parameters that control the global or local structure to `runUmap()` can be passed on with the `...` argument. Ex: `copykit::runUmap(scCNA, min_dist = 0)`. To learn more on how those parameters can control global and local structure embedding visit the [Umap website](https://umap-learn.readthedocs.io/en/latest/clustering.html). For the full list of possible parameters check `?uwot::umap`.
+
+```{  warning=FALSE}
+breast_tumor <- copykit::runUmap(breast_tumor,
+                                 min_dist = 0,
+                                 n_neighbors = 30)
+```
 
 

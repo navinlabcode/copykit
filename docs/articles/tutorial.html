@@ -87,80 +87,50 @@
 <a href="#copykit" class="anchor"></a>CopyKit</h1>
 <p><strong>CopyKit</strong> provides a toolkit for the analysis of single-cell copy number datasets. It includes functions to read data from <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4417119/">Varbin</a> or <a href="https://www.10xgenomics.com/solutions/single-cell-cnv/">10X CNA datasets</a>.</p>
 <p>A common workflow with <strong>CopyKit</strong> consists in reading the dataset and using to filter the noisy cells out, clustering and plotting heatmaps for further analysis.</p>
-<div id="readvarbincna" class="section level2">
+<div id="reading-varbin-dataset" class="section level2">
 <h2 class="hasAnchor">
-<a href="#readvarbincna" class="anchor"></a>readVarbinCNA</h2>
+<a href="#reading-varbin-dataset" class="anchor"></a>Reading Varbin dataset</h2>
 <p>Datasets generated with the varbin pipeline can be read with the function <code><a href="../reference/readVarbinCNA.html">readVarbinCNA()</a></code>. It creates an S4 class <code>scCNA</code> from the output directory of the copy number pipeline. <code><a href="../reference/readVarbinCNA.html">readVarbinCNA()</a></code> searches for the uber*.seg uber.bin and uber.ratio files in the provided directory.</p>
 <p>The scCNA object will contain 3 different assays: <strong>segment ratios</strong>, <strong>ratios</strong> and <strong>bincounts</strong> where each bin is row and each sample (cell) is a column.</p>
 <p>CopyKit stores the genomic ranges as a GRanges object containing chromosome number, start coordinate, end coordinate and absolute genomic position. Each row represents the coordinates for one bin.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">breast_tumor &lt;-<span class="st"> </span>copykit<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/copykit/man/readVarbinCNA.html">readVarbinCNA</a></span>(<span class="st">"~/path_to_varbin_output/"</span>)</a></code></pre></div>
-<pre><code>## Importing segment ratios.</code></pre>
-<pre><code>## Importing ratios.</code></pre>
-<pre><code>## Importing bin counts.</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">breast_tumor</a></code></pre></div>
-<pre><code>## class: scCNA 
-## dim: 12205 1442 
-## metadata(0):
-## assays(3): segment_ratios ratios bin_counts
-## rownames(12205): 1 2 ... 12204 12205
-## rowData names(1): abspos
-## colnames(1442): tn20_2_s2_c10_s394_r1_001
-##   tn20_2_s2_c11_s395_r1_001 ... tn20_s6_c382_s2302_r1_001
-##   tn20_s6_c383_s2303_r1_001
-## colData names(1): sample
-## reducedDimNames(0):
-## spikeNames(0):
-## rowRanges has: 12205 ranges</code></pre>
+<p><code>{   eval = FALSE, warning=FALSE} breast_tumor &lt;- copykit::readVarbinCNA("~/path_to_varbin_output/")</code></p>
+<p><code>{   echo = FALSE, warning=FALSE} dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/" breast_tumor &lt;- copykit::readVarbinCNA(dir)</code></p>
+<pre><code>breast_tumor</code></pre>
 </div>
-<div id="filtercells" class="section level2">
+<div id="filtering-cells-" class="section level2">
 <h2 class="hasAnchor">
-<a href="#filtercells" class="anchor"></a>filterCells</h2>
+<a href="#filtering-cells-" class="anchor"></a>Filtering cells.</h2>
 <p>Cells with low quality can be easily filtered with <code><a href="../reference/filterCells.html">filterCells()</a></code>.</p>
 <p><code><a href="../reference/filterCells.html">filterCells()</a></code> uses a k-nearest-neighbor approach to remove cells with random CNA profiles, largely due to noise.</p>
 <p><strong>CopyKit</strong> automatically outputs a heatmap so you can visually assess if the filtering performed as expected</p>
 <p>It is possible to control how strict the filtering will be by changing the argument <code>resolution</code>. Ex: <code><a href="../reference/filterCells.html">filterCells(resolution = 0.9)</a></code></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">breast_tumor &lt;-<span class="st"> </span>copykit<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/copykit/man/filterCells.html">filterCells</a></span>(breast_tumor,</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">                            <span class="dt">resolution =</span> <span class="fl">0.8</span>)</a></code></pre></div>
-<pre><code>## Warning: Setting row names on a tibble is deprecated.
-
-## Warning: Setting row names on a tibble is deprecated.
-
-## Warning: Setting row names on a tibble is deprecated.</code></pre>
-<pre><code>## Calculating correlation matrix.</code></pre>
-<pre><code>## Adding information to metadata. Access with SummarizedExperiment::colData(scCNA).</code></pre>
-<pre><code>## Plotting heatmap.</code></pre>
-<pre><code>## Your dataset has: 1442 Cells. Plotting heatmap may take a long time with large number of cells. Set number of threads with n_threads for parallel processing if possible to speed up.</code></pre>
-<pre><code>## Done.</code></pre>
-<p><img src="tutorial_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<pre warning="FALSE"><code>breast_tumor &lt;- copykit::filterCells(breast_tumor,
+                            resolution = 0.8)</code></pre>
 <p>The information is store as metadata and can be accessed with <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">SummarizedExperiment::colData()</a></code>.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(SummarizedExperiment<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(breast_tumor))</a></code></pre></div>
-<pre><code>## DataFrame with 6 rows and 2 columns
-##                                              sample    filtered
-##                                         &lt;character&gt; &lt;character&gt;
-## tn20_2_s2_c10_s394_r1_001 tn20_2_s2_c10_s394_r1_001        kept
-## tn20_2_s2_c11_s395_r1_001 tn20_2_s2_c11_s395_r1_001        kept
-## tn20_2_s2_c12_s396_r1_001 tn20_2_s2_c12_s396_r1_001     removed
-## tn20_2_s2_c13_s397_r1_001 tn20_2_s2_c13_s397_r1_001     removed
-## tn20_2_s2_c14_s398_r1_001 tn20_2_s2_c14_s398_r1_001     removed
-## tn20_2_s2_c19_s403_r1_001 tn20_2_s2_c19_s403_r1_001        kept</code></pre>
+<pre warning="FALSE"><code><a href="https://rdrr.io/r/utils/head.html">head(SummarizedExperiment::colData(breast_tumor))</a></code></pre>
 </div>
-<div id="runumap" class="section level2">
+<div id="non-linear-dimension-reduction" class="section level2">
 <h2 class="hasAnchor">
-<a href="#runumap" class="anchor"></a>runUmap</h2>
+<a href="#non-linear-dimension-reduction" class="anchor"></a>Non-linear dimension reduction</h2>
+<p>We can explore the sample organization at reduced dimensions with <code><a href="../reference/runUmap.html">runUmap()</a></code>. The goal is to explore the dataset for the presence of different subpopulations. <code><a href="../reference/runUmap.html">runUmap()</a></code> stores the generated embedding into the <code>scCNA</code> object and can be accessed with <code><a href="https://rdrr.io/pkg/SingleCellExperiment/man/SCE-reducedDims.html">SingleCellExperiment::reducedDim(scCNA, 'umap')</a></code>. <strong>CopyKit</strong> uses the package <code>uwot</code> to generate the umap embedding, this means that additional parameters that control the global or local structure to <code><a href="../reference/runUmap.html">runUmap()</a></code> can be passed on with the <code>...</code> argument. Ex: <code><a href="../reference/runUmap.html">copykit::runUmap(scCNA, min_dist = 0)</a></code>. To learn more on how those parameters can control global and local structure embedding visit the <a href="https://umap-learn.readthedocs.io/en/latest/clustering.html">Umap website</a>. For the full list of possible parameters check <code><a href="https://rdrr.io/pkg/uwot/man/umap.html">?uwot::umap</a></code>.</p>
+<pre warning="FALSE"><code>breast_tumor &lt;- copykit::runUmap(breast_tumor,
+                                 min_dist = 0,
+                                 n_neighbors = 30)</code></pre>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li>
 <a href="#copykit">CopyKit</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#readvarbincna">readVarbinCNA</a></li>
-      <li><a href="#filtercells">filterCells</a></li>
-      <li><a href="#runumap">runUmap</a></li>
+<li><a href="#reading-varbin-dataset">Reading Varbin dataset</a></li>
+      <li><a href="#filtering-cells-">Filtering cells.</a></li>
+      <li><a href="#non-linear-dimension-reduction">Non-linear dimension reduction</a></li>
       </ul>
 </li>
       </ul>
