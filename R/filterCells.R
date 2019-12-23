@@ -22,7 +22,16 @@ filterCells <- function(scCNA,
                         k = 5,
                         resolution = 0.8,
                         n_threads = 1) {
-  k = k
+
+  # checks
+  if (!is.numeric(resolution)) {
+    stop("Resolution needs to be a number between 0 and 1")
+  }
+
+  if (resolution < 0 || resolution > 1) {
+    stop("Resolution needs to be a number between 0 and 1")
+  }
+
   seg <- copykit::segment_ratios(scCNA)
 
   message("Calculating correlation matrix.")
