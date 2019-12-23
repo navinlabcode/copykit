@@ -16,7 +16,18 @@
 runUmap <- function(scCNA,
                     seed = 17,
                     ...) {
-  seg_data <- t(segment_ratios(scCNA))
+  seg_data <- segment_ratios(scCNA)
+
+  # checking for filtered cells
+  # subsetting filtered cells
+  if (!is.null(SummarizedExperiment::colData(scCNA)$filtered)) {
+    message("Removing filtered out cells.")
+    seg_data <- seg_data[SummarizedExperiment::colData(breast_tumor)$filtered == "kept"]
+  }
+
+  # transposing
+  seg_data <- t(seg_data) %>%
+    as.data.frame()
 
   message(paste("Embedding data with UMAP. Using seed", seed))
   set.seed(seed)
@@ -26,7 +37,9 @@ runUmap <- function(scCNA,
 
   SingleCellExperiment::reducedDims(scCNA) <- list(umap = dat_umap)
 
-  message("Done. Access reduced dimensions slot with: SingleCellExperiment::reducedDims(scCNA, 'umap')")
+  message(
+    "Done. Access reduced dimensions slot with: SingleCellExperiment::reducedDims(scCNA, 'umap')"
+  )
 
   return(scCNA)
 
