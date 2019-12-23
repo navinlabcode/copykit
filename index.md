@@ -1,7 +1,3 @@
----
-output: github_document
----
-
 # CopyKit
 
   **CopyKit** provides a toolkit for the analysis of single-cell copy number datasets. It includes functions to read data from [Varbin](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4417119/) or [10X CNA datasets](https://www.10xgenomics.com/solutions/single-cell-cnv/).

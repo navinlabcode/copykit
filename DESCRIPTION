@@ -32,6 +32,7 @@ Imports:
     amap,
     janitor,
     scran,
-    leiden
+    leiden,
+    ape
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr

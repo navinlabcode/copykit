@@ -1,5 +1,5 @@
 ---
-title: "tutorial"
+title: "CopyKit workflow"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{  tutorial}
@@ -8,8 +8,6 @@ vignette: >
 editor_options: 
   chunk_output_type: console
 ---
-
-# CopyKit
 
   **CopyKit** provides a toolkit for the analysis of single-cell copy number datasets. It includes functions to read data from [Varbin](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4417119/) or [10X CNA datasets](https://www.10xgenomics.com/solutions/single-cell-cnv/).
   
@@ -24,14 +22,16 @@ editor_options:
   
   CopyKit stores the genomic ranges as a GRanges object containing chromosome number, start coordinate, end coordinate and absolute genomic position. 
   Each row represents the coordinates for one bin.
+  
+  It is possible to exclude the information from ChrY (important when working with XX samples) by setting the argument `remove_Y` to `TRUE`. Ex: `readVarbinCNA("~/path_to_varbin_output/", remove_Y = TRUE)`.
 
-``` {   eval = FALSE, warning=FALSE}
+``` { eval = FALSE, warning=FALSE}
 breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/")
 ```
 
-```{   echo = FALSE, warning=FALSE}
+```{ echo = FALSE, warning=FALSE}
 dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/"
-breast_tumor <- copykit::readVarbinCNA(dir)
+breast_tumor <- copykit::readVarbinCNA(dir, remove_Y = TRUE)
 ```
 
 ```{   }
@@ -48,14 +48,20 @@ Cells with low quality can be easily filtered with `filterCells()`.
 
 It is possible to control how strict the filtering will be by changing the argument `resolution`. Ex: `filterCells(resolution = 0.9)`
 
-```{   warning=FALSE}
+```{   eval = FALSE, warning=FALSE, fig.height = 7 }
 breast_tumor <- copykit::filterCells(breast_tumor,
                             resolution = 0.8)
 ```
 
+```{  echo = FALSE, warning=FALSE, fig.height = 7 }
+breast_tumor <- copykit::filterCells(breast_tumor,
+                            resolution = 0.8,
+                            n_threads = 40)
+```
+
 The information is store as metadata and can be accessed with `SummarizedExperiment::colData()`.
 
-```{  warning=FALSE}
+```{  warning=FALSE }
 head(SummarizedExperiment::colData(breast_tumor))
 ```
 
@@ -83,20 +89,33 @@ copykit::plotUmap(breast_tumor)
 Major clusters are found by looking at the graph connected components, whereas minor clusters uses the Leiden algorithm to detect connected communities within the major clusters.
 To run `copykit::findClusters()` you first need to run `copykit::runUmap()` since **CopyKit** applies the clustering on top of the UMAP embedding.
 
-```{ warning=FALSE}
+```{ warning=FALSE }
 breast_tumor <- findClusters(breast_tumor)
 ```
 
 Clustering information is stored as metadata and can be accessed with `SummarizedExperiment::colData(scCNA).
 
-```{ warning=FALSE}
+```{ warning=FALSE }
 head(SummarizedExperiment::colData(breast_tumor))
 ```
 
 `copykit::plotUmap()` can look for the cluster information and display it.
 
-```{  warning=FALSE}
+```{  warning=FALSE }
 copykit::plotUmap(breast_tumor)
+```
+
+# Plotting heatmap
+
+Plotting heatmap with **CopyKit** is done with the `plotHeatmap()` function. `plotHeatmap()` orders the cells according to a neighbor joining phylogenetic tree.
+If cells were filtered it will automatically exclude the filtered out cells from the dataset. Otherwise the entire dataset is shown. `plotHeatmap()` also checks for the existence of cluster information and will automatically add it as an annotation to the heatmap.
+
+```{ eval = FALSE, warning = FALSE, fig.height = 8}
+copykit::plotHeatmap(breast_tumor)
+```
+
+```{ echo = FALSE, warning = FALSE, fig.height = 8}
+copykit::plotHeatmap(breast_tumor, n_threads = 40)
 ```
 
 
