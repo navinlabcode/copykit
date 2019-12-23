@@ -22,7 +22,6 @@ filterCells <- function(scCNA,
                         k = 5,
                         resolution = 0.8,
                         n_threads = 1) {
-
   # checks
   if (!is.numeric(resolution)) {
     stop("Resolution needs to be a number between 0 and 1")
@@ -75,20 +74,67 @@ filterCells <- function(scCNA,
                                     "removed" = "firebrick3"
                                   )))
 
+  #chromosome bar aesthetic
+  chr_ranges <-
+    as.data.frame(SummarizedExperiment::rowRanges(scCNA))
+  chr_lengths <- rle(as.numeric(chr_ranges$seqnames))$lengths
+
+  if (any(chr_ranges$seqnames == "24") ||
+      any(chr_ranges$seqnames == "Y") ||
+      any(chr_ranges$seqnames == "chrY")) {
+    chr_binary <- rep(c(2, 1), length(chr_lengths) / 2)
+  } else {
+    chr_binary <- c(rep(c(2, 1), (length(chr_lengths) / 2)), 2)
+  }
+
+  chr <-
+    data.frame(chr = rep.int(x = chr_binary, times = chr_lengths))
+
+  # getting lengths for chr numbers annotation
+  chr_rl_c <- c(1, cumsum(chr_lengths))
+
+  # creating a data frame to calculate rowMeans
+  chr_df <-
+    data.frame(a = chr_rl_c[1:length(chr_rl_c) - 1], b = chr_rl_c[2:length(chr_rl_c)])
+  chr_l_means <- round(rowMeans(chr_df))
+
+  chrom.names <- c(1:22, "X", "Y")
+
+  # creating the vector for chr number annotations
+  v <- vector(length = sum(chr_lengths), mode = "character")
+  suppressWarnings(v[chr_l_means] <- chrom.names)
+  v[is.na(v)] <- ""
+
+
+
+  # chr bar with the chr names
+  chr_bar <-
+    ComplexHeatmap::HeatmapAnnotation(
+      chr_text = ComplexHeatmap::anno_text(v[1:nrow(seg)],
+                                           gp = grid::gpar(fontsize = 14)),
+      df = as.character(chr[1:nrow(chr),]),
+      show_legend = FALSE,
+      show_annotation_name = FALSE,
+      which = "column",
+      col = list(df = c("1" = "grey88", "2" = "black"))
+    )
+
   # Heatmap
   ht <- ComplexHeatmap::Heatmap(
-    t(seg),
+    log2(t(seg)),
     cluster_rows = function(x) {
       fastcluster::hclust(amap::Dist(x, method = "manhattan", nbproc = n_threads),
                           method = "ward.D2")
     },
     cluster_columns = FALSE,
     use_raster = TRUE,
+    top_annotation = chr_bar,
     border = TRUE,
     show_row_names = FALSE,
     show_column_names = FALSE,
     row_split = dplyr::pull(dst_knn_df, filtered),
-    left_annotation = filter_anno
+    left_annotation = filter_anno,
+    heatmap_legend_param = list(title = "log2(segratio)")
   )
 
   print(ht)
