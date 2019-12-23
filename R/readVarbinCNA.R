@@ -53,7 +53,8 @@ readVarbinCNA <- function(dir,
     glob = "*uber*seg.txt"
   ),
   col_types = readr::cols()) %>%
-    janitor::clean_names()
+    janitor::clean_names() %>%
+    as.data.frame()
 
   if (remove_Y == TRUE) {
     dat <- dat %>%
@@ -74,7 +75,8 @@ readVarbinCNA <- function(dir,
     glob = "*uber*ratio.txt"
   ),
   col_types = readr::cols()) %>%
-    janitor::clean_names()
+    janitor::clean_names() %>%
+    as.data.frame()
 
   if (remove_Y == TRUE) {
     dat_rat <- dat_rat %>%
@@ -94,7 +96,8 @@ readVarbinCNA <- function(dir,
     glob = "*uber*bin.txt"
   ),
   col_types = readr::cols()) %>%
-    janitor::clean_names()
+    janitor::clean_names() %>%
+    as.data.frame()
 
   if (remove_Y == TRUE) {
     dat_bin <- dat_bin %>%

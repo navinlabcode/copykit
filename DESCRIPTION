@@ -30,6 +30,8 @@ Imports:
     ComplexHeatmap,
     fastcluster,
     amap,
-    janitor
+    janitor,
+    scran,
+    leiden
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr

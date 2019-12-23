@@ -3,6 +3,7 @@
 export("%>%")
 export(bin_counts)
 export(filterCells)
+export(findClusters)
 export(plotUmap)
 export(ratios)
 export(readVarbinCNA)

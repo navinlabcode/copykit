@@ -15,18 +15,22 @@
 
 plotUmap <- function(scCNA) {
   # theme setup
-  my_theme <- list(theme(
-    axis.title.x = element_text(colour = "gray28", size = 20),
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank(),
-    axis.title.y = element_text(colour = "gray28", size = 20),
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    axis.line = element_blank(),
-    legend.position = "right",
-    legend.title = element_blank(),
-    legend.text = element_text(size = 14)
-  ),xlab("umap1"),ylab("umap2"))
+  my_theme <- list(
+    theme(
+      axis.title.x = element_text(colour = "gray28", size = 20),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.title.y = element_text(colour = "gray28", size = 20),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.line = element_blank(),
+      legend.position = "right",
+      legend.title = element_blank(),
+      legend.text = element_text(size = 14)
+    ),
+    xlab("umap1"),
+    ylab("umap2")
+  )
 
   # obtaining data from reducedDim slot
   if (!is.null(SingleCellExperiment::reducedDim(breast_tumor))) {
@@ -36,7 +40,7 @@ plotUmap <- function(scCNA) {
   } else
     stop("Reduced dimensions slot is null. Use runUmap() to create it.")
 
-  if (is.null(SummarizedExperiment::colData(scCNA, "cluster"))) {
+  if (is.null(SummarizedExperiment::colData(scCNA, "minor_clusters"))) {
     message("No cluster information detected, use findClusters() to create it.")
     message("Plotting Umap.")
 
@@ -47,15 +51,25 @@ plotUmap <- function(scCNA) {
 
   } else {
     message("Plotting Umap.")
-    message("Using colData(scCNA, 'cluster') cluster information.")
+    message("Using colData(scCNA) cluster information.")
 
     ggplot(umap_df) +
+      geom_point(
+        aes(
+          x = V1,
+          y = V2,
+          color = SummarizedExperiment::colData(scCNA)$major_clusters
+        ),
+        alpha = 1,
+        size = 10
+      ) +
       geom_point(aes(
         x = V1,
         y = V2,
-        color = SummarizedExperiment::colData(scCNA, "cluster")
-      )) +
-      scale_color_manual(values = color_palette)
+        color = SummarizedExperiment::colData(scCNA)$minor_clusters
+      ),
+      alpha = .8) +
+    scale_color_manual(values = c(major_palette, minor_palette)) +
     theme_classic() +
       my_theme
 

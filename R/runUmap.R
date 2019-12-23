@@ -18,7 +18,7 @@ runUmap <- function(scCNA,
                     ...) {
   seg_data <- t(segment_ratios(scCNA))
 
-  message(paste("Embedding data with UMAP. Using seed:", seed))
+  message(paste("Embedding data with UMAP. Using seed", seed))
   set.seed(seed)
 
   dat_umap <- uwot::umap(seg_data,
