@@ -19,12 +19,6 @@ plotHeatmap <- function(scCNA,
   #obtaining data
   seg_data <- t(segment_ratios(scCNA))
 
-  # subsetting filtered cells
-  if (!is.null(SummarizedExperiment::colData(scCNA)$filtered)) {
-    message("Removing filtered out cells.")
-    seg_data <- seg_data[SummarizedExperiment::colData(breast_tumor)$filtered == "kept"]
-  }
-
   #chromosome bar aesthetic
   chr_ranges <-
     as.data.frame(SummarizedExperiment::rowRanges(scCNA))
@@ -69,13 +63,10 @@ plotHeatmap <- function(scCNA,
     )
 
   if (nrow(seg_data) > 500) {
-    message(
-      paste(
-        "Your dataset has:",
-        nrow(seg_data),
-        "Cells. Plotting heatmap may take a long time with large number of cells. Set number of threads with n_threads for parallel processing if possible to speed up."
-      )
-    )
+    message(paste("Your dataset has:",
+                  nrow(seg_data), "Cells"))
+    message("Plotting heatmap may take a long time with large number of cells")
+    message("Set number of threads with n_threads for parallel processing if possible to speed up.")
   }
 
   # ordering cells
@@ -113,7 +104,6 @@ plotHeatmap <- function(scCNA,
       show_heatmap_legend = TRUE
     )
   } else {
-
     #cluster annotation
     metadata <- colData(scCNA) %>%
       as.data.frame()
@@ -124,10 +114,13 @@ plotHeatmap <- function(scCNA,
       dplyr::select(major_clusters,
                     minor_clusters)
 
-    cluster_anno <- ComplexHeatmap::rowAnnotation(df = metadata_anno_df,
-                                                  col = list(major_clusters = major_palette,
-                                                             minor_clusters = minor_palette),
-                                                  show_annotation_name = FALSE)
+    cluster_anno <-
+      ComplexHeatmap::rowAnnotation(
+        df = metadata_anno_df,
+        col = list(major_clusters = major_palette,
+                   minor_clusters = minor_palette),
+        show_annotation_name = FALSE
+      )
 
     seg_data_ordered <- seg_data[tree_tips_order,]
 
