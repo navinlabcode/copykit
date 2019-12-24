@@ -33,8 +33,8 @@ plotUmap <- function(scCNA) {
   )
 
   # obtaining data from reducedDim slot
-  if (!is.null(SingleCellExperiment::reducedDim(breast_tumor, withDimnames = FALSE))) {
-    umap_df <- SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE) %>%
+  if (!is.null(SingleCellExperiment::reducedDim(breast_tumor))) {
+    umap_df <- SingleCellExperiment::reducedDim(scCNA, 'umap') %>%
       as.data.frame()
 
   } else
@@ -53,17 +53,12 @@ plotUmap <- function(scCNA) {
     message("Plotting Umap.")
     message("Using colData(scCNA) cluster information.")
 
-    #obtaining cluster info
-    metadata <- SummarizedExperiment::colData(scCNA) %>%
-      as.data.frame() %>%
-      dplyr::filter(filtered == "kept")
-
     ggplot(umap_df) +
       geom_point(
         aes(
           x = V1,
           y = V2,
-          color = metadata$major_clusters
+          color = SummarizedExperiment::colData(scCNA)$major_clusters
         ),
         alpha = 1,
         size = 10
@@ -71,7 +66,7 @@ plotUmap <- function(scCNA) {
       geom_point(aes(
         x = V1,
         y = V2,
-        color = metadata$minor_clusters
+        color = as.factor(SummarizedExperiment::colData(scCNA)$minor_clusters)
       ),
       alpha = .8) +
     scale_color_manual(values = c(major_palette, minor_palette)) + # palettes are in sysdata.rda
