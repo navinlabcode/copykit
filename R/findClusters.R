@@ -28,9 +28,9 @@ findClusters <- function(scCNA,
   }
 
   # obtaining data from reducedDim slot
-  if (!is.null(SingleCellExperiment::reducedDim(breast_tumor, withDimnames = FALSE))) {
+  if (!is.null(SingleCellExperiment::reducedDim(breast_tumor))) {
     umap_df <-
-      SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE) %>%
+      SingleCellExperiment::reducedDim(scCNA, 'umap') %>%
       as.data.frame()
 
   } else
@@ -59,41 +59,9 @@ findClusters <- function(scCNA,
   #minor
   leid <- leiden::leiden(g_adj, seed = seed)
 
-  # correction for filtered out cells
-  names(g_clusters) <- rownames(umap_df)
-  names(leid) <- rownames(umap_df)
-
-  samp <-
-    data.frame(
-      sample = SummarizedExperiment::colData(scCNA)$sample,
-      major_clusters = vector(
-        mode = "character",
-        length = length(SummarizedExperiment::colData(scCNA)$sample)
-      ),
-      minor_clusters = vector(
-        mode = "character",
-        length = length(SummarizedExperiment::colData(scCNA)$sample)
-      ),
-      stringsAsFactors = FALSE
-    )
-
-  pos <-
-    which(SummarizedExperiment::colData(scCNA)$sample %in% rownames(umap_df))
-
-  samp$major_clusters[pos] <- g_clusters
-  samp$minor_clusters[pos] <- as.character(leid)
-
   # storing info
-  SummarizedExperiment::colData(scCNA)$major_clusters <-
-    samp$major_clusters
-  SummarizedExperiment::colData(scCNA)$minor_clusters <-
-    samp$minor_clusters
-
-  SummarizedExperiment::colData(scCNA)$major_clusters[SummarizedExperiment::colData(scCNA)$major_clusters == ""] <-
-    NA
-
-  SummarizedExperiment::colData(scCNA)$minor_clusters[SummarizedExperiment::colData(scCNA)$minor_clusters == ""] <-
-    NA
+  SummarizedExperiment::colData(scCNA)$major_clusters <- g_clusters
+  SummarizedExperiment::colData(scCNA)$minor_clusters <- leid
 
   message("Done.")
 
