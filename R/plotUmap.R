@@ -53,12 +53,17 @@ plotUmap <- function(scCNA) {
     message("Plotting Umap.")
     message("Using colData(scCNA) cluster information.")
 
+    #obtaining cluster info
+    metadata <- SummarizedExperiment::colData(scCNA) %>%
+      as.data.frame() %>%
+      dplyr::filter(filtered == "kept")
+
     ggplot(umap_df) +
       geom_point(
         aes(
           x = V1,
           y = V2,
-          color = SummarizedExperiment::colData(scCNA)$major_clusters
+          color = metadata$major_clusters
         ),
         alpha = 1,
         size = 10
@@ -66,7 +71,7 @@ plotUmap <- function(scCNA) {
       geom_point(aes(
         x = V1,
         y = V2,
-        color = SummarizedExperiment::colData(scCNA)$minor_clusters
+        color = metadata$minor_clusters
       ),
       alpha = .8) +
     scale_color_manual(values = c(major_palette, minor_palette)) + # palettes are in sysdata.rda
