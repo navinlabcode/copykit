@@ -44,9 +44,9 @@ Cells with low quality can be easily filtered with `filterCells()`.
 
 `filterCells()` uses a k-nearest-neighbor approach to remove cells with random CNA profiles, largely due to noise.
 
-**CopyKit** automatically outputs a heatmap so you can visually assess if the filtering performed as expected
+By default, **CopyKit** automatically outputs a heatmap so you can visually assess if the filtering performed as expected, this however can be turned off by adding the argument `copykit::filterCells(scCNA, plot_heatmap = FALSE)`. Plotting the heatmap has a time consuming step due to distance calculations. CopyKit also allows for parallel processing of the distance calculations `copykit::filterCells()` with the argument `n_threads`.
 
-It is possible to control how strict the filtering will be by changing the argument `resolution`. Ex: `filterCells(resolution = 0.9)`
+To control how strict the filtering, change the argument `resolution`. Ex: `copykit::filterCells(resolution = 0.9)`
 
 ```{   eval = FALSE, warning=FALSE, fig.height = 7 }
 breast_tumor <- copykit::filterCells(breast_tumor,
@@ -56,7 +56,8 @@ breast_tumor <- copykit::filterCells(breast_tumor,
 ```{  echo = FALSE, warning=FALSE, fig.height = 7 }
 breast_tumor <- copykit::filterCells(breast_tumor,
                             resolution = 0.8,
-                            n_threads = 40)
+                            n_threads = 40,
+                            plot_heatmap = FALSE)
 ```
 
 The information is store as metadata and can be accessed with `SummarizedExperiment::colData()`.
@@ -68,7 +69,7 @@ head(SummarizedExperiment::colData(breast_tumor))
 ## Non-linear dimension reduction
 
 We can explore the sample organization at reduced dimensions with `runUmap()`. The goal is to explore the dataset for the presence of different subpopulations.
-`runUmap()` stores the generated embedding into the `scCNA` object and can be accessed with `SingleCellExperiment::reducedDim(scCNA, 'umap')`.
+`runUmap()` stores the generated embedding into the `scCNA` object and can be accessed with `SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)`.
 **CopyKit** uses the package `uwot` to generate the umap embedding, this means that additional parameters that control the global or local structure to `runUmap()` can be passed on with the `...` argument. Ex: `copykit::runUmap(scCNA, min_dist = 0)`. To learn more on how those parameters can control global and local structure embedding visit the [Umap website](https://umap-learn.readthedocs.io/en/latest/clustering.html). For the full list of possible parameters check `?uwot::umap`.
 
 ```{  warning=FALSE}
@@ -90,7 +91,7 @@ Major clusters are found by looking at the graph connected components, whereas m
 To run `copykit::findClusters()` you first need to run `copykit::runUmap()` since **CopyKit** applies the clustering on top of the UMAP embedding.
 
 ```{ warning=FALSE }
-breast_tumor <- findClusters(breast_tumor)
+breast_tumor <- copykit::findClusters(breast_tumor)
 ```
 
 Clustering information is stored as metadata and can be accessed with `SummarizedExperiment::colData(scCNA).

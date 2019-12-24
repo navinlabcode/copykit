@@ -8,7 +8,7 @@
 #' @param seed Sets a seed for the pseudorandom number generator.
 #' @param ... Additional parameters passed to \code{uwot::umap}.
 #'
-#' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDims(scCNA, 'umap')}
+#' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)}
 #' @export
 #'
 #' @examples
@@ -22,7 +22,8 @@ runUmap <- function(scCNA,
   # subsetting filtered cells
   if (!is.null(SummarizedExperiment::colData(scCNA)$filtered)) {
     message("Removing filtered out cells.")
-    seg_data <- seg_data[SummarizedExperiment::colData(breast_tumor)$filtered == "kept"]
+    seg_data <-
+      seg_data[SummarizedExperiment::colData(breast_tumor)$filtered == "kept"]
   }
 
   # transposing
@@ -35,10 +36,15 @@ runUmap <- function(scCNA,
   dat_umap <- uwot::umap(seg_data,
                          ...)
 
+  rownames(dat_umap) <- rownames(seg_data)
+
+  # Due to the reducedDim validity check of the number of samples needing to be the same of the number of elements in the object, I'll need to suppress that validity check to be able to store the filtered dataset UMAP in reducedDim()
+
+  S4Vectors:::disableValidity(TRUE)
   SingleCellExperiment::reducedDims(scCNA) <- list(umap = dat_umap)
 
   message(
-    "Done. Access reduced dimensions slot with: SingleCellExperiment::reducedDims(scCNA, 'umap')"
+    "Done. Access reduced dimensions slot with: SingleCellExperiment::reducedDims(scCNA, 'umap', withDimnames = FALSE)"
   )
 
   return(scCNA)

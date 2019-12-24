@@ -33,6 +33,7 @@ Imports:
     janitor,
     scran,
     leiden,
-    ape
+    ape,
+    S4Vectors
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr

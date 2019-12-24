@@ -25,3 +25,4 @@ scCNA <- function(segment_ratios,
                                                     bin_counts = bin_counts), ...)
   .scCNA(cna)
 }
+

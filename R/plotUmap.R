@@ -6,7 +6,7 @@
 #'
 #' @param scCNA scCNA object.
 #'
-#' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SummarizedExperiment::reducedDim(scCNA, 'umap')}. \code{plotUmap} searches for cluster information in the \code{SummarizedExperiment::colData()} metadata and colors the clusters according to that information.
+#' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SummarizedExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)}. \code{plotUmap} searches for cluster information in the \code{SummarizedExperiment::colData()} metadata and colors the clusters according to that information.
 #'
 #' @export
 #'
@@ -33,8 +33,8 @@ plotUmap <- function(scCNA) {
   )
 
   # obtaining data from reducedDim slot
-  if (!is.null(SingleCellExperiment::reducedDim(breast_tumor))) {
-    umap_df <- SingleCellExperiment::reducedDim(scCNA, 'umap') %>%
+  if (!is.null(SingleCellExperiment::reducedDim(breast_tumor, withDimnames = FALSE))) {
+    umap_df <- SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE) %>%
       as.data.frame()
 
   } else
