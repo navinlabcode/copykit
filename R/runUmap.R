@@ -27,9 +27,9 @@ runUmap <- function(scCNA,
   SingleCellExperiment::reducedDims(scCNA) <- list(umap = dat_umap)
 
   message(
-    "Access reduced dimensions slot with: SingleCellExperiment::reducedDims(scCNA, 'umap')"
+    "Access reduced dimensions slot with: SingleCellExperiment::reducedDims(scCNA, 'umap')."
   )
-  message("Done")
+  message("Done.")
 
   return(scCNA)
 

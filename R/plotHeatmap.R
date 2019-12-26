@@ -105,7 +105,7 @@ plotHeatmap <- function(scCNA,
     )
   } else {
     #cluster annotation
-    metadata <- colData(scCNA) %>%
+    metadata <- SummarizedExperiment::colData(scCNA) %>%
       as.data.frame()
 
     metadata <- metadata[tree_tips_order,]
