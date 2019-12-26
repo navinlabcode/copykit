@@ -31,6 +31,9 @@ breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/")
 
 ```{r echo = FALSE, warning=FALSE}
 options(bitmapType='cairo')
+library(tidyverse)
+library(reticulate)
+use_python("/volumes/lab/users/dminussi/software/pythonenv/env/bin/python", required = T)
 dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/"
 breast_tumor <- copykit::readVarbinCNA(dir, remove_Y = TRUE)
 ```
@@ -123,7 +126,7 @@ copykit::plotUmap(breast_tumor)
 It is possible to run phylogenetic analysis with copykit by using the function `copykit::runPhylo()`. This function creates a distance based neighbor-joining tree that is stored within the scCNA object. You can access the resulting tree with `copykit::phylo()`
 
 ```{r}
-breast_tumor <- runPhylo(breast_tumor)
+breast_tumor <- copykit::runPhylo(breast_tumor)
 ```
 
 Which can be easily visualized with
@@ -140,7 +143,7 @@ copykit::plotHeatmap(breast_tumor)
 ```
 
 ```{r echo = FALSE, warning = FALSE, fig.height = 8}
-copykit::plotHeatmap(breast_tumor, n_threads = 20)
+copykit::plotHeatmap(breast_tumor)
 ```
 
 

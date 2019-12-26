@@ -4,7 +4,7 @@
 \alias{plotHeatmap}
 \title{Plot heatmap}
 \usage{
-plotHeatmap(scCNA, n_threads = 1)
+plotHeatmap(scCNA, order_cells = "phylogeny", n_threads = 1)
 }
 \arguments{
 \item{scCNA}{scCNA object.}

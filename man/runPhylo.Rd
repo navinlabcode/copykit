@@ -11,12 +11,12 @@ runPhylo(scCNA, method = "nj", metric = "euclidean", n_threads = 1)
 
 \item{method}{Phylogenetic method to be run, currently only accepts "nj" (neighbor-joining).}
 
-\item{metric}{distance metric passed to construct the phylogeny.}
+\item{metric}{distance metric passed to construct the phylogeny (Defaults to "euclidean").}
 
 \item{n_threads}{Number of threads used to calculate the distance matrix. Passed to `amap::Dist`}
 }
 \value{
-A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)}
+A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDim(scCNA, 'umap')}
 }
 \description{
 Performs phylogenetic analysis using the segment ratios data

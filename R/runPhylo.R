@@ -33,13 +33,6 @@ runPhylo <- function(scCNA,
   seg_data <- t(segment_ratios(scCNA)) %>%
     as.data.frame()
 
-  if (nrow(seg_data) > 500) {
-    message(paste("Your dataset has:",
-                  nrow(seg_data), "Cells"))
-    message("Calculating the distance matrix may take a long time with large number of cells")
-    message("Set number of threads with n_threads for parallel processing if possible to speed up.")
-  }
-
   # ordering cells
   message("Creating neighbor-joining tree.")
   tree <- ape::nj(distMat(scCNA))
