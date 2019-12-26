@@ -36,6 +36,8 @@ runPhylo <- function(scCNA,
 
   phylo(scCNA) <- tree
 
+  message("Access slot with copykit::phylo(scCNA).")
+  message("Done.")
   return(scCNA)
 
 }
