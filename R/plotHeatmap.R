@@ -5,7 +5,7 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param n_threads Number of threads used to calculate the distance. Passed to `amap::Dist`
+#' @order_cells Methods to order the cells within the heatmap. Accepted values are "phylogeny", "hclust", "graph_breadth_search". Defaults to "phylogeny".
 #'
 #' @return A heatmap visualization.
 #'
@@ -15,7 +15,7 @@
 #'
 
 plotHeatmap <- function(scCNA,
-                        n_threads = 1) {
+                        order_cells = "phylogeny") {
   #obtaining data
   seg_data <- t(segment_ratios(scCNA))
 
@@ -62,22 +62,48 @@ plotHeatmap <- function(scCNA,
       col = list(df = c("1" = "grey88", "2" = "black"))
     )
 
-  if (nrow(seg_data) > 500) {
-    message(paste("Your dataset has:",
-                  nrow(seg_data), "Cells"))
-    message("Plotting heatmap may take a long time with large number of cells")
-    message("Set number of threads with n_threads for parallel processing if possible to speed up.")
+  # ordering cells
+  if (order_cells == "phylogeny") {
+
+    tryCatch(
+      phylo(scCNA),
+      error = function(e) {
+         message("No phylogeny detected in scCNA object.")
+         runPhylo(scCNA)
+      }
+    )
+
+    tree <- phylo(scCNA)
+
+    # getting order
+    is_tip <- tree$edge[, 2] <= length(tree$tip.label)
+    ordered_tips_index <- tree$edge[is_tip, 2]
+    tree_tips_order <- tree$tip.label[ordered_tips_index] %>% rev()
+
+    # ordering data
+    seg_data_ordered <- seg_data[tree_tips_order,]
+
   }
 
-  # ordering cells
-  tree <- ape::nj(amap::Dist(seg_data, nbproc = n_threads))
+  if (order_cells == "hclust") {
+    # checking distance matrix
+    if (length(copykit::distMat(scCNA)) == 0) {
+      message("No distance matrix detected in the scCNA object.")
+      scCNA <-  runDistMat(scCNA, metric = metric)
+    }
 
-  tree <- ape::ladderize(tree)
+    if (nrow(as.matrix(copykit::distMat(scCNA))) != ncol(scCNA)) {
+      stop("Number of samples in the distance matrix different from number of samples in the scCNA object. Perhaps you filtered your dataset? use copykit::runDistMat() to update it.")
+    }
 
-  # getting order
-  is_tip <- tree$edge[, 2] <= length(tree$tip.label)
-  ordered_tips_index <- tree$edge[is_tip, 2]
-  tree_tips_order <- tree$tip.label[ordered_tips_index] %>% rev()
+    hc <- fastcluster::hclust(distMat(scCNA),
+                              method = "ward.D2")
+
+    seg_data_ordered <- seg_data[hc$order,]
+
+  }
+
+
 
   # plotting
   if (is.null(SummarizedExperiment::colData(scCNA)$minor_clusters)) {
@@ -87,7 +113,7 @@ plotHeatmap <- function(scCNA,
     message("Plotting Heatmap.")
 
     ComplexHeatmap::Heatmap(
-      log2(seg_data + 1e-3),
+      log2(seg_data_ordered + 1e-3),
       use_raster = TRUE,
       column_title = "Genomic coordinates",
       column_title_gp = grid::gpar(fontsize = 18),
@@ -121,8 +147,6 @@ plotHeatmap <- function(scCNA,
                    minor_clusters = minor_palette),
         show_annotation_name = FALSE
       )
-
-    seg_data_ordered <- seg_data[tree_tips_order,]
 
     #plotting
     ComplexHeatmap::Heatmap(
