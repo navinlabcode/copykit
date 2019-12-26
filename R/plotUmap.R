@@ -16,7 +16,7 @@
 plotUmap <- function(scCNA) {
   # theme setup
   my_theme <- list(
-    theme(
+    ggplot2::theme(
       axis.title.x = element_text(colour = "gray28", size = 20),
       axis.text.x = element_blank(),
       axis.ticks.x = element_blank(),
