@@ -25,14 +25,29 @@ setMethod("bin_counts", "scCNA", function(x, withDimnames = TRUE) {
 
 #' @export
 setMethod("phylo", "scCNA", function(x) {
-  # accessor for the Phylo slot
+  # accessor for the phylo slot
   out <- x@phylo
   out
 })
 
 #' @export
 setReplaceMethod("phylo", "scCNA", function(x, value) {
+  # setter method for phylo slot
   x@phylo <- value
+  x
+})
+
+#' @export
+setMethod("distMat", "scCNA", function(x) {
+  # accessor for the distMat slot
+  out <- x@distMat
+  out
+})
+
+#' @export
+setReplaceMethod("distMat", "scCNA", function(x, value) {
+  # setter method for distMat slot
+  x@distMat <- value
   x
 })
 
