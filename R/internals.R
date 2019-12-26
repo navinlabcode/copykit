@@ -24,11 +24,25 @@ setMethod("bin_counts", "scCNA", function(x, withDimnames = TRUE) {
 })
 
 #' @export
+setMethod("phylo", "scCNA", function(x) {
+  # accessor for the Phylo slot
+  out <- x@phylo
+  out
+})
+
+#' @export
+setReplaceMethod("phylo", "scCNA", function(x, value) {
+  x@phylo <- value
+  x
+})
+
+#' @export
 #' @importMethodsFrom SingleCellExperiment show
 setMethod("show", "scCNA", function(object) {
   callNextMethod()
   cat(
-    "rowRanges has: ", length(SummarizedExperiment::rowRanges(object)), " ranges",
-    sep = ""
+    "rowRanges has: ", length(SummarizedExperiment::rowRanges(object)), " ranges\n",
+    sep = "",
+    "Phylo:"
   )
 })

@@ -10,3 +10,8 @@ setGeneric("ratios", function(x, ...) standardGeneric("ratios"))
 #' @export
 setGeneric("bin_counts", function(x, ...) standardGeneric("bin_counts"))
 
+#' @export
+setGeneric("phylo", function(x, ...) standardGeneric("phylo"))
+
+#' @export
+setGeneric("phylo<-", function(x, ..., value) standardGeneric("phylo<-"))
