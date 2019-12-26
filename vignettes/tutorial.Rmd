@@ -2,9 +2,9 @@
 title: "CopyKit workflow"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{  tutorial}
-  %\VignetteEncoding{  UTF-8}
-  %\VignetteEngine{  knitr::rmarkdown}
+  %\VignetteIndexEntry{r  tutorial}
+  %\VignetteEncoding{r  UTF-8}
+  %\VignetteEngine{r  knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
 ---
@@ -25,16 +25,17 @@ editor_options:
   
   It is possible to exclude the information from ChrY (important when working with XX samples) by setting the argument `remove_Y` to `TRUE`. Ex: `readVarbinCNA("~/path_to_varbin_output/", remove_Y = TRUE)`.
 
-``` { eval = FALSE, warning=FALSE}
+``` {r eval = FALSE, warning=FALSE}
 breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/")
 ```
 
-```{ echo = FALSE, warning=FALSE}
+```{r echo = FALSE, warning=FALSE}
+options(bitmapType='cairo')
 dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/"
 breast_tumor <- copykit::readVarbinCNA(dir, remove_Y = TRUE)
 ```
 
-```{   }
+```{r   }
 breast_tumor
 ```
 
@@ -44,26 +45,38 @@ Cells with low quality can be easily filtered with `filterCells()`.
 
 `filterCells()` uses a k-nearest-neighbor approach to remove cells with random CNA profiles, largely due to noise.
 
-By default, **CopyKit** automatically outputs a heatmap so you can visually assess if the filtering performed as expected, this however can be turned off by adding the argument `copykit::filterCells(scCNA, plot_heatmap = FALSE)`. Plotting the heatmap has a time consuming step due to distance calculations. CopyKit also allows for parallel processing of the distance calculations `copykit::filterCells()` with the argument `n_threads`.
+By default, **CopyKit** automatically outputs a heatmap so you can visually assess if the filtering performed as expected, this however can be turned off by adding the argument `copykit::filterCells(scCNA, plot_heatmap = FALSE)`. Plotting the heatmap is a time consuming step due to distance calculations. CopyKit also allows for parallel processing of the distance calculations `copykit::filterCells()` with the argument `n_threads`.
 
 To control how strict the filtering, change the argument `resolution`. Ex: `copykit::filterCells(resolution = 0.9)`
 
-```{   eval = FALSE, warning=FALSE, fig.height = 7 }
+```{r eval = FALSE, warning=FALSE }
 breast_tumor <- copykit::filterCells(breast_tumor,
                             resolution = 0.8)
 ```
 
-```{  echo = FALSE, warning=FALSE, fig.height = 7 }
+```{r echo = FALSE, warning=FALSE}
 breast_tumor <- copykit::filterCells(breast_tumor,
                             resolution = 0.8,
-                            n_threads = 40,
-                            plot_heatmap = FALSE)
+                            n_threads = 20,
+                            plot_heatmap = TRUE)
 ```
 
 The information is store as metadata and can be accessed with `SummarizedExperiment::colData()`.
 
-```{  warning=FALSE }
+```{r  warning=FALSE }
 head(SummarizedExperiment::colData(breast_tumor))
+```
+
+If you are satisfied with the filtering you can simply subset the object based on the `SummarizedExperiment::colData(bt)$filtered` column
+
+```{r warning=FALSE}
+breast_tumor <- breast_tumor[,SummarizedExperiment::colData(breast_tumor)$filtered == "kept"]
+```
+
+After subsetting it is recommended to calculate a distance matrix that will be later passaged to functions such as `copykit::runPhylo()` or `copykit::plotHeatmap()`. This distance matrix is stored in the scCNA object and can be accessed with `copykit::distMat()`.
+
+```{r warning=FALSE}
+breast_tumor <- copykit::runDistMat(breast_tumor)
 ```
 
 ## Non-linear dimension reduction
@@ -72,7 +85,7 @@ We can explore the sample organization at reduced dimensions with `runUmap()`. T
 `runUmap()` stores the generated embedding into the `scCNA` object and can be accessed with `SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)`.
 **CopyKit** uses the package `uwot` to generate the umap embedding, this means that additional parameters that control the global or local structure to `runUmap()` can be passed on with the `...` argument. Ex: `copykit::runUmap(scCNA, min_dist = 0)`. To learn more on how those parameters can control global and local structure embedding visit the [Umap website](https://umap-learn.readthedocs.io/en/latest/clustering.html). For the full list of possible parameters check `?uwot::umap`.
 
-```{  warning=FALSE}
+```{r  warning=FALSE}
 breast_tumor <- copykit::runUmap(breast_tumor,
                                  min_dist = 0,
                                  n_neighbors = 30)
@@ -80,7 +93,7 @@ breast_tumor <- copykit::runUmap(breast_tumor,
 
 It is possivel to visualize the results with the function `copykit::plotUmap()`.
 
-```{  warning=FALSE}
+```{r  warning=FALSE}
 copykit::plotUmap(breast_tumor)
 ```
 
@@ -90,33 +103,46 @@ copykit::plotUmap(breast_tumor)
 Major clusters are found by looking at the graph connected components, whereas minor clusters uses the Leiden algorithm to detect connected communities within the major clusters.
 To run `copykit::findClusters()` you first need to run `copykit::runUmap()` since **CopyKit** applies the clustering on top of the UMAP embedding.
 
-```{ warning=FALSE }
+```{r warning=FALSE }
 breast_tumor <- copykit::findClusters(breast_tumor)
 ```
 
 Clustering information is stored as metadata and can be accessed with `SummarizedExperiment::colData(scCNA).
 
-```{ warning=FALSE }
+```{r warning=FALSE }
 head(SummarizedExperiment::colData(breast_tumor))
 ```
 
 `copykit::plotUmap()` can look for the cluster information and display it.
 
-```{  warning=FALSE }
+```{r  warning=FALSE }
 copykit::plotUmap(breast_tumor)
+```
+
+# Running phylogenetic analysis
+It is possible to run phylogenetic analysis with copykit by using the function `copykit::runPhylo()`. This function creates a distance based neighbor-joining tree that is stored within the scCNA object. You can access the resulting tree with `copykit::phylo()`
+
+```{r}
+breast_tumor <- runPhylo(breast_tumor)
+```
+
+Which can be easily visualized with
+```{r warning=FALSE, fig.height=8}
+plot(copykit::phylo(breast_tumor), cex = 0.1)
 ```
 
 # Plotting heatmap
 
-Plotting heatmap with **CopyKit** is done with the `plotHeatmap()` function. `plotHeatmap()` orders the cells according to a neighbor joining phylogenetic tree.
-If cells were filtered it will automatically exclude the filtered out cells from the dataset. Otherwise the entire dataset is shown. `plotHeatmap()` also checks for the existence of cluster information and will automatically add it as an annotation to the heatmap.
+Plotting heatmap with **CopyKit** is done with the `plotHeatmap()` function. By default `plotHeatmap()` orders the cells according to a neighbor joining phylogenetic tree. `plotHeatmap()` also checks for the existence of cluster information and will automatically add it as an annotation to the heatmap.
 
-```{ eval = FALSE, warning = FALSE, fig.height = 8}
+```{r eval = FALSE, warning = FALSE, fig.height = 8}
 copykit::plotHeatmap(breast_tumor)
 ```
 
-```{ echo = FALSE, warning = FALSE, fig.height = 8}
-copykit::plotHeatmap(breast_tumor, n_threads = 40)
+```{r echo = FALSE, warning = FALSE, fig.height = 8}
+copykit::plotHeatmap(breast_tumor, n_threads = 20)
 ```
+
+
 
 
