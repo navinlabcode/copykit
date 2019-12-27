@@ -30,8 +30,7 @@ breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/")
 ```
 
 ```{r echo = FALSE, warning=FALSE}
-options(bitmapType='cairo')
-library(tidyverse)
+suppressPackageStartupMessages(library(tidyverse))
 library(reticulate)
 use_python("/volumes/lab/users/dminussi/software/pythonenv/env/bin/python", required = T)
 dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/"
@@ -146,6 +145,14 @@ copykit::plotHeatmap(breast_tumor)
 copykit::plotHeatmap(breast_tumor)
 ```
 
+It might be of interest to check for the heterogeneity in the number of copies across all the samples for different genes. **CopyKit** provides the function `copykit::geneCopyPlot()`.
+```{r}
+copykit::geneCopyPlot(breast_tumor,
+                      genes = c("KRAS",
+                                "MYC",
+                                "TP53",
+                                "ERBB2"))
+```
 
 
 

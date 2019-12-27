@@ -48,6 +48,9 @@ findClusters <- function(scCNA,
     scran::buildSNNGraph(umap_df, k = k_minor, transposed = T)
   g_adj <- igraph::as_adjacency_matrix(g_minor)
 
+  # saving g_minor graph
+  copykit::graph(scCNA) <- g_minor
+
   # finding clusters
   #  major
   message("Finding clusters.")
