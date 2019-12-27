@@ -4,12 +4,10 @@
 \alias{plotHeatmap}
 \title{Plot heatmap}
 \usage{
-plotHeatmap(scCNA, order_cells = "phylogeny", n_threads = 1)
+plotHeatmap(scCNA, order_cells = "phylogeny")
 }
 \arguments{
 \item{scCNA}{scCNA object.}
-
-\item{n_threads}{Number of threads used to calculate the distance. Passed to `amap::Dist`}
 }
 \value{
 A heatmap visualization.

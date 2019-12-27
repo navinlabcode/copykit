@@ -5,7 +5,7 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @order_cells Methods to order the cells within the heatmap. Accepted values are "phylogeny", "hclust", "graph_breadth_search". Defaults to "phylogeny".
+#' @order_cells Methods to order the cells within the heatmap. Accepted values are "phylogeny", "hclust", "graph_search". Defaults to "phylogeny".
 #'
 #' @return A heatmap visualization.
 #'
@@ -55,7 +55,7 @@ plotHeatmap <- function(scCNA,
     ComplexHeatmap::HeatmapAnnotation(
       chr_text = ComplexHeatmap::anno_text(v[1:ncol(seg_data)],
                                            gp = grid::gpar(fontsize = 14)),
-      df = as.character(chr[1:nrow(chr), ]),
+      df = as.character(chr[1:nrow(chr),]),
       show_legend = FALSE,
       show_annotation_name = FALSE,
       which = "column",
@@ -64,12 +64,11 @@ plotHeatmap <- function(scCNA,
 
   # ordering cells
   if (order_cells == "phylogeny") {
-
     tryCatch(
       phylo(scCNA),
       error = function(e) {
-         message("No phylogeny detected in scCNA object.")
-         runPhylo(scCNA)
+        message("No phylogeny detected in scCNA object.")
+        runPhylo(scCNA)
       }
     )
 
@@ -81,7 +80,7 @@ plotHeatmap <- function(scCNA,
     tree_tips_order <- tree$tip.label[ordered_tips_index] %>% rev()
 
     # ordering data
-    seg_data_ordered <- seg_data[tree_tips_order,]
+    seg_data_ordered <- seg_data[tree_tips_order, ]
 
   }
 
@@ -93,13 +92,42 @@ plotHeatmap <- function(scCNA,
     }
 
     if (nrow(as.matrix(copykit::distMat(scCNA))) != ncol(scCNA)) {
-      stop("Number of samples in the distance matrix different from number of samples in the scCNA object. Perhaps you filtered your dataset? use copykit::runDistMat() to update it.")
+      stop(
+        "Number of samples in the distance matrix different from number of samples in the scCNA object. Perhaps you filtered your dataset? use copykit::runDistMat() to update it."
+      )
     }
 
     hc <- fastcluster::hclust(distMat(scCNA),
                               method = "ward.D2")
 
-    seg_data_ordered <- seg_data[hc$order,]
+    seg_data_ordered <- seg_data[hc$order, ]
+
+  }
+
+  if (order_cells == "graph_search") {
+
+    if (is.null(SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = F))) {
+      message("No umap detected, running copykit::runUmap()")
+      scCNA <- copykit::runUmap(scCNA)
+    }
+
+    tryCatch(
+      copykit::graph(scCNA),
+      error = function(e) {
+        stop("No graph detected. Please run copykit::findClusters()")
+      }
+    )
+
+    umap_df <-
+      SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = F)
+
+    g_minor  <- copykit::graph(scCNA)
+
+    g_bs <- igraph::bfs(g_minor, 1)
+
+    g_ord <- as.numeric(g_bs$order)
+
+    seg_data_ordered <- seg_data[g_ord, ]
 
   }
 
@@ -134,7 +162,7 @@ plotHeatmap <- function(scCNA,
     metadata <- SummarizedExperiment::colData(scCNA) %>%
       as.data.frame()
 
-    metadata <- metadata[tree_tips_order,]
+    metadata <- metadata[rownames(seg_data_ordered), ]
 
     metadata_anno_df <- metadata %>%
       dplyr::select(major_clusters,
