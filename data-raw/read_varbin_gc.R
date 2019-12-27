@@ -7,7 +7,7 @@
 ## Why this script and the internal data?
 ## 1. The coordination here is a mixture of 0-based and 1-based.
 ## For example, start=0, end=977835, bin_length=977386.
-## Equivalently, pure 0-based: [0, 977836); pure 1-based: [1, 977835]
+## Equivalently, pure 0-based: [0, 977836); pure 1-based: [1, 977836]
 ## 2. This provides the ground-truth of the genomic locaitons of all varbins.
 #
 ##########################################
