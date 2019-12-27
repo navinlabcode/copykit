@@ -39,14 +39,14 @@ geneCopyPlot <- function(scCNA,
 
   # subsetting to only the desired genes
   # hg19_genes genomic range is saved inside sysdata.rda to avoid loading a lot of annotation packages
-  hg19_genes_features <- subset(hg19_genes,
+  hg19_genes_features <- BiocGenerics:::subset(hg19_genes,
                                 SYMBOL %in% genes)
 
   #finding overlaps
   olaps <-
-    findOverlaps(hg19_genes_features,
+    suppressWarnings(findOverlaps(hg19_genes_features,
                  ranges,
-                 ignore.strand = TRUE)
+                 ignore.strand = TRUE))
 
   # creating a data frame that will contain the genes and positions (index) in the
   # pipeline ranges.
