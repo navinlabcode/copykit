@@ -14,7 +14,7 @@
 #' @examples
 #'
 
-
+#' @importFrom BiocGenerics %in%
 geneCopyPlot <- function(scCNA,
                          genes) {
 
