@@ -8,13 +8,14 @@
 #' @param genes vector containing the HUGO Symbol for the genes of interest.
 #'
 #' @return A violin plot with the segment ratios for the genes of interest.
+#' @import BiocGenerics
 #'
 #' @export
 #'
 #' @examples
 #'
 
-#' @importFrom BiocGenerics %in%
+
 geneCopyPlot <- function(scCNA,
                          genes) {
 
@@ -62,7 +63,7 @@ geneCopyPlot <- function(scCNA,
   seg_data <- segment_ratios(scCNA)
 
   seg_data_genes <- seg_data[df$pos, ] %>%
-    mutate(gene = df$gene)
+    dplyr::mutate(gene = df$gene)
 
   #long format for plotting
   seg_long <- tidyr::gather(seg_data_genes,
@@ -70,11 +71,11 @@ geneCopyPlot <- function(scCNA,
                             value = "segratio",
                             -gene)
   #plotting
-  p <- ggplot(seg_long, aes(x = gene,
+  p <- ggplot2::ggplot(seg_long, aes(x = gene,
                        y = segratio + 1e-3)) +
-    geom_violin() +
-    theme_classic() +
-    scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+    ggplot2::geom_violin() +
+    ggplot2::theme_classic() +
+    ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
     my_theme
 
   print(p)
