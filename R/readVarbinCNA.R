@@ -147,7 +147,7 @@ readVarbinCNA <- function(dir,
     dplyr::mutate(end = dplyr::lead(chrompos) - 1) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
-      chr = chrom,
+      chr = paste0("chr",chrom),
       start = chrompos,
       end = end,
       abspos = abspos
