@@ -39,6 +39,7 @@ Imports:
     scales,
     tidyr,
     tibble,
-    igraph
+    igraph,
+    BiocGenerics
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr
