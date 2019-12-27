@@ -6,7 +6,7 @@
 #'
 #' @param scCNA scCNA object.
 #'
-#' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDim(scCNA, 'umap')}. \code{plotUmap} searches for cluster information in the \code{SingleCellExperiment::colData()} metadata and colors the clusters according to that information.
+#' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SummarizedExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)}. \code{plotUmap} searches for cluster information in the \code{SummarizedExperiment::colData()} metadata and colors the clusters according to that information.
 #'
 #' @export
 #'
@@ -16,7 +16,7 @@
 plotUmap <- function(scCNA) {
   # theme setup
   my_theme <- list(
-    theme(
+    ggplot2::theme(
       axis.title.x = element_text(colour = "gray28", size = 20),
       axis.text.x = element_blank(),
       axis.ticks.x = element_blank(),
@@ -40,7 +40,7 @@ plotUmap <- function(scCNA) {
   } else
     stop("Reduced dimensions slot is null. Use runUmap() to create it.")
 
-  if (is.null(SummarizedExperiment::colData(scCNA, "minor_clusters"))) {
+  if (is.null(SummarizedExperiment::colData(scCNA)$minor_clusters)) {
     message("No cluster information detected, use findClusters() to create it.")
     message("Plotting Umap.")
 
@@ -66,10 +66,10 @@ plotUmap <- function(scCNA) {
       geom_point(aes(
         x = V1,
         y = V2,
-        color = SummarizedExperiment::colData(scCNA)$minor_clusters
+        color = as.factor(SummarizedExperiment::colData(scCNA)$minor_clusters)
       ),
       alpha = .8) +
-    scale_color_manual(values = c(major_palette, minor_palette)) +
+    scale_color_manual(values = c(major_palette, minor_palette)) + # palettes are in sysdata.rda
     theme_classic() +
       my_theme
 

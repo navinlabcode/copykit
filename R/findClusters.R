@@ -22,7 +22,6 @@ findClusters <- function(scCNA,
                          k_major = 35,
                          k_minor = 21,
                          seed = 17) {
-
   # checks
   if (!is.numeric(k_minor) || !is.numeric(k_major)) {
     stop("k_minor and k_major must be numeric values.")
@@ -30,7 +29,8 @@ findClusters <- function(scCNA,
 
   # obtaining data from reducedDim slot
   if (!is.null(SingleCellExperiment::reducedDim(breast_tumor))) {
-    umap_df <- SingleCellExperiment::reducedDim(scCNA, 'umap') %>%
+    umap_df <-
+      SingleCellExperiment::reducedDim(scCNA, 'umap') %>%
       as.data.frame()
 
   } else
@@ -61,7 +61,7 @@ findClusters <- function(scCNA,
 
   # storing info
   SummarizedExperiment::colData(scCNA)$major_clusters <- g_clusters
-  SummarizedExperiment::colData(scCNA)$minor_clusters <- as.character(leid)
+  SummarizedExperiment::colData(scCNA)$minor_clusters <- leid
 
   message("Done.")
 

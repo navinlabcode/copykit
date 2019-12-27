@@ -4,7 +4,7 @@
 \alias{filterCells}
 \title{Filter noise cells}
 \usage{
-filterCells(scCNA, k = 5, resolution = 0.8, n_threads = 1)
+filterCells(scCNA, k = 5, resolution = 0.8, plot_heatmap = TRUE, n_threads = 1)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
@@ -12,6 +12,8 @@ filterCells(scCNA, k = 5, resolution = 0.8, n_threads = 1)
 \item{k}{K-nearest-neighbor, defaults to 5.}
 
 \item{resolution}{Set's how strict the correlation cut off will be. Defaults to 0.8.}
+
+\item{plot_heatmap}{Plot a heatmap with annotations of the removed and kept cells (Defaults to TRUE).}
 
 \item{n_threads}{Number of parallel threads to calculate distances with \code{amap::Dist()}. Defaults to 1}
 }

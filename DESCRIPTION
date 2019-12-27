@@ -1,6 +1,6 @@
 Package: copykit
 Title: CopyKit
-Version: 0.0.0.9002
+Version: 0.0.0.9004
 Authors@R: 
     person(given = "Darlan",
            family = "Conterno Minussi",
@@ -32,6 +32,9 @@ Imports:
     amap,
     janitor,
     scran,
-    leiden
+    leiden,
+    ape,
+    S4Vectors,
+    parallel
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr

@@ -31,10 +31,11 @@ readVarbinCNA <- function(dir,
     glob = "*uber*seg.txt"
   )) == FALSE) {
     stop(
-      "Segment ratio matrix can't be found in the provided directory. Please make sure uber.seg file can be found."
+      "Segment ratio matrix can't be found in the provided directory. Please make sure a uber.seg file can be found."
     )
   }
 
+  # checking for the existence of more than one uber file
   if (length(fs::dir_ls(
     path = dir,
     recurse = T,
