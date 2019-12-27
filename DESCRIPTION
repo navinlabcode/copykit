@@ -35,6 +35,10 @@ Imports:
     leiden,
     ape,
     S4Vectors,
-    parallel
+    parallel,
+    scales,
+    tidyr,
+    tibble,
+    igraph
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr

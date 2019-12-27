@@ -52,6 +52,20 @@ setReplaceMethod("distMat", "scCNA", function(x, value) {
 })
 
 #' @export
+setMethod("graph", "scCNA", function(x) {
+  # accessor for the getGraph slot
+  out <- x@graph
+  out
+})
+
+#' @export
+setReplaceMethod("graph", "scCNA", function(x, value) {
+  # setter method for getGraph slot
+  x@graph <- value
+  x
+})
+
+#' @export
 #' @importMethodsFrom SingleCellExperiment show
 setMethod("show", "scCNA", function(object) {
   callNextMethod()
