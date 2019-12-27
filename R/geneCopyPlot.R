@@ -37,6 +37,7 @@ geneCopyPlot <- function(scCNA,
   # getting ranges from scCNA object
   ranges <- SummarizedExperiment::rowRanges(scCNA)
 
+  print(hg19_genes)
   # subsetting to only the desired genes
   # hg19_genes genomic range is saved inside sysdata.rda to avoid loading a lot of annotation packages
   hg19_genes_features <- BiocGenerics:::subset(hg19_genes,
