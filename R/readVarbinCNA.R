@@ -15,6 +15,8 @@
 #' @return Bin counts can be acessed with \code{copykit::bin_counts}.
 #' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 #'
+#' @import GenomeInfoDb GenomicRanges IRanges
+#'
 #' @export
 #'
 #' @examples
@@ -165,11 +167,31 @@ readVarbinCNA <- function(dir,
 #   g <- GenomicRanges::makeGRangesFromDataFrame(ranges,
 #                                                keep.extra.columns = TRUE,
 #                                                ignore.strand = T)
-  gr_varbin_full <- readRDS(system.file(
-    "extdata", "inst/extdata/hg19_200k_varbins_full.granges.rds",
-    package = "copykit"))
-  # OFF-KBD!!!!
 
+  # To-be released
+  # gr_varbin_full <- readRDS(system.file(
+  #   "extdata", "inst/extdata/hg19_200k_varbins_full.granges.rds",
+  #   package = "copykit"))
+  gr_varbin_full <- readRDS("/volumes/lab/users/yyan/project/copykit/inst/extdata/hg19_200k_varbins_full.granges.rds")
+  GenomeInfoDb::seqlevelsStyle(gr_varbin_full) <- 'Ensembl'
+  gr_varbin_full <- GenomeInfoDb::renameSeqlevels(
+    gr_varbin_full, c(X=23, Y=24))
+
+  rg$chrompos <- rg$chrompos + 1  ## To 1-based
+  rg$abspos <- rg$abspos + 1  ## To 1-based
+  key_query <- paste0(rg$chrom,
+                      '_',
+                      rg$chrompos)
+  key_ref   <- paste0(seqnames(gr_varbin_full),
+                      '_',
+                      IRanges::start(gr_varbin_full))
+  idx <- match(key_query, key_ref)
+  if (anyNA(idx)) {
+    warning('Input ', sum(is.na(idx)),
+            'varbins are not recorded in white sheet\n.')
+  }
+  g <- gr_varbin_full[idx, ]
+  g$abspos <- rg$abspos
 
   # creating scCNA object
   cna_obj <- scCNA(
