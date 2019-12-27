@@ -21,3 +21,10 @@ setGeneric("distMat", function(x, ...) standardGeneric("distMat"))
 
 #' @export
 setGeneric("distMat<-", function(x, ..., value) standardGeneric("distMat<-"))
+
+#' @export
+setGeneric("graph", function(x, ...) standardGeneric("graph"))
+
+#' @export
+setGeneric("graph<-", function(x, ..., value) standardGeneric("graph<-"))
+

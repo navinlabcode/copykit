@@ -11,6 +11,13 @@ phylo <- structure(list(), class = "phylo")
 #' @exportClass phylo
 setOldClass("phylo")
 
+#' @export
+#' @keywords internal
+phylo <- structure(list(), class = "igraph")
+
+#' @exportClass phylo
+setOldClass("igraph")
+
 ###################################################################
 # defining scCNA class
 #'
@@ -19,12 +26,14 @@ setOldClass("phylo")
 #'  @importClassesFrom SummarizedExperiment RangedSummarizedExperiment SingleCellExperiment
 #'  @importClassesFrom S4Vectors DataFrame SimpleList
 
+
 #' @export
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
 .scCNA <- setClass("scCNA",
                    slots = representation(
                      phylo = "phylo",
-                     distMat = "dist"
+                     distMat = "dist",
+                     graph = "igraph"
                    ),
                    contains = "SingleCellExperiment")
 
@@ -35,6 +44,7 @@ scCNA <- function(segment_ratios,
                   bin_counts,
                   phylo = structure("list", class = "phylo"),
                   distMat = dist(matrix(0,0,0)),
+                  graph = igraph::graph.empty(),
                   ...) {
   cna <-
     SingleCellExperiment::SingleCellExperiment(list(segment_ratios = segment_ratios,
@@ -43,7 +53,8 @@ scCNA <- function(segment_ratios,
                                                ...)
   .scCNA(cna,
          phylo = phylo,
-         distMat = distMat)
+         distMat = distMat,
+         graph = graph)
 }
 
 

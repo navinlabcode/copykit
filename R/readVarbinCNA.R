@@ -15,8 +15,6 @@
 #' @return Bin counts can be acessed with \code{copykit::bin_counts}.
 #' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 #'
-#' @import GenomeInfoDb GenomicRanges IRanges
-#'
 #' @export
 #'
 #' @examples
@@ -128,45 +126,45 @@ readVarbinCNA <- function(dir,
                     chrompos,
                     abspos)) %>%
     as.data.frame()
-#
-#   mean_bin_sizes <- rg %>%
-#     dplyr::group_by(chrom) %>%
-#     dplyr::mutate(bin_size = (dplyr::lead(chrompos) - 1) - chrompos) %>%
-#     tidyr::drop_na() %>%
-#     dplyr::summarise(mean_bin_size = mean(bin_size)) %>%
-#     dplyr::pull(mean_bin_size)
-#
-#   ranges_end <- rg %>%
-#     dplyr::group_by(chrom) %>%
-#     dplyr::mutate(end = dplyr::lead(chrompos) - 1) %>%
-#     dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
-#     dplyr::ungroup() %>%
-#     dplyr::mutate(end = chrompos + mean_bin_sizes) %>%
-#     dplyr::pull(end)
-#
-#   ranges <- rg %>%
-#     dplyr::group_by(chrom) %>%
-#     dplyr::mutate(end = dplyr::lead(chrompos) - 1) %>%
-#     dplyr::ungroup() %>%
-#     dplyr::mutate(
-#       chr = chrom,
-#       start = chrompos,
-#       end = end,
-#       abspos = abspos
-#     ) %>%
-#     dplyr::select(chr,
-#                   start,
-#                   end,
-#                   abspos)
-#
-#   if (length(which(is.na(ranges$end) == TRUE)) == length(ranges_end)) {
-#     ranges$end[is.na(ranges$end)] <- ranges_end
-#   } else
-#     stop("Problem with adding the value of the last bin end")
-#
-#   g <- GenomicRanges::makeGRangesFromDataFrame(ranges,
-#                                                keep.extra.columns = TRUE,
-#                                                ignore.strand = T)
+
+  # mean_bin_sizes <- rg %>%
+  #   dplyr::group_by(chrom) %>%
+  #   dplyr::mutate(bin_size = (dplyr::lead(chrompos) - 1) - chrompos) %>%
+  #   tidyr::drop_na() %>%
+  #   dplyr::summarise(mean_bin_size = mean(bin_size)) %>%
+  #   dplyr::pull(mean_bin_size)
+  #
+  # ranges_end <- rg %>%
+  #   dplyr::group_by(chrom) %>%
+  #   dplyr::mutate(end = dplyr::lead(chrompos) - 1) %>%
+  #   dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
+  #   dplyr::ungroup() %>%
+  #   dplyr::mutate(end = chrompos + mean_bin_sizes) %>%
+  #   dplyr::pull(end)
+  #
+  # ranges <- rg %>%
+  #   dplyr::group_by(chrom) %>%
+  #   dplyr::mutate(end = dplyr::lead(chrompos) - 1) %>%
+  #   dplyr::ungroup() %>%
+  #   dplyr::mutate(
+  #     chr = paste0("chr",chrom),
+  #     start = chrompos,
+  #     end = end,
+  #     abspos = abspos
+  #   ) %>%
+  #   dplyr::select(chr,
+  #                 start,
+  #                 end,
+  #                 abspos)
+  #
+  # if (length(which(is.na(ranges$end) == TRUE)) == length(ranges_end)) {
+  #   ranges$end[is.na(ranges$end)] <- ranges_end
+  # } else
+  #   stop("Problem with adding the value of the last bin end")
+
+  # g <- GenomicRanges::makeGRangesFromDataFrame(ranges,
+  #                                              keep.extra.columns = TRUE,
+  #                                              ignore.strand = T)
 
   # To-be released
   # gr_varbin_full <- readRDS(system.file(
@@ -192,6 +190,7 @@ readVarbinCNA <- function(dir,
   }
   g <- gr_varbin_full[idx, ]
   g$abspos <- rg$abspos
+  GenomeInfoDb::seqlevelsStyle(g) <- 'UCSC'  ## add chr prefix
 
   # creating scCNA object
   cna_obj <- scCNA(
