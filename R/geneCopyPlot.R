@@ -54,8 +54,8 @@ geneCopyPlot <- function(scCNA,
   # some genes might overlap more than one range (more than one bin), in this case
   # only one will be kept
   df <-
-    tibble::tibble(gene = as.character(hg19_genes_features$SYMBOL[queryHits(olaps)]),
-           pos = subjectHits(olaps),
+    tibble::tibble(gene = as.character(hg19_genes_features$SYMBOL[S4Vectors::queryHits(olaps)]),
+           pos = S4Vectors::subjectHits(olaps),
     ) %>%
     dplyr::distinct(gene, .keep_all = TRUE)
 
