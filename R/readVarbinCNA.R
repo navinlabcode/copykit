@@ -5,22 +5,26 @@
 #' The scCNA object contains the segment ratios, ratios and bincounts within the assay slot. where each bin is row and each sample (cell) is a column.
 #' Genomic ranges are stored in a GRanges object containing chromosome number, start coordinate, end cordinate and absolute genomic position. Each row represents the coordinates for one bin.
 #'
-#' @author Darlan Conterno Minussi
+#' @author Darlan Conterno Minussi, Yun Yan
 #'
 #' @param dir A path for the output of the copy number pipeline.
 #' @param remove_Y (default == FALSE) If set to TRUE, removes information from the chrY from the dataset.
-#'
+#' @param genome_version Name of the genome assembly. Default: 'hg19'.
+#' @param bin_size The resolution of the VarBin method. Default: '200k'. Available options: '100k', '200k'.
 #' @return Segment ratios can be acessed with \code{copykit::segment_ratios}.
 #' @return Ratios can be acessed with \code{copykit::ratios}.
 #' @return Bin counts can be acessed with \code{copykit::bin_counts}.
 #' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 #'
+#' @import GenomeInfoDb
 #' @export
 #'
 #' @examples
 #'
 readVarbinCNA <- function(dir,
-                          remove_Y = FALSE) {
+                          remove_Y = FALSE,
+                          genome_version = c('hg19', 'hg38'),
+                          bin_size = c('200k', '100k')) {
   # Reads a copy number directory and produces
   # a scCNA object as output
 
@@ -114,63 +118,20 @@ readVarbinCNA <- function(dir,
     message("Removed ChrY information.")
   }
 
-  # saving ranges, generating start and end
-  # Unfortunately, varbin does not output start and end position, so it has to be derived from the data
-  # leaving a problem to the correct end value of the bin. We can't use the chromosome length due to the
-  # telomeric regions being blacklisted so I opted to add the average of the bin size to the last bin
-  # this will be solved by adding start and end to the varbin pipeline but won't be backwards compatible with previously
-  # processed datasets
-
+  # Fetch the locations (and other informations) of varbins
   rg <- dat %>%
     dplyr::select(c(chrom,
                     chrompos,
                     abspos)) %>%
     as.data.frame()
 
-  # mean_bin_sizes <- rg %>%
-  #   dplyr::group_by(chrom) %>%
-  #   dplyr::mutate(bin_size = (dplyr::lead(chrompos) - 1) - chrompos) %>%
-  #   tidyr::drop_na() %>%
-  #   dplyr::summarise(mean_bin_size = mean(bin_size)) %>%
-  #   dplyr::pull(mean_bin_size)
-  #
-  # ranges_end <- rg %>%
-  #   dplyr::group_by(chrom) %>%
-  #   dplyr::mutate(end = dplyr::lead(chrompos) - 1) %>%
-  #   dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
-  #   dplyr::ungroup() %>%
-  #   dplyr::mutate(end = chrompos + mean_bin_sizes) %>%
-  #   dplyr::pull(end)
-  #
-  # ranges <- rg %>%
-  #   dplyr::group_by(chrom) %>%
-  #   dplyr::mutate(end = dplyr::lead(chrompos) - 1) %>%
-  #   dplyr::ungroup() %>%
-  #   dplyr::mutate(
-  #     chr = paste0("chr",chrom),
-  #     start = chrompos,
-  #     end = end,
-  #     abspos = abspos
-  #   ) %>%
-  #   dplyr::select(chr,
-  #                 start,
-  #                 end,
-  #                 abspos)
-  #
-  # if (length(which(is.na(ranges$end) == TRUE)) == length(ranges_end)) {
-  #   ranges$end[is.na(ranges$end)] <- ranges_end
-  # } else
-  #   stop("Problem with adding the value of the last bin end")
+  genome_version <- match.arg(genome_version)
+  bin_size <- match.arg(bin_size)
+  grlist_varbin <- switch(genome_version,
+                          hg19 = varbin_hg19_grangeslist)
+  tmp_key <- paste0('res_', bin_size)
+  gr_varbin_full <- grlist_varbin[[tmp_key]]
 
-  # g <- GenomicRanges::makeGRangesFromDataFrame(ranges,
-  #                                              keep.extra.columns = TRUE,
-  #                                              ignore.strand = T)
-
-  # To-be released
-  # gr_varbin_full <- readRDS(system.file(
-  #   "extdata", "inst/extdata/hg19_200k_varbins_full.granges.rds",
-  #   package = "copykit"))
-  gr_varbin_full <- readRDS("/volumes/lab/users/yyan/project/copykit/inst/extdata/hg19_200k_varbins_full.granges.rds")
   GenomeInfoDb::seqlevelsStyle(gr_varbin_full) <- 'Ensembl'
   gr_varbin_full <- GenomeInfoDb::renameSeqlevels(
     gr_varbin_full, c(X=23, Y=24))
@@ -190,6 +151,10 @@ readVarbinCNA <- function(dir,
   }
   g <- gr_varbin_full[idx, ]
   g$abspos <- rg$abspos
+
+
+  g <- GenomeInfoDb::renameSeqlevels(
+    g, c(`23`='X', `24`='Y'))
   GenomeInfoDb::seqlevelsStyle(g) <- 'UCSC'  ## add chr prefix
 
   # creating scCNA object

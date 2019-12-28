@@ -4,12 +4,21 @@
 \alias{readVarbinCNA}
 \title{Load data from Copy Number Experiment}
 \usage{
-readVarbinCNA(dir, remove_Y = FALSE)
+readVarbinCNA(
+  dir,
+  remove_Y = FALSE,
+  genome_version = c("hg19", "hg38"),
+  bin_size = c("200k", "100k")
+)
 }
 \arguments{
 \item{dir}{A path for the output of the copy number pipeline.}
 
 \item{remove_Y}{(default == FALSE) If set to TRUE, removes information from the chrY from the dataset.}
+
+\item{genome_version}{Name of the genome assembly. Default: 'hg19'.}
+
+\item{bin_size}{The resolution of the VarBin method. Default: '200k'. Available options: '100k', '200k'.}
 }
 \value{
 Segment ratios can be acessed with \code{copykit::segment_ratios}.
@@ -30,5 +39,5 @@ Genomic ranges are stored in a GRanges object containing chromosome number, star
 
 }
 \author{
-Darlan Conterno Minussi
+Darlan Conterno Minussi, Yun Yan
 }
