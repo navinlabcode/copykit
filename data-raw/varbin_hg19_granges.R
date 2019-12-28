@@ -8,7 +8,7 @@
 # - varbin.gc.content.200k.bowtie.k50.hg19.bin_not_removed.txt
 #
 # Output: 'sysdata.rda' which additionally contains a GRangesList object
-# named 'varbin_hg19_granges'.
+# named 'varbin_hg19_grangeslist'.
 #
 # 1. Convert the raw coordinate from a mixture of 0-based and 1-based to 1-based.
 # For example, start=0, end=977835, bin_length=977386.
@@ -70,15 +70,15 @@ make_granges_from_varbin_file <- function(x){
 }
 
 list_gr <- lapply(fpath_varbin, make_granges_from_varbin_file)
-varbin_hg19_granges <- GRangesList(unlist(list_gr))
-cat(length(varbin_hg19_granges), 'resolutions are available:\n')
-cat(names(varbin_hg19_granges), '\n')
+varbin_hg19_grangeslist <- GRangesList(unlist(list_gr))
+cat(length(varbin_hg19_grangeslist), 'resolutions are available:\n')
+cat(names(varbin_hg19_grangeslist), '\n')
 cat('How many varbins are available per resolution?:\n')
-print(sapply(varbin_hg19_granges, length))
+print(sapply(varbin_hg19_grangeslist, length))
 
 # Export to package internal data
 devtools::load_all('./')
 usethis::use_data(
   major_palette, minor_palette, hg19_genes, ## previously available
-  varbin_hg19_granges, ## Added in this script
+  varbin_hg19_grangeslist, ## Added in this script
   internal = TRUE, overwrite = TRUE)
