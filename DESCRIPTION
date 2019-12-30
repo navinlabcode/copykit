@@ -1,12 +1,17 @@
 Package: copykit
 Title: CopyKit
 Version: 0.0.0.9004
-Authors@R: 
+Authors@R: c(
     person(given = "Darlan",
            family = "Conterno Minussi",
            role = c("aut", "cre"),
            email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+    person(given = "Yun",
+           family = "Yan",
+           role = c("ctb"),
+           email = "yun.yan@uth.tmc.edu",
+           comment = c(ORCID = "0000-0002-3701-9608")) )
 Description: Toolkit for single-cell copy number analysis.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -24,6 +29,7 @@ Imports:
     magrittr,
     SingleCellExperiment,
     GenomicRanges,
+    GenomeInfoDb,
     SummarizedExperiment,
     readr,
     fs,
