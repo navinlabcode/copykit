@@ -7,7 +7,7 @@
 readVarbinCNA(
   dir,
   remove_Y = FALSE,
-  genome_version = c("hg19", "hg38"),
+  genome_version = c("hg19"),
   bin_size = c("200k", "100k")
 )
 }
