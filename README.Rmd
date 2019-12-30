@@ -32,7 +32,3 @@ devtools::install_github("navinlabcode/copykit")
 
 ## Tutorial
 
-The tutorial cna be found at **future web page** (for now it is in index.html on the repository)
-
-
-
