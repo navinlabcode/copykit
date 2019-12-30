@@ -46,6 +46,7 @@ Imports:
     tidyr,
     tibble,
     igraph,
-    BiocGenerics
+    BiocGenerics,
+    data.table
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr

@@ -50,16 +50,17 @@ readVarbinCNA <- function(dir,
     )
   }
 
-  # reading segment ratios
+  # importing data
   message("Importing segment ratios.")
-  dat <- readr::read_tsv(fs::dir_ls(
-    path = dir,
-    recurse = T,
-    glob = "*uber*seg.txt"
-  ),
-  col_types = readr::cols()) %>%
+  dat <- data.table::fread(input = fs::dir_ls(
+      path = dir,
+      recurse = T,
+      glob = "*uber*seg.txt"
+    ),
+    showProgress = TRUE) %>%
     janitor::clean_names() %>%
     as.data.frame()
+
 
   if (remove_Y == TRUE) {
     dat <- dat %>%
@@ -74,12 +75,12 @@ readVarbinCNA <- function(dir,
 
   # reading ratios
   message("Importing ratios.")
-  dat_rat <- readr::read_tsv(fs::dir_ls(
+  dat_rat <- data.table::fread(fs::dir_ls(
     path = dir,
     recurse = T,
     glob = "*uber*ratio.txt"
   ),
-  col_types = readr::cols()) %>%
+  showProgress = TRUE) %>%
     janitor::clean_names() %>%
     as.data.frame()
 
@@ -95,12 +96,12 @@ readVarbinCNA <- function(dir,
 
   # reading bin counts
   message("Importing bin counts.")
-  dat_bin <- readr::read_tsv(fs::dir_ls(
+  dat_bin <- data.table::fread(fs::dir_ls(
     path = dir,
     recurse = T,
     glob = "*uber*bin.txt"
   ),
-  col_types = readr::cols()) %>%
+  showProgress = TRUE) %>%
     janitor::clean_names() %>%
     as.data.frame()
 
