@@ -78,7 +78,7 @@ print(sapply(varbin_hg19_grangeslist, length))
 
 # Export to package internal data
 devtools::load_all('./')
-usethis::use_data(
-  major_palette, minor_palette, hg19_genes, ## previously available
-  varbin_hg19_grangeslist, ## Added in this script
-  internal = TRUE, overwrite = TRUE)
+# usethis::use_data(
+#   major_palette, minor_palette, hg19_genes, ## previously available
+#   varbin_hg19_grangeslist, ## Added in this script
+#   internal = TRUE, overwrite = TRUE)
