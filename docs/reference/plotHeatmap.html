@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CopyKit</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9004</span>
       </span>
     </div>
 
@@ -92,7 +92,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/tutorial.html">CopyKit workflow</a>
+      <a href="../articles/CopyKit_Workflow.html">CopyKit_Workflow</a>
     </li>
   </ul>
 </li>
@@ -121,7 +121,7 @@
     <p>Plots a heatmap of the copy number data. Each row is a cell and colums represent genomic positions.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotHeatmap</span>(<span class='no'>scCNA</span>, <span class='kw'>order_cells</span> <span class='kw'>=</span> <span class='st'>"phylogeny"</span>, <span class='kw'>n_threads</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
+    <pre class="usage"><span class='fu'>plotHeatmap</span>(<span class='no'>scCNA</span>, <span class='kw'>order_cells</span> <span class='kw'>=</span> <span class='st'>"phylogeny"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -129,10 +129,6 @@
     <tr>
       <th>scCNA</th>
       <td><p>scCNA object.</p></td>
-    </tr>
-    <tr>
-      <th>n_threads</th>
-      <td><p>Number of threads used to calculate the distance. Passed to `amap::Dist`</p></td>
     </tr>
     </table>
 

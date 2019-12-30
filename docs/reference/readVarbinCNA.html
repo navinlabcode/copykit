@@ -72,7 +72,7 @@ Genomic ranges are stored in a GRanges object containing chromosome number, star
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CopyKit</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9004</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@ Genomic ranges are stored in a GRanges object containing chromosome number, star
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/tutorial.html">CopyKit workflow</a>
+      <a href="../articles/CopyKit_Workflow.html">CopyKit_Workflow</a>
     </li>
   </ul>
 </li>
@@ -127,7 +127,12 @@ The scCNA object contains the segment ratios, ratios and bincounts within the as
 Genomic ranges are stored in a GRanges object containing chromosome number, start coordinate, end cordinate and absolute genomic position. Each row represents the coordinates for one bin.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>readVarbinCNA</span>(<span class='no'>dir</span>, <span class='kw'>remove_Y</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>readVarbinCNA</span>(
+  <span class='no'>dir</span>,
+  <span class='kw'>remove_Y</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>genome_version</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hg19"</span>),
+  <span class='kw'>bin_size</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"200k"</span>, <span class='st'>"100k"</span>)
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -139,6 +144,14 @@ Genomic ranges are stored in a GRanges object containing chromosome number, star
     <tr>
       <th>remove_Y</th>
       <td><p>(default == FALSE) If set to TRUE, removes information from the chrY from the dataset.</p></td>
+    </tr>
+    <tr>
+      <th>genome_version</th>
+      <td><p>Name of the genome assembly. Default: 'hg19'.</p></td>
+    </tr>
+    <tr>
+      <th>bin_size</th>
+      <td><p>The resolution of the VarBin method. Default: '200k'. Available options: '100k', '200k'.</p></td>
     </tr>
     </table>
 
@@ -162,7 +175,7 @@ Genomic ranges are stored in a GRanges object containing chromosome number, star
     </ul>
 
     <h2>Author</h2>
-    <p>Darlan Conterno Minussi</p>
+    <p>Darlan Conterno Minussi, Yun Yan</p>
   </div>
 </div>
 

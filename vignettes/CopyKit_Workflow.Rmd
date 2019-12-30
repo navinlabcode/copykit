@@ -1,13 +1,18 @@
 ---
-title: "CopyKit workflow"
+title: "CopyKit_Workflow"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{r  tutorial}
-  %\VignetteEncoding{r  UTF-8}
-  %\VignetteEngine{r  knitr::rmarkdown}
-editor_options: 
-  chunk_output_type: console
+  %\VignetteIndexEntry{CopyKit_Workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
 
   **CopyKit** provides a toolkit for the analysis of single-cell copy number datasets. It includes functions to read data from [Varbin](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4417119/) or [10X CNA datasets](https://www.10xgenomics.com/solutions/single-cell-cnv/).
   
@@ -25,17 +30,19 @@ editor_options:
   
   It is possible to exclude the information from ChrY (important when working with XX samples) by setting the argument `remove_Y` to `TRUE`. Ex: `readVarbinCNA("~/path_to_varbin_output/", remove_Y = TRUE)`.
 
-``` {r eval = FALSE, warning=FALSE}
+``` {r reading_data, eval = FALSE, warning=FALSE}
 breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/")
 ```
 
 ```{r echo = FALSE, warning=FALSE}
+library(reticulate)
+use_python("/volumes/lab/users/dminussi/software/pythonenv/env/bin/python", required = T)
 suppressPackageStartupMessages(library(tidyverse))
 dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/"
 breast_tumor <- copykit::readVarbinCNA(dir, remove_Y = TRUE)
 ```
 
-```{r   }
+```{r viewing_object}
 breast_tumor
 ```
 
@@ -49,12 +56,12 @@ By default, **CopyKit** automatically outputs a heatmap so you can visually asse
 
 To control how strict the filtering, change the argument `resolution`. Ex: `copykit::filterCells(resolution = 0.9)`
 
-```{r eval = FALSE, warning=FALSE }
+```{r filtering_cells, eval = FALSE, warning=FALSE }
 breast_tumor <- copykit::filterCells(breast_tumor,
                             resolution = 0.8)
 ```
 
-```{r echo = FALSE, warning=FALSE}
+```{ echo = FALSE, warning=FALSE}
 breast_tumor <- copykit::filterCells(breast_tumor,
                             resolution = 0.8,
                             n_threads = 20,
@@ -135,11 +142,11 @@ plot(copykit::phylo(breast_tumor), cex = 0.1)
 
 Plotting heatmap with **CopyKit** is done with the `plotHeatmap()` function. By default `plotHeatmap()` orders the cells according to a neighbor joining phylogenetic tree. `plotHeatmap()` also checks for the existence of cluster information and will automatically add it as an annotation to the heatmap.
 
-```{r eval = FALSE, warning = FALSE, fig.height = 8}
+```{ eval = FALSE, warning = FALSE, fig.height = 8}
 copykit::plotHeatmap(breast_tumor)
 ```
 
-```{r echo = FALSE, warning = FALSE, fig.height = 8}
+```{ echo = FALSE, warning = FALSE, fig.height = 8}
 copykit::plotHeatmap(breast_tumor)
 ```
 
