@@ -23,7 +23,7 @@
 #'
 readVarbinCNA <- function(dir,
                           remove_Y = FALSE,
-                          genome_version = c('hg19', 'hg38'),
+                          genome_version = c('hg19'),
                           bin_size = c('200k', '100k')) {
   # Reads a copy number directory and produces
   # a scCNA object as output
@@ -156,6 +156,7 @@ readVarbinCNA <- function(dir,
   g <- GenomeInfoDb::renameSeqlevels(
     g, c(`23`='X', `24`='Y'))
   GenomeInfoDb::seqlevelsStyle(g) <- 'UCSC'  ## add chr prefix
+  # A chr1, chr2, ..., chrX, chrY style
 
   # creating scCNA object
   cna_obj <- scCNA(
