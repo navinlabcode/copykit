@@ -22,6 +22,7 @@ Suggests:
     knitr,
     rmarkdown
 Language: en-US
+biocViews:
 Imports: 
     dplyr,
     ggplot2,

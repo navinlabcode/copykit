@@ -161,7 +161,7 @@ plot(phylo(breast_tumor), cex = 0.1)
 
 Plotting heatmap with **CopyKit** is done with the `plotHeatmap()` function. By default `plotHeatmap()` orders the cells according to a neighbor joining phylogenetic tree. `plotHeatmap()` also checks for the existence of cluster information and will automatically add it as an annotation to the heatmap if available.
 
-```{r eval = FALSE, warning = FALSE, fig.height = 8}
+```{r plotHeatmap, warning = FALSE}
 copykit::plotHeatmap(breast_tumor)
 ```
 
