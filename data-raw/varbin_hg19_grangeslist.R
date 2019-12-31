@@ -23,8 +23,9 @@
 library(devtools)
 library(usethis)
 library(GenomicRanges)
+library(GenomeInfoDb)
 
-# VarBins annotations are from the official pipeline's lib
+# VarBins annotations are from the official pipeline's lib: UCSC style (chr1, chrX, chrY)
 fpath_varbin <- list(
   `res_100k`='/volumes/seq/code/PIPELINES/CNA_pipeline_v1.4/lib/varbin.gc.content.100k.bowtie.k50.hg19.bin_not_removed.txt',
   `res_200k`='/volumes/seq/code/PIPELINES/CNA_pipeline_v1.4/lib/varbin.gc.content.200k.bowtie.k50.hg19.bin_not_removed.txt'
@@ -75,6 +76,9 @@ cat(length(varbin_hg19_grangeslist), 'resolutions are available:\n')
 cat(names(varbin_hg19_grangeslist), '\n')
 cat('How many varbins are available per resolution?:\n')
 print(sapply(varbin_hg19_grangeslist, length))
+
+hg19_seqinfo <- GenomeInfoDb::Seqinfo(genome = 'hg19')
+GenomeInfoDb::seqinfo(varbin_hg19_grangeslist) <- hg19_seqinfo
 
 # Export to package internal data
 # devtools::load_all('./')
