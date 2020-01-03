@@ -48,6 +48,8 @@ Imports:
     tibble,
     igraph,
     BiocGenerics,
-    data.table
+    data.table,
+    grid,
+    stringr
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr

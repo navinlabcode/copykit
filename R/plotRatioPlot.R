@@ -11,6 +11,7 @@
 #' @return A violin plot with the segment ratios for the genes of interest.
 #' @import BiocGenerics
 #' @import S4Vectors
+#' @import grid
 #'
 #' @export
 #'
@@ -18,7 +19,8 @@
 #'
 
 plotRatioPlot <- function(scCNA,
-                          sample_name) {
+                          sample_name = NULL,
+                          interactively = NULL) {
 
 
   ####################
@@ -51,7 +53,7 @@ plotRatioPlot <- function(scCNA,
                         dplyr::select(xstart,
                                       xend))
 
-  if (length(chr_rects == 24)) {
+  if (length(chrom_rects) == 24) {
     chrom_rects$colors <- rep(c("white", "gray"), length(chr_lengths) / 2)
   } else {
     chrom_rects$colors <- c(rep(c("white", "gray"), (length(chr_lengths) / 2)), "white")
@@ -130,8 +132,52 @@ plotRatioPlot <- function(scCNA,
   } else stop("Nrow in copykit::segment_ratios() assay different than nrow in copykit::ratios().")
 
   ###############
+  ## Interactively
+  ###############
+  # Interectively allows the user to click on plotHeatmap row and
+  # will return the clicked cell row as the ratio plot
+  # thanks to user Greg snow on stack overflow
+  # https://stackoverflow.com/questions/10526005/is-there-any-way-to-use-the-identify-command-with-ggplot-2
+
+
+  if (interactively == TRUE) {
+
+    message("Interectively set to TRUE.\nPlotting heatmap.")
+    ordered_df <- .interactivelyHeatmap(scCNA)
+
+    # capturing heatmap viewport
+    ht_vp <- grid::current.vpTree() %>%
+      as.character() %>%
+      stringr::str_extract("heatmap_matrix_[0-9]{1,2}")
+
+    x = 1:ncol(ordered_df)
+    y = 1:nrow(ordered_df)
+
+    grid::downViewport(ht_vp)
+    grid::pushViewport(grid::dataViewport(x,y))
+
+    message("Click on the row of the sample you want to visualize the ratio plot.")
+
+    tmp <- grid::grid.locator("in")
+    tmp.n <- as.numeric(tmp)
+    tmp2.x <- as.numeric(grid::convertX( unit(x,'native'), 'in' ))
+    tmp2.y <- as.numeric(grid::convertY( unit(y,'native'), 'in' ))
+
+    w <- which.min((tmp2.y-tmp.n[2])^2)
+
+    sample_name <- rownames(ordered_df)[w]
+
+  }
+
+
+  ###############
   ## Plot
   ###############
+
+  # sample name check
+  if (is.null(sample_name) && interactively == FALSE) {
+    stop("Please provide a sample to the argument sample_name.")
+  }
 
   p <- ggplot(df %>% filter(sample == sample_name)) +
     ggchr_back +
