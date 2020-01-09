@@ -181,7 +181,6 @@ copykit::plotRatioPlot(breast_tumor,
 ```
 ![plotRatioPlot interactive](docs/plotRatioPlotgif.gif)
 
-
 # Visualize specific genes
 
 It might be of interest to check for the heterogeneity in the number of copies across all the samples for different genes. **CopyKit** provides the function `geneCopyPlot()`.
