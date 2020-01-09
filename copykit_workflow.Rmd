@@ -32,7 +32,7 @@ library(copykit)
   Datasets generated with the varbin pipeline can be read with the function `readVarbinCNA()`. It creates an S4 class `scCNA` from the output directory of the copy number pipeline.
   `readVarbinCNA()` searches for the uber*.seg uber.bin and uber.ratio files in the provided directory.
   
-  The scCNA object will contain 3 different assays: **segment ratios**, **ratios** and **bincounts** where each bin is row and each sample (cell) is a column.
+  The scCNA object will contain 3 different assays: **segment ratios** (accessed with `copykit::segment_ratios()`), **ratios** (accessed with `copykit::ratios()`) and **bincounts** (accessed with `copykit::bin_counts()`) where each bin is row and each sample (cell) is a column.
   
   CopyKit stores the genomic ranges as a GRanges object containing chromosome number, start coordinate, end coordinate and absolute genomic position. 
   Each row represents the coordinates for one bin.
@@ -164,6 +164,11 @@ Plotting heatmap with **CopyKit** is done with the `plotHeatmap()` function. By 
 ```{r plotHeatmap, warning = FALSE}
 copykit::plotHeatmap(breast_tumor)
 ```
+
+# Plotting ratio plot
+
+It is important to 
+
 
 # Visualize specific genes
 
