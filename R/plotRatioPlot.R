@@ -20,7 +20,7 @@
 
 plotRatioPlot <- function(scCNA,
                           sample_name = NULL,
-                          interactively = NULL) {
+                          interactively = FALSE) {
 
 
   ####################
@@ -142,7 +142,7 @@ plotRatioPlot <- function(scCNA,
 
   if (interactively == TRUE) {
 
-    message("Interectively set to TRUE.\nPlotting heatmap.")
+    message("Interactively set to TRUE.\nPlotting heatmap.")
     ordered_df <- .interactivelyHeatmap(scCNA)
 
     # capturing heatmap viewport
@@ -161,7 +161,7 @@ plotRatioPlot <- function(scCNA,
     tmp <- grid::grid.locator("in")
     tmp.n <- as.numeric(tmp)
     tmp2.x <- as.numeric(grid::convertX( unit(x,'native'), 'in' ))
-    tmp2.y <- as.numeric(grid::convertY( unit(y,'native'), 'in' ))
+    tmp2.y <- rev(as.numeric(grid::convertY( unit(y,'native'), 'in' )))
 
     w <- which.min((tmp2.y-tmp.n[2])^2)
 

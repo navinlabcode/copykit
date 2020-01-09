@@ -167,7 +167,19 @@ copykit::plotHeatmap(breast_tumor)
 
 # Plotting ratio plot
 
-It is important to 
+It is important to make sure that the segmentation is correctly following the data. In **CopyKit** that can be done with `copykit::plotRatioPlot()` for any given cell:
+```{r plotRatioPlot, warning = FALSE}
+copykit::plotRatioPlot(breast_tumor,
+                       sample_name = "tn20_2_s2_c10_s394_r1_001")
+```
+
+`copykit::plotRatioPlot()` can also be used interactively. In this mode, **CopyKit** will plot a heatmap of the dataset. When the heatmap plotting is done you can click on the cell you would like to visualize the ratio plot of: 
+
+```{r interactPlotRatioPlot, eval = FALSE}
+copykit::plotRatioPlot(breast_tumor,
+                       interactively = TRUE)
+```
+![plotRatioPlot interactive](docs/plotRatioPlotgif.gif)
 
 
 # Visualize specific genes

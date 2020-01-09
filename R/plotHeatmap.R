@@ -88,7 +88,7 @@ plotHeatmap <- function(scCNA,
     # checking distance matrix
     if (length(copykit::distMat(scCNA)) == 0) {
       message("No distance matrix detected in the scCNA object.")
-      scCNA <-  runDistMat(scCNA, metric = metric)
+      scCNA <-  runDistMat(scCNA, metric = "euclidean")
     }
 
     if (nrow(as.matrix(copykit::distMat(scCNA))) != ncol(scCNA)) {
