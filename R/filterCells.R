@@ -23,8 +23,12 @@ filterCells <- function(scCNA,
                         k = 5,
                         resolution = 0.8,
                         plot_heatmap = TRUE,
-                        n_threads = 1) {
+                        n_threads = parallel::detectCores() / 4) {
   # checks
+  if (n_threads < 1) {
+    n_threads = 1
+  }
+
   if (!is.numeric(resolution)) {
     stop("Resolution needs to be a number between 0 and 1")
   }
@@ -64,9 +68,12 @@ filterCells <- function(scCNA,
         paste(
           "Your dataset has:",
           nrow(dst_knn_df),
-          "Cells. Plotting heatmap may take a long time with large number of cells. Set number of threads with n_threads for parallel processing if possible to speed up."
+          "Cells. Plotting heatmap may take a long time with large number of cells.\n Set number of threads with n_threads for parallel processing if possible to speed up."
         )
       )
+
+      message(paste("Using", n_threads, "cores."))
+
     }
 
     # filtered annotation
