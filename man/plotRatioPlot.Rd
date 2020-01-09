@@ -4,7 +4,7 @@
 \alias{plotRatioPlot}
 \title{Plot ratio plot}
 \usage{
-plotRatioPlot(scCNA, sample_name = NULL, interactively = NULL)
+plotRatioPlot(scCNA, sample_name = NULL, interactively = FALSE)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
