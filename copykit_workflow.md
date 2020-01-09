@@ -35,9 +35,11 @@ output directory of the copy number pipeline. `readVarbinCNA()` searches
 for the uber\*.seg uber.bin and uber.ratio files in the provided
 directory.
 
-The scCNA object will contain 3 different assays: **segment ratios**,
-**ratios** and **bincounts** where each bin is row and each sample
-(cell) is a column.
+The scCNA object will contain 3 different assays: **segment ratios**
+(accessed with `copykit::segment_ratios()`), **ratios** (accessed with
+`copykit::ratios()`) and **bincounts** (accessed with
+`copykit::bin_counts()`) where each bin is row and each sample (cell) is
+a column.
 
 CopyKit stores the genomic ranges as a GRanges object containing
 chromosome number, start coordinate, end coordinate and absolute genomic
@@ -98,21 +100,21 @@ SummarizedExperiment::rowRanges(breast_tumor)
     ##   12165     chrX 154339311-154639929      * |     300619          4         3
     ##   12166     chrX 154639930-154938160      * |     298231          1         3
     ##   12167     chrX 154938161-155180157      * |     241997          2         1
-    ##         dist_telomere        gc_content      abspos
-    ##             <integer>         <numeric> <integer64>
-    ##       1       1146783 0.611899007743492      977837
-    ##       2       1371964 0.592286977886868     1200864
-    ##       3       1699329 0.545698915854107     1455239
-    ##       4       1934728 0.541937320462544     1758058
-    ##       5       2156893 0.570018070633446     1989904
-    ##     ...           ...               ...         ...
-    ##   12163       1227655 0.433821936071646  3034868549
-    ##   12164        983007 0.395383453780725  3035140822
-    ##   12165        749886 0.390856865334616  3035372597
-    ##   12166        391320 0.380503703505117  3035673216
-    ##   12167        155540 0.383103922776009  3035971447
+    ##         dist_telomere        gc_content     abspos
+    ##             <integer>         <numeric>  <numeric>
+    ##       1       1146783 0.611899007743492     977837
+    ##       2       1371964 0.592286977886868    1200864
+    ##       3       1699329 0.545698915854107    1455239
+    ##       4       1934728 0.541937320462544    1758058
+    ##       5       2156893 0.570018070633446    1989904
+    ##     ...           ...               ...        ...
+    ##   12163       1227655 0.433821936071646 3034868549
+    ##   12164        983007 0.395383453780725 3035140822
+    ##   12165        749886 0.390856865334616 3035372597
+    ##   12166        391320 0.380503703505117 3035673216
+    ##   12167        155540 0.383103922776009 3035971447
     ##   -------
-    ##   seqinfo: 24 sequences from an unspecified genome; no seqlengths
+    ##   seqinfo: 93 sequences (1 circular) from hg19 genome
 
 ## Filtering cells.
 
@@ -143,6 +145,8 @@ breast_tumor <- copykit::filterCells(breast_tumor,
     ## Plotting heatmap.
 
     ## Your dataset has: 1442 Cells. Plotting heatmap may take a long time with large number of cells. Set number of threads with n_threads for parallel processing if possible to speed up.
+
+    ## Loading required namespace: Cairo
 
     ## Done.
 
@@ -326,6 +330,33 @@ annotation to the heatmap if available.
 copykit::plotHeatmap(breast_tumor)
 ```
 
+![](copykit_workflow_files/figure-gfm/plotHeatmap-1.png)<!-- -->
+
+# Plotting ratio plot
+
+It is important to make sure that the segmentation is correctly
+following the data. In **CopyKit** that can be done with
+`copykit::plotRatioPlot()` for any given cell:
+
+``` r
+copykit::plotRatioPlot(breast_tumor,
+                       sample_name = "tn20_2_s2_c10_s394_r1_001")
+```
+
+![](copykit_workflow_files/figure-gfm/plotRatioPlot-1.png)<!-- -->
+
+`copykit::plotRatioPlot()` can also be used interactively. In this mode,
+**CopyKit** will plot a heatmap of the dataset. When the heatmap
+plotting is done you can click on the cell you would like to visualize
+the ratio plot of:
+
+``` r
+copykit::plotRatioPlot(breast_tumor,
+                       interactively = TRUE)
+```
+
+![plotRatioPlot interactive](docs/plotRatioPlotgif.gif)
+
 # Visualize specific genes
 
 It might be of interest to check for the heterogeneity in the number of
@@ -340,4 +371,4 @@ copykit::geneCopyPlot(breast_tumor,
                                 "ERBB2"))
 ```
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
