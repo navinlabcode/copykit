@@ -57,7 +57,8 @@ readVarbinCNA <- function(dir,
       recurse = T,
       glob = "*uber*seg.txt"
     ),
-    showProgress = TRUE) %>%
+    showProgress = TRUE,
+    integer64 = "double") %>%
     janitor::clean_names() %>%
     as.data.frame()
 
@@ -80,7 +81,8 @@ readVarbinCNA <- function(dir,
     recurse = T,
     glob = "*uber*ratio.txt"
   ),
-  showProgress = TRUE) %>%
+  showProgress = TRUE,
+  integer64 = "double") %>%
     janitor::clean_names() %>%
     as.data.frame()
 
@@ -101,7 +103,8 @@ readVarbinCNA <- function(dir,
     recurse = T,
     glob = "*uber*bin.txt"
   ),
-  showProgress = TRUE) %>%
+  showProgress = TRUE,
+  integer64 = "double") %>%
     janitor::clean_names() %>%
     as.data.frame()
 
