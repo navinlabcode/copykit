@@ -4,7 +4,13 @@
 \alias{filterCells}
 \title{Filter noise cells}
 \usage{
-filterCells(scCNA, k = 5, resolution = 0.8, plot_heatmap = TRUE, n_threads = 1)
+filterCells(
+  scCNA,
+  k = 5,
+  resolution = 0.8,
+  plot_heatmap = TRUE,
+  n_threads = parallel::detectCores()/4
+)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
