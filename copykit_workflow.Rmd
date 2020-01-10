@@ -61,6 +61,14 @@ breast_tumor
 SummarizedExperiment::rowRanges(breast_tumor)
 ```
 
+## Obtain metrics
+**Copykit** can provide some quick metrics about the data. That can be done with `copykit::runMetrics()`. It returns informative plots regarding the data
+
+- Root Mean Squared Error: calculated from the distance of each bin to the segment. Which can be used as a way to evaluated the overdispersion and overall noise of the sample
+- Total reads: Total read counts for each cell.
+- PCR duplicates: Percentage of reads that are PCR duplicates for each cell.
+
+All the information is stored as metadata and can be accessed with `SummarizedExperiment::colData()`.
 
 ## Filtering cells.
 
@@ -86,7 +94,7 @@ breast_tumor <- copykit::filterCells(
 )
 ```
 
-The information is store as metadata and can be accessed with `SummarizedExperiment::colData()`.
+The information is stored as metadata and can be accessed with `SummarizedExperiment::colData()`.
 
 ```{r  warning=FALSE }
 head(SummarizedExperiment::colData(breast_tumor))

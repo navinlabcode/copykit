@@ -50,6 +50,8 @@ Imports:
     BiocGenerics,
     data.table,
     grid,
-    stringr
+    stringr,
+    Metrics,
+    ggbeeswarm
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr
