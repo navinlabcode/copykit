@@ -70,6 +70,12 @@ SummarizedExperiment::rowRanges(breast_tumor)
 
 All the information is stored as metadata and can be accessed with `SummarizedExperiment::colData()`.
 
+```{r}
+copykit::runMetrics(breast_tumor)
+```
+
+You can use the metrics in the metadata to filter the cells if desired.
+
 ## Filtering cells.
 
 Cells with low quality can be easily filtered with `filterCells()`.

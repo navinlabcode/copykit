@@ -59,6 +59,8 @@ breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/")
 
     ## Importing bin counts.
 
+    ## Importing metrics.
+
     ## Removed ChrY information.
 
 ``` r
@@ -73,7 +75,7 @@ breast_tumor
     ## rowData names(6): bin_length gene_count ... gc_content abspos
     ## colnames(1442): tn20_2_s2_c10_s394_r1_001 tn20_2_s2_c11_s395_r1_001 ...
     ##   tn20_s6_c382_s2302_r1_001 tn20_s6_c383_s2303_r1_001
-    ## colData names(1): sample
+    ## colData names(4): sample total_reads reads_kept pcr_duplicates
     ## reducedDimNames(0):
     ## spikeNames(0):
     ## rowRanges has: 12167 ranges
@@ -116,6 +118,36 @@ SummarizedExperiment::rowRanges(breast_tumor)
     ##   -------
     ##   seqinfo: 93 sequences (1 circular) from hg19 genome
 
+## Obtain metrics
+
+**Copykit** can provide some quick metrics about the data. That can be
+done with `copykit::runMetrics()`. It returns informative plots
+regarding the data
+
+  - Root Mean Squared Error: calculated from the distance of each bin to
+    the segment. Which can be used as a way to evaluated the
+    overdispersion and overall noise of the sample
+  - Total reads: Total read counts for each cell.
+  - PCR duplicates: Percentage of reads that are PCR duplicates for each
+    cell.
+
+All the information is stored as metadata and can be accessed with
+`SummarizedExperiment::colData()`.
+
+``` r
+copykit::runMetrics(breast_tumor)
+```
+
+    ## Calculating RMSE
+
+    ## Using 48 cores.
+
+    ## Done.
+
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+You can use the metrics in the metadata to filter the cells if desired.
+
 ## Filtering cells.
 
 Cells with low quality can be easily filtered with `filterCells()`.
@@ -144,7 +176,10 @@ breast_tumor <- copykit::filterCells(breast_tumor,
 
     ## Plotting heatmap.
 
-    ## Your dataset has: 1442 Cells. Plotting heatmap may take a long time with large number of cells. Set number of threads with n_threads for parallel processing if possible to speed up.
+    ## Your dataset has: 1442 Cells. Plotting heatmap may take a long time with large number of cells.
+    ##  Set number of threads with n_threads for parallel processing if possible to speed up.
+
+    ## Using 20 cores.
 
     ## Loading required namespace: Cairo
 
@@ -152,22 +187,30 @@ breast_tumor <- copykit::filterCells(breast_tumor,
 
 ![](copykit_workflow_files/figure-gfm/filtering_cells_parallel-1.png)<!-- -->
 
-The information is store as metadata and can be accessed with
+The information is stored as metadata and can be accessed with
 `SummarizedExperiment::colData()`.
 
 ``` r
 head(SummarizedExperiment::colData(breast_tumor))
 ```
 
-    ## DataFrame with 6 rows and 2 columns
-    ##                                              sample    filtered
-    ##                                         <character> <character>
-    ## tn20_2_s2_c10_s394_r1_001 tn20_2_s2_c10_s394_r1_001        kept
-    ## tn20_2_s2_c11_s395_r1_001 tn20_2_s2_c11_s395_r1_001        kept
-    ## tn20_2_s2_c12_s396_r1_001 tn20_2_s2_c12_s396_r1_001     removed
-    ## tn20_2_s2_c13_s397_r1_001 tn20_2_s2_c13_s397_r1_001     removed
-    ## tn20_2_s2_c14_s398_r1_001 tn20_2_s2_c14_s398_r1_001     removed
-    ## tn20_2_s2_c19_s403_r1_001 tn20_2_s2_c19_s403_r1_001        kept
+    ## DataFrame with 6 rows and 5 columns
+    ##                                              sample total_reads reads_kept
+    ##                                         <character>   <integer>  <integer>
+    ## tn20_2_s2_c10_s394_r1_001 tn20_2_s2_c10_s394_r1_001     1182995    1084587
+    ## tn20_2_s2_c11_s395_r1_001 tn20_2_s2_c11_s395_r1_001      628360     578103
+    ## tn20_2_s2_c12_s396_r1_001 tn20_2_s2_c12_s396_r1_001     1133710    1041569
+    ## tn20_2_s2_c13_s397_r1_001 tn20_2_s2_c13_s397_r1_001     1470505    1335844
+    ## tn20_2_s2_c14_s398_r1_001 tn20_2_s2_c14_s398_r1_001     1297807    1182345
+    ## tn20_2_s2_c19_s403_r1_001 tn20_2_s2_c19_s403_r1_001     1066632     978170
+    ##                           pcr_duplicates    filtered
+    ##                                <numeric> <character>
+    ## tn20_2_s2_c10_s394_r1_001           0.08        kept
+    ## tn20_2_s2_c11_s395_r1_001           0.08        kept
+    ## tn20_2_s2_c12_s396_r1_001           0.08     removed
+    ## tn20_2_s2_c13_s397_r1_001           0.09     removed
+    ## tn20_2_s2_c14_s398_r1_001           0.09     removed
+    ## tn20_2_s2_c19_s403_r1_001           0.08        kept
 
 If you are satisfied with the filtering you can simply subset the object
 based on the `SummarizedExperiment::colData(bt)$filtered`
@@ -231,7 +274,7 @@ plotUmap(breast_tumor)
 
     ## Plotting Umap.
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 # Finding clusters
 
@@ -263,15 +306,23 @@ Clustering information is stored as metadata and can be accessed with
 head(SummarizedExperiment::colData(breast_tumor))
 ```
 
-    ## DataFrame with 6 rows and 4 columns
-    ##                                              sample    filtered major_clusters
-    ##                                         <character> <character>    <character>
-    ## tn20_2_s2_c10_s394_r1_001 tn20_2_s2_c10_s394_r1_001        kept              A
-    ## tn20_2_s2_c11_s395_r1_001 tn20_2_s2_c11_s395_r1_001        kept              A
-    ## tn20_2_s2_c19_s403_r1_001 tn20_2_s2_c19_s403_r1_001        kept              A
-    ## tn20_2_s2_c2_s386_r1_001   tn20_2_s2_c2_s386_r1_001        kept              B
-    ## tn20_2_s2_c20_s404_r1_001 tn20_2_s2_c20_s404_r1_001        kept              B
-    ## tn20_2_s2_c21_s405_r1_001 tn20_2_s2_c21_s405_r1_001        kept              A
+    ## DataFrame with 6 rows and 7 columns
+    ##                                              sample total_reads reads_kept
+    ##                                         <character>   <integer>  <integer>
+    ## tn20_2_s2_c10_s394_r1_001 tn20_2_s2_c10_s394_r1_001     1182995    1084587
+    ## tn20_2_s2_c11_s395_r1_001 tn20_2_s2_c11_s395_r1_001      628360     578103
+    ## tn20_2_s2_c19_s403_r1_001 tn20_2_s2_c19_s403_r1_001     1066632     978170
+    ## tn20_2_s2_c2_s386_r1_001   tn20_2_s2_c2_s386_r1_001     1214093    1101868
+    ## tn20_2_s2_c20_s404_r1_001 tn20_2_s2_c20_s404_r1_001      947926     879111
+    ## tn20_2_s2_c21_s405_r1_001 tn20_2_s2_c21_s405_r1_001     1095090    1009111
+    ##                           pcr_duplicates    filtered major_clusters
+    ##                                <numeric> <character>    <character>
+    ## tn20_2_s2_c10_s394_r1_001           0.08        kept              A
+    ## tn20_2_s2_c11_s395_r1_001           0.08        kept              A
+    ## tn20_2_s2_c19_s403_r1_001           0.08        kept              A
+    ## tn20_2_s2_c2_s386_r1_001            0.09        kept              B
+    ## tn20_2_s2_c20_s404_r1_001           0.07        kept              B
+    ## tn20_2_s2_c21_s405_r1_001           0.08        kept              A
     ##                           minor_clusters
     ##                                <numeric>
     ## tn20_2_s2_c10_s394_r1_001              3
@@ -291,7 +342,7 @@ plotUmap(breast_tumor)
 
     ## Using colData(scCNA) cluster information.
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 # Running phylogenetic analysis
 
@@ -316,7 +367,7 @@ Which can be easily visualized with
 plot(phylo(breast_tumor), cex = 0.1)
 ```
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 # Plotting heatmap
 
@@ -371,4 +422,4 @@ copykit::geneCopyPlot(breast_tumor,
                                 "ERBB2"))
 ```
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
