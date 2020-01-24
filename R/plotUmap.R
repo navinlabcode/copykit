@@ -33,7 +33,7 @@ plotUmap <- function(scCNA) {
   )
 
   # obtaining data from reducedDim slot
-  if (!is.null(SingleCellExperiment::reducedDim(breast_tumor))) {
+  if (!is.null(SingleCellExperiment::reducedDim(scCNA))) {
     umap_df <- SingleCellExperiment::reducedDim(scCNA, 'umap') %>%
       as.data.frame()
 
