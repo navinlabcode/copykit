@@ -10,8 +10,10 @@
 #' @return Adds a the metrics to the scCNA metadata. Those metrics can be used for subsetting the data if desired
 #' @return Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #' @export
+#' @import ggplot2
 #'
 #' @examples
+#'
 #'
 runMetrics <- function(scCNA,
                        n_threads = parallel::detectCores() / 4) {
@@ -35,15 +37,15 @@ runMetrics <- function(scCNA,
   # theme setup
   my_theme <- list(
     ggplot2::theme(
-      axis.title.x = element_text(colour = "gray28", size = 20),
-      axis.text.x = element_blank(),
-      axis.ticks.x =  element_blank(),
-      axis.title.y = element_text(colour = "gray28", size = 20),
-      axis.text.y = element_text(size = 15),
-      axis.line.x = element_blank(),
+      axis.title.x = ggplot2::element_text(colour = "gray28", size = 20),
+      axis.text.x = ggplot2::element_blank(),
+      axis.ticks.x =  ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_text(colour = "gray28", size = 20),
+      axis.text.y = ggplot2::element_text(size = 15),
+      axis.line.x = ggplot2::element_blank(),
       legend.position = "right",
-      legend.title = element_blank(),
-      legend.text = element_text(size = 16)
+      legend.title = ggplot2::element_blank(),
+      legend.text = ggplot2::element_text(size = 16)
     )
   )
 
