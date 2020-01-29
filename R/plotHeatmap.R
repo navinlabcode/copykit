@@ -15,8 +15,9 @@
 #'
 
 plotHeatmap <- function(scCNA,
-                        order_cells = "phylogeny") {
-  #obtaining data
+                        order_cells = "graph_order") {
+
+    #obtaining data
   seg_data <- t(segment_ratios(scCNA))
 
   #chromosome bar aesthetic
