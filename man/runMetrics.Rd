@@ -17,9 +17,12 @@ Adds a the metrics to the scCNA metadata. Those metrics can be used for subsetti
 Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 }
 \description{
-Provides some metrics to quickly assess the quality and overall look of the copy number data.
+Calculates the RMSE and the breakpoint counts for each cell.
+Stores it in the metadata that can be accessed with \code{SummarizedExperiment::colData(scCNA)}
+Results can be visualized with \code{plotMetrics()}
 }
 \examples{
+
 
 }
 \author{

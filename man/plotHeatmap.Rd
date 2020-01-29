@@ -4,7 +4,7 @@
 \alias{plotHeatmap}
 \title{Plot heatmap}
 \usage{
-plotHeatmap(scCNA, order_cells = "phylogeny")
+plotHeatmap(scCNA, order_cells = "graph_order")
 }
 \arguments{
 \item{scCNA}{scCNA object.}

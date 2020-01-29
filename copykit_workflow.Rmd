@@ -67,12 +67,21 @@ SummarizedExperiment::rowRanges(breast_tumor)
 - Root Mean Squared Error: calculated from the distance of each bin to the segment. Which can be used as a way to evaluated the overdispersion and overall noise of the sample
 - Total reads: Total read counts for each cell.
 - PCR duplicates: Percentage of reads that are PCR duplicates for each cell.
+- Breakpoint count: Counts the number of breakpoints per chromosome and sums it up for every cell.
 
 All the information is stored as metadata and can be accessed with `SummarizedExperiment::colData()`.
 
 ```{r}
-copykit::runMetrics(breast_tumor)
+breast_tumor <- copykit::runMetrics(breast_tumor)
 ```
+
+After the information is calculated and saved in the scCNA object it can be visualized with `copykit::plotMetrics()`
+```{r}
+copykit::plotMetrics(breast_tumor)
+```
+
+
+
 
 You can use the metrics in the metadata to filter the cells if desired.
 

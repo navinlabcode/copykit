@@ -1,6 +1,8 @@
 #' Run metrics
 #'
-#' Provides some metrics to quickly assess the quality and overall look of the copy number data.
+#' Calculates the RMSE and the breakpoint counts for each cell.
+#' Stores it in the metadata that can be accessed with \code{SummarizedExperiment::colData(scCNA)}
+#' Results can be visualized with \code{plotMetrics()}
 #'
 #' @author Darlan Conterno Minussi
 #'
@@ -17,7 +19,6 @@
 #'
 runMetrics <- function(scCNA,
                        n_threads = parallel::detectCores() / 4) {
-
   # checks
 
   if (!is.numeric(n_threads)) {
@@ -26,34 +27,22 @@ runMetrics <- function(scCNA,
 
   # checks
   if (n_threads > parallel::detectCores()) {
-    stop(paste("n_threads argument must be smaller than ", parallel::detectCores()))
+    stop(paste(
+      "n_threads argument must be smaller than ",
+      parallel::detectCores()
+    ))
   }
 
   if (n_threads < 1) {
     n_threads = 1
   }
 
-
-  # theme setup
-  my_theme <- list(
-    ggplot2::theme(
-      axis.title.x = ggplot2::element_text(colour = "gray28", size = 20),
-      axis.text.x = ggplot2::element_blank(),
-      axis.ticks.x =  ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_text(colour = "gray28", size = 20),
-      axis.text.y = ggplot2::element_text(size = 15),
-      axis.line.x = ggplot2::element_blank(),
-      legend.position = "right",
-      legend.title = ggplot2::element_blank(),
-      legend.text = ggplot2::element_text(size = 16)
-    )
-  )
-
   ###################
   # Retrieving data
 
   dat_seg <- copykit::segment_ratios(scCNA)
   dat_rat <- copykit::ratios(scCNA)
+  rg <- SummarizedExperiment::rowRanges(scCNA)
 
   ####################
   # RMSE
@@ -71,45 +60,52 @@ runMetrics <- function(scCNA,
 
   SummarizedExperiment::colData(scCNA)$rmse <- rmses
 
-  # rmse plot
-  df <- as.data.frame(SummarizedExperiment::colData(scCNA))
+  ####################
+  # Number of breakpoints
+  # Performed for every chromosome
 
-  p1 <- ggplot2::ggplot(df, aes("RMSE",rmse)) +
-    ggbeeswarm::geom_quasirandom() +
-    ggplot2::theme_classic() +
-    ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-    ggplot2::ylab("RMSE") +
-    xlab("") +
-    my_theme
+  rg_chr <- rg %>%
+    as.data.frame() %>%
+    dplyr::select(seqnames) %>%
+    dplyr::mutate(seqnames = as.character(seqnames))
 
-  # total_reads plot
-  if (!is.null(df$total_reads)) {
-    p2 <- ggplot2::ggplot(df, aes("tot_reads",total_reads)) +
-      ggbeeswarm::geom_quasirandom() +
-      ggplot2::theme_classic() +
-      ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10),
-                                  labels = scales::label_scientific()) +
-      ggplot2::ylab("Read Count") +
-      xlab("") +
-      my_theme
-  }
+  dat_seg_cp <- dat_seg
 
-  # pcr_duplicates plot
-  if (!is.null(df$pcr_duplicates)) {
-    p3 <- ggplot2::ggplot(df, aes("pcr_dups",pcr_duplicates)) +
-      ggbeeswarm::geom_quasirandom() +
-      ggplot2::theme_classic() +
-      ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10),
-                                  labels = scales::percent_format()) +
-      ggplot2::ylab("PCR Duplicates (%)") +
-      xlab("") +
-      my_theme
-  }
+  # split by chrom
+  message("Counting breakpoints.")
+  dat_seg_split <- split(dat_seg_cp, pull(rg_chr, seqnames))
 
-  if (!is.null(df$pcr_duplicates)) {
-    print(cowplot::plot_grid(p1, p2, p3, nrow = 1))
-  } else print(p1)
+  brkpt_by_chrom <-
+    lapply(dat_seg_split, function(x) {
+      purrr::map_dfc(x, function(i) {
+        length(rle(i)$values) - 1
+      }) %>%
+        unlist()
+    })
+
+  brkpt_by_chrom_df <- dplyr::bind_rows(brkpt_by_chrom) %>%
+    as.data.frame()
+  rownames(brkpt_by_chrom_df) <- colnames(dat_seg_cp)
+
+  brkpt_by_chrom_l <- brkpt_by_chrom_df %>%
+    tibble::rownames_to_column(var = "sample") %>%
+    tidyr::gather(key = "chr",
+                  value = "brkpts",-sample)
+
+  brkpt_by_sample_cnt <- brkpt_by_chrom_l %>%
+    dplyr::group_by(sample) %>%
+    dplyr::tally(brkpts)
+
+  # making sure order is correct
+  brkpt_by_sample_cnt <-
+    brkpt_by_sample_cnt[match(brkpt_by_sample_cnt$sample,
+                              SummarizedExperiment::colData(scCNA)$sample), ]
+
+  SummarizedExperiment::colData(scCNA)$breakpoint_count <-
+    brkpt_by_sample_cnt$n
 
   message("Done.")
+
+  return(scCNA)
 
 }
