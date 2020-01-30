@@ -10,6 +10,7 @@
 #'
 #' @export
 #'
+#' @import uwot
 #' @examples
 #'
 

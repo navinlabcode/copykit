@@ -12,6 +12,7 @@
 #' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDim(scCNA, 'umap')}
 #' @export
 #'
+#' @import ape
 #' @examples
 
 runPhylo <- function(scCNA,

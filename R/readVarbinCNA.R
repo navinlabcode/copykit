@@ -17,6 +17,8 @@
 #' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 #'
 #' @import GenomeInfoDb
+#' @import dplyr
+#' @import data.table
 #' @export
 #'
 #' @examples
