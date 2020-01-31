@@ -16,7 +16,7 @@
 #'
 
 plotHeatmap <- function(scCNA,
-                        order_cells = "graph_order") {
+                        order_cells = "graph_search") {
 
     #obtaining data
   seg_data <- t(segment_ratios(scCNA))
@@ -119,6 +119,11 @@ plotHeatmap <- function(scCNA,
         stop("No graph detected. Please run copykit::findClusters()")
       }
     )
+
+    if(igraph::gorder(graph(scCNA)) != ncol(copykit::segment_ratios(scCNA))) {
+      stop("Number of vertices in graph different than number of samples.
+           Please run copykit::findClusters() and try again.")
+    }
 
     umap_df <-
       SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = F)
