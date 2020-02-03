@@ -5,9 +5,9 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
+#' @param label Color by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #'
 #' @return A plot with the metrics available in the metadata
-#' @return Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #' @export
 #' @import ggplot2
 #'
@@ -15,7 +15,8 @@
 #'
 #'
 
-plotMetrics <- function(scCNA) {
+plotMetrics <- function(scCNA,
+                        label = NULL) {
 
   # retrieving data
   df <- as.data.frame(SummarizedExperiment::colData(scCNA))
@@ -25,6 +26,13 @@ plotMetrics <- function(scCNA) {
     message("Metrics not detected.")
     message("Running copykit::runMetrics()")
     scCNA <- runMetrics(scCNA)
+  }
+
+  # check if label exists
+  if (!is.null(label) && (label %in% colnames(df))) {
+    message(paste0("Coloring by: ", label))
+  } else {
+    stop(paste0("Label ", label, " is not a column of the scCNA object."))
   }
 
   # theme setup
@@ -86,8 +94,63 @@ plotMetrics <- function(scCNA) {
       my_theme
   }
 
-  if (!is.null(df$pcr_duplicates)) {
+  # obtaining label
+  if (!is.null(label)) {
+    lab <- dplyr::pull(df,
+                       var = label)
+
+    # coloring by continuos variable
+    if (is.numeric(label)) {
+
+      color_lab <- list(ggplot2::scale_color_viridis_c())
+
+      p1 <- p1 +
+        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        color_lab
+
+      p2 <- p2 +
+        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        color_lab
+
+      p3 <- p3 +
+        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        color_lab
+
+      p4 <- p4 +
+        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        color_lab
+
+      print(cowplot::plot_grid(p1, p2, p3, p4, nrow = 2))
+
+    } else {
+      # coloring for discrete variable label
+      color_lab <- list(ggplot2::scale_color_viridis_d())
+
+      p1 <- p1 +
+        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        color_lab
+
+      p2 <- p2 +
+        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        color_lab
+
+      p3 <- p3 +
+        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        color_lab
+
+      p4 <- p4 +
+        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        color_lab
+
+      print(cowplot::plot_grid(p1, p2, p3, p4, nrow = 2))
+    }
+
+
+  } else {
+    # else just print th enormal without colors
     print(cowplot::plot_grid(p1, p2, p3, p4, nrow = 2))
-  } else print(p1)
+  }
+
+
 
 }
