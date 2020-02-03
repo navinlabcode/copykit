@@ -5,6 +5,7 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
+#' @param label Color by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #'
 #' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SummarizedExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)}. \code{plotUmap} searches for cluster information in the \code{SummarizedExperiment::colData()} metadata and colors the clusters according to that information.
 #'
@@ -14,7 +15,12 @@
 #' @examples
 #'
 
-plotUmap <- function(scCNA) {
+plotUmap <- function(scCNA,
+                     label = NULL) {
+
+  # retrieving metadata
+  df <- as.data.frame(SummarizedExperiment::colData(scCNA))
+
   # theme setup
   my_theme <- list(
     ggplot2::theme(
@@ -33,6 +39,15 @@ plotUmap <- function(scCNA) {
     ylab("umap2")
   )
 
+  # check if label exists
+  if (!is.null(label)) {
+    message(paste0("Coloring by: ", label))
+  }
+
+  if (!is.null(label) && !(label %in% colnames(df))) {
+    stop(paste0("Label ", label, " is not a column of the scCNA object."))
+  }
+
   # obtaining data from reducedDim slot
   if (!is.null(SingleCellExperiment::reducedDim(scCNA))) {
     umap_df <- SingleCellExperiment::reducedDim(scCNA, 'umap') %>%
@@ -41,17 +56,21 @@ plotUmap <- function(scCNA) {
   } else
     stop("Reduced dimensions slot is null. Use runUmap() to create it.")
 
-  if (is.null(SummarizedExperiment::colData(scCNA)$minor_clusters)) {
+  message("Plotting Umap.")
+
+  if (is.null(label) && is.null(SummarizedExperiment::colData(scCNA)$minor_clusters)) {
+    # if label is not provided and clusters were not run
+
     message("No cluster information detected, use findClusters() to create it.")
-    message("Plotting Umap.")
 
     ggplot(umap_df) +
       geom_point(aes(V1, V2)) +
       theme_classic() +
       my_theme
 
-  } else {
-    message("Plotting Umap.")
+  } else if (is.null(label) && !is.null(SummarizedExperiment::colData(scCNA)$minor_clusters)) {
+    # if label is not provided but findClusters was run
+
     message("Using colData(scCNA) cluster information.")
 
     ggplot(umap_df) +
@@ -73,6 +92,36 @@ plotUmap <- function(scCNA) {
     scale_color_manual(values = c(major_palette, minor_palette)) + # palettes are in sysdata.rda
     theme_classic() +
       my_theme
+
+  } else if (!is.null(label)) {
+    # if label is provided, coloring by the label
+
+    lab <- dplyr::pull(df,
+                       var = label)
+
+        p <- ggplot(umap_df) +
+      geom_point(aes(V1, V2,
+                     color = lab)) +
+      theme_classic() +
+      my_theme
+
+    # coloring by continuos variable
+    if (is.numeric(label)) {
+
+      color_lab <- list(ggplot2::scale_color_viridis_c())
+
+      p <- p + color_lab
+
+      print(p)
+
+    } else {
+      # coloring for discrete variable label
+      color_lab <- list(ggplot2::scale_color_viridis_d())
+
+      p <- p + color_lab
+
+      print(p)
+    }
 
   }
 
