@@ -78,6 +78,7 @@ breast_tumor
     ## colData names(4): sample total_reads reads_kept pcr_duplicates
     ## reducedDimNames(0):
     ## spikeNames(0):
+    ## altExpNames(0):
     ## rowRanges has: 12167 ranges
     ## Phylo:
 
@@ -130,23 +131,47 @@ regarding the data
   - Total reads: Total read counts for each cell.
   - PCR duplicates: Percentage of reads that are PCR duplicates for each
     cell.
+  - Breakpoint count: Counts the number of breakpoints per chromosome
+    and sums it up for every cell.
 
 All the information is stored as metadata and can be accessed with
 `SummarizedExperiment::colData()`.
 
 ``` r
-copykit::runMetrics(breast_tumor)
+breast_tumor <- copykit::runMetrics(breast_tumor)
 ```
 
     ## Calculating RMSE
 
     ## Using 48 cores.
 
+    ## Counting breakpoints.
+
     ## Done.
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+After the information is calculated and saved in the scCNA object it can
+be visualized with `copykit::plotMetrics()`
 
-You can use the metrics in the metadata to filter the cells if desired.
+``` r
+copykit::plotMetrics(breast_tumor)
+```
+
+![](copykit_workflow_files/figure-gfm/plot_metrics-1.png)<!-- -->
+
+`copykit::plotMetrics()` can color information regarding any column
+available in the metadata.
+
+``` r
+copykit::plotMetrics(breast_tumor,
+                     label = "rmse")
+```
+
+    ## Coloring by: rmse
+
+![](copykit_workflow_files/figure-gfm/plot_metrics_label-1.png)<!-- -->
+
+You can also use the metrics in the metadata to filter the cells if
+desired.
 
 ## Filtering cells.
 
@@ -179,7 +204,7 @@ breast_tumor <- copykit::filterCells(breast_tumor,
     ## Your dataset has: 1442 Cells. Plotting heatmap may take a long time with large number of cells.
     ##  Set number of threads with n_threads for parallel processing if possible to speed up.
 
-    ## Using 20 cores.
+    ## Using 40 cores.
 
     ## Loading required namespace: Cairo
 
@@ -194,7 +219,7 @@ The information is stored as metadata and can be accessed with
 head(SummarizedExperiment::colData(breast_tumor))
 ```
 
-    ## DataFrame with 6 rows and 5 columns
+    ## DataFrame with 6 rows and 8 columns
     ##                                              sample total_reads reads_kept
     ##                                         <character>   <integer>  <integer>
     ## tn20_2_s2_c10_s394_r1_001 tn20_2_s2_c10_s394_r1_001     1182995    1084587
@@ -203,14 +228,22 @@ head(SummarizedExperiment::colData(breast_tumor))
     ## tn20_2_s2_c13_s397_r1_001 tn20_2_s2_c13_s397_r1_001     1470505    1335844
     ## tn20_2_s2_c14_s398_r1_001 tn20_2_s2_c14_s398_r1_001     1297807    1182345
     ## tn20_2_s2_c19_s403_r1_001 tn20_2_s2_c19_s403_r1_001     1066632     978170
-    ##                           pcr_duplicates    filtered
-    ##                                <numeric> <character>
-    ## tn20_2_s2_c10_s394_r1_001           0.08        kept
-    ## tn20_2_s2_c11_s395_r1_001           0.08        kept
-    ## tn20_2_s2_c12_s396_r1_001           0.08     removed
-    ## tn20_2_s2_c13_s397_r1_001           0.09     removed
-    ## tn20_2_s2_c14_s398_r1_001           0.09     removed
-    ## tn20_2_s2_c19_s403_r1_001           0.08        kept
+    ##                           pcr_duplicates              rmse breakpoint_count
+    ##                                <numeric>         <numeric>        <numeric>
+    ## tn20_2_s2_c10_s394_r1_001           0.08 0.216382837301687               62
+    ## tn20_2_s2_c11_s395_r1_001           0.08 0.294904041482104               74
+    ## tn20_2_s2_c12_s396_r1_001           0.08  0.18606060334932               81
+    ## tn20_2_s2_c13_s397_r1_001           0.09  0.15753330535439               56
+    ## tn20_2_s2_c14_s398_r1_001           0.09 0.197584954503024              122
+    ## tn20_2_s2_c19_s403_r1_001           0.08 0.226702781199834               67
+    ##                           filter_corr_value    filtered
+    ##                                   <numeric> <character>
+    ## tn20_2_s2_c10_s394_r1_001  0.98590760631357        kept
+    ## tn20_2_s2_c11_s395_r1_001 0.919570405276702        kept
+    ## tn20_2_s2_c12_s396_r1_001 0.326630273561911     removed
+    ## tn20_2_s2_c13_s397_r1_001 0.274886170136174     removed
+    ## tn20_2_s2_c14_s398_r1_001 0.342528378728546     removed
+    ## tn20_2_s2_c19_s403_r1_001 0.975748454261478        kept
 
 If you are satisfied with the filtering you can simply subset the object
 based on the `SummarizedExperiment::colData(bt)$filtered`
@@ -270,11 +303,48 @@ It is possivel to visualize the results with the function `plotUmap()`.
 plotUmap(breast_tumor)
 ```
 
+    ## Plotting Umap.
+
     ## No cluster information detected, use findClusters() to create it.
+
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+`plotUmap()` can also be used to display information according to the
+metadata
+
+For example on this sample we have information about different spatial
+locations, they are presented in the sample names with the prefix **S**
+followed by a number. We will use that and add that information to the
+metadata:
+
+First we will add that information to the metadata
+
+``` r
+# saving to a data.frame
+spatial_info <- as.data.frame(SummarizedExperiment::colData(breast_tumor))
+# removing the extra information
+spatial_info$sample_edited <- stringr::str_extract(spatial_info$sample,
+                                                   "tn20_[0-9]_s[0-9]")
+spatial_info$spatial_location <- stringr::str_extract(spatial_info$sample_edited,
+                                                      "(s[0-9])")
+
+SummarizedExperiment::colData(breast_tumor)$spatial_location <- spatial_info$spatial_location
+```
+
+Now we can plot that information using `plotUmap()`
+
+``` r
+plotUmap(breast_tumor, 
+         label = "spatial_location")
+```
+
+    ## Coloring by: spatial_location
 
     ## Plotting Umap.
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+    ## Warning: Removed 281 rows containing missing values (geom_point).
+
+![](copykit_workflow_files/figure-gfm/plot_umap_label-1.png)<!-- -->
 
 # Finding clusters
 
@@ -306,7 +376,7 @@ Clustering information is stored as metadata and can be accessed with
 head(SummarizedExperiment::colData(breast_tumor))
 ```
 
-    ## DataFrame with 6 rows and 7 columns
+    ## DataFrame with 6 rows and 11 columns
     ##                                              sample total_reads reads_kept
     ##                                         <character>   <integer>  <integer>
     ## tn20_2_s2_c10_s394_r1_001 tn20_2_s2_c10_s394_r1_001     1182995    1084587
@@ -315,22 +385,30 @@ head(SummarizedExperiment::colData(breast_tumor))
     ## tn20_2_s2_c2_s386_r1_001   tn20_2_s2_c2_s386_r1_001     1214093    1101868
     ## tn20_2_s2_c20_s404_r1_001 tn20_2_s2_c20_s404_r1_001      947926     879111
     ## tn20_2_s2_c21_s405_r1_001 tn20_2_s2_c21_s405_r1_001     1095090    1009111
-    ##                           pcr_duplicates    filtered major_clusters
-    ##                                <numeric> <character>    <character>
-    ## tn20_2_s2_c10_s394_r1_001           0.08        kept              A
-    ## tn20_2_s2_c11_s395_r1_001           0.08        kept              A
-    ## tn20_2_s2_c19_s403_r1_001           0.08        kept              A
-    ## tn20_2_s2_c2_s386_r1_001            0.09        kept              B
-    ## tn20_2_s2_c20_s404_r1_001           0.07        kept              B
-    ## tn20_2_s2_c21_s405_r1_001           0.08        kept              A
-    ##                           minor_clusters
-    ##                                <numeric>
-    ## tn20_2_s2_c10_s394_r1_001              3
-    ## tn20_2_s2_c11_s395_r1_001              3
-    ## tn20_2_s2_c19_s403_r1_001             12
-    ## tn20_2_s2_c2_s386_r1_001               8
-    ## tn20_2_s2_c20_s404_r1_001              8
-    ## tn20_2_s2_c21_s405_r1_001              3
+    ##                           pcr_duplicates              rmse breakpoint_count
+    ##                                <numeric>         <numeric>        <numeric>
+    ## tn20_2_s2_c10_s394_r1_001           0.08 0.216382837301687               62
+    ## tn20_2_s2_c11_s395_r1_001           0.08 0.294904041482104               74
+    ## tn20_2_s2_c19_s403_r1_001           0.08 0.226702781199834               67
+    ## tn20_2_s2_c2_s386_r1_001            0.09 0.223616463784378               63
+    ## tn20_2_s2_c20_s404_r1_001           0.07 0.224447682153074               95
+    ## tn20_2_s2_c21_s405_r1_001           0.08 0.208614154086208               62
+    ##                           filter_corr_value    filtered spatial_location
+    ##                                   <numeric> <character>      <character>
+    ## tn20_2_s2_c10_s394_r1_001  0.98590760631357        kept               s2
+    ## tn20_2_s2_c11_s395_r1_001 0.919570405276702        kept               s2
+    ## tn20_2_s2_c19_s403_r1_001 0.975748454261478        kept               s2
+    ## tn20_2_s2_c2_s386_r1_001  0.957232362114731        kept               s2
+    ## tn20_2_s2_c20_s404_r1_001 0.960377831040763        kept               s2
+    ## tn20_2_s2_c21_s405_r1_001 0.970281747303508        kept               s2
+    ##                           major_clusters minor_clusters
+    ##                              <character>      <numeric>
+    ## tn20_2_s2_c10_s394_r1_001              A              3
+    ## tn20_2_s2_c11_s395_r1_001              A              3
+    ## tn20_2_s2_c19_s403_r1_001              A             12
+    ## tn20_2_s2_c2_s386_r1_001               B              8
+    ## tn20_2_s2_c20_s404_r1_001              B              8
+    ## tn20_2_s2_c21_s405_r1_001              A              3
 
 `plotUmap()` will display cluster information if it is available.
 

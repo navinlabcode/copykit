@@ -71,19 +71,22 @@ SummarizedExperiment::rowRanges(breast_tumor)
 
 All the information is stored as metadata and can be accessed with `SummarizedExperiment::colData()`.
 
-```{r}
+```{r run_metrics}
 breast_tumor <- copykit::runMetrics(breast_tumor)
 ```
 
 After the information is calculated and saved in the scCNA object it can be visualized with `copykit::plotMetrics()`
-```{r}
+```{r plot_metrics}
 copykit::plotMetrics(breast_tumor)
 ```
 
+`copykit::plotMetrics()` can color information regarding any column available in the metadata.
+```{r plot_metrics_label}
+copykit::plotMetrics(breast_tumor,
+                     label = "rmse")
+```
 
-
-
-You can use the metrics in the metadata to filter the cells if desired.
+You can also use the metrics in the metadata to filter the cells if desired.
 
 ## Filtering cells.
 
@@ -104,7 +107,7 @@ breast_tumor <- copykit::filterCells(breast_tumor,
 breast_tumor <- copykit::filterCells(
   breast_tumor,
   resolution = 0.8,
-  n_threads = 20,
+  n_threads = 40,
   plot_heatmap = TRUE
 )
 ```
@@ -144,6 +147,31 @@ It is possivel to visualize the results with the function `plotUmap()`.
 ```{r  warning=FALSE}
 plotUmap(breast_tumor)
 ```
+
+`plotUmap()` can also be used to display information according to the metadata
+
+For example on this sample we have information about different spatial locations, they are presented in the sample names with the prefix **S** followed by a number. We will use that and add that information to the metadata:
+
+First we will add that information to the metadata
+```{r}
+# saving to a data.frame
+spatial_info <- as.data.frame(SummarizedExperiment::colData(breast_tumor))
+# removing the extra information
+spatial_info$sample_edited <- stringr::str_extract(spatial_info$sample,
+                                                   "tn20_[0-9]_s[0-9]")
+spatial_info$spatial_location <- stringr::str_extract(spatial_info$sample_edited,
+                                                      "(s[0-9])")
+
+SummarizedExperiment::colData(breast_tumor)$spatial_location <- spatial_info$spatial_location
+```
+
+Now we can plot that information using `plotUmap()`
+```{r plot_umap_label}
+plotUmap(breast_tumor, 
+         label = "spatial_location")
+```
+
+
 
 # Finding clusters
 
