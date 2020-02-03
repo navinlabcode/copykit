@@ -9,7 +9,7 @@
 #' @param k K-nearest-neighbor, defaults to 5.
 #' @param resolution Set's how strict the correlation cut off will be. Defaults to 0.8.
 #' @param plot_heatmap Plot a heatmap with annotations of the removed and kept cells (Defaults to TRUE).
-#' @param n_threads Number of parallel threads to calculate distances with \code{amap::Dist()}. Defaults to 1
+#' @param n_threads Number of parallel threads to calculate distances with \code{amap::Dist()}. Defaults to 1/4 of the cores available in your system.
 #'
 #' @return Adds a filtered cells label to the scCNA metadata. Cells that pass the filtering criteria receive the label "kept", whereas cells that do not pass the filtering criteria receive the label "removed".
 #' @return Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
@@ -56,7 +56,9 @@ filterCells <- function(scCNA,
   )
   if (identical(SummarizedExperiment::colData(scCNA)$sample,
                 dst_knn_df$sample)) {
+    SummarizedExperiment::colData(scCNA)$filter_corr_value <- dst_knn_df$cor
     SummarizedExperiment::colData(scCNA)$filtered <- dst_knn_df$filtered
+
   } else
     stop("Sample names do not match metadata sample info. Check colData(scCNA).")
 
