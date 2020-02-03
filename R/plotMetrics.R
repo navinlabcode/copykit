@@ -29,11 +29,14 @@ plotMetrics <- function(scCNA,
   }
 
   # check if label exists
-  if (!is.null(label) && (label %in% colnames(df))) {
+  if (!is.null(label)) {
     message(paste0("Coloring by: ", label))
-  } else {
+  }
+
+  if (!is.null(label) && !(label %in% colnames(df))) {
     stop(paste0("Label ", label, " is not a column of the scCNA object."))
   }
+
 
   # theme setup
   my_theme <- list(
