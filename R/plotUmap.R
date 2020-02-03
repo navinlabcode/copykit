@@ -106,7 +106,7 @@ plotUmap <- function(scCNA,
       my_theme
 
     # coloring by continuos variable
-    if (is.numeric(label)) {
+    if (is.numeric(lab)) {
 
       color_lab <- list(ggplot2::scale_color_viridis_c())
 

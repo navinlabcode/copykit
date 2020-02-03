@@ -24,8 +24,7 @@ plotMetrics <- function(scCNA,
   # check if runMetrics was run
   if (is.null(df$rmse)) {
     message("Metrics not detected.")
-    message("Running copykit::runMetrics()")
-    scCNA <- runMetrics(scCNA)
+    message("Please run copykit::runMetrics()")
   }
 
   # check if label exists
@@ -103,7 +102,7 @@ plotMetrics <- function(scCNA,
                        var = label)
 
     # coloring by continuos variable
-    if (is.numeric(label)) {
+    if (is.numeric(lab)) {
 
       color_lab <- list(ggplot2::scale_color_viridis_c())
 
@@ -153,7 +152,5 @@ plotMetrics <- function(scCNA,
     # else just print th enormal without colors
     print(cowplot::plot_grid(p1, p2, p3, p4, nrow = 2))
   }
-
-
 
 }
