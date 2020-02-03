@@ -21,7 +21,7 @@ filterCells(
 
 \item{plot_heatmap}{Plot a heatmap with annotations of the removed and kept cells (Defaults to TRUE).}
 
-\item{n_threads}{Number of parallel threads to calculate distances with \code{amap::Dist()}. Defaults to 1}
+\item{n_threads}{Number of parallel threads to calculate distances with \code{amap::Dist()}. Defaults to 1/4 of the cores available in your system.}
 }
 \value{
 Adds a filtered cells label to the scCNA metadata. Cells that pass the filtering criteria receive the label "kept", whereas cells that do not pass the filtering criteria receive the label "removed".

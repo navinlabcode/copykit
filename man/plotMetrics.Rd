@@ -4,15 +4,15 @@
 \alias{plotMetrics}
 \title{Plot metrics}
 \usage{
-plotMetrics(scCNA)
+plotMetrics(scCNA, label = NULL)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
+
+\item{label}{Color by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
 }
 \value{
 A plot with the metrics available in the metadata
-
-Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 }
 \description{
 Provides a plot of the metrics to quickly assess the quality and overall look of the copy number data.

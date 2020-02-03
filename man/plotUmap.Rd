@@ -4,10 +4,12 @@
 \alias{plotUmap}
 \title{Plot UMAP embedding}
 \usage{
-plotUmap(scCNA)
+plotUmap(scCNA, label = NULL)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
+
+\item{label}{Color by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
 }
 \value{
 A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SummarizedExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)}. \code{plotUmap} searches for cluster information in the \code{SummarizedExperiment::colData()} metadata and colors the clusters according to that information.
