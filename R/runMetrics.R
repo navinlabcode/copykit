@@ -34,7 +34,7 @@ runMetrics <- function(scCNA,
   }
 
   if (n_threads < 1) {
-    n_threads = 1
+    n_threads <- 1
   }
 
   ###################

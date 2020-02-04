@@ -37,7 +37,8 @@ readVarbinCNA <- function(dir,
     glob = "*uber*seg.txt"
   )) == FALSE) {
     stop(
-      "Segment ratio matrix can't be found in the provided directory. Please make sure a uber.seg file can be found."
+      "Segment ratio matrix can't be found in the provided directory.
+      Please make sure a uber.seg file can be found."
     )
   }
 
@@ -48,7 +49,8 @@ readVarbinCNA <- function(dir,
     glob = "*uber*seg.txt"
   )) > 1) {
     stop(
-      "More than one uber.seg file can be found at the provided directory. Please make sure to only have one sample at that location."
+      "More than one uber.seg file can be found at the provided directory.
+      Please make sure to only have one sample at that location."
     )
   }
 

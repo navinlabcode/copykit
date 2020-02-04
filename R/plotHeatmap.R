@@ -42,7 +42,8 @@ plotHeatmap <- function(scCNA,
 
   # creating a data frame to calculate rowMeans
   chr_df <-
-    data.frame(a = chr_rl_c[1:length(chr_rl_c) - 1], b = chr_rl_c[2:length(chr_rl_c)])
+    data.frame(a = chr_rl_c[1:length(chr_rl_c) - 1],
+               b = chr_rl_c[2:length(chr_rl_c)])
   chr_l_means <- round(rowMeans(chr_df))
 
   chrom.names <- c(1:22, "X", "Y")
@@ -95,7 +96,8 @@ plotHeatmap <- function(scCNA,
 
     if (nrow(as.matrix(copykit::distMat(scCNA))) != ncol(scCNA)) {
       stop(
-        "Number of samples in the distance matrix different from number of samples in the scCNA object. Perhaps you filtered your dataset? use copykit::runDistMat() to update it."
+        "Number of samples in the distance matrix different from number of samples in the scCNA object.
+        Perhaps you filtered your dataset? use copykit::runDistMat() to update it."
       )
     }
 
@@ -108,7 +110,9 @@ plotHeatmap <- function(scCNA,
 
   if (order_cells == "graph_search") {
 
-    if (is.null(SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = F))) {
+    if (is.null(SingleCellExperiment::reducedDim(scCNA,
+                                                 'umap',
+                                                 withDimnames = F))) {
       message("No umap detected, running copykit::runUmap()")
       scCNA <- copykit::runUmap(scCNA)
     }

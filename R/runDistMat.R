@@ -18,7 +18,7 @@ runDistMat <- function(scCNA,
                        n_threads = parallel::detectCores() / 4) {
   # cores check
   if (n_threads < 1) {
-    n_threads = 1
+    n_threads <- 1
   }
 
   message(paste("Calculating distance matrix with metric:", metric))

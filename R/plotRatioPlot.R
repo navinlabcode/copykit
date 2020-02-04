@@ -54,9 +54,11 @@ plotRatioPlot <- function(scCNA,
                                       xend))
 
   if (length(chrom_rects) == 24) {
-    chrom_rects$colors <- rep(c("white", "gray"), length(chr_lengths) / 2)
+    chrom_rects$colors <- rep(c("white", "gray"),
+                              length(chr_lengths) / 2)
   } else {
-    chrom_rects$colors <- c(rep(c("white", "gray"), (length(chr_lengths) / 2)), "white")
+    chrom_rects$colors <- c(rep(c("white", "gray"),
+                                (length(chr_lengths) / 2)), "white")
   }
 
   # Creating the geom_rect object
@@ -150,8 +152,8 @@ plotRatioPlot <- function(scCNA,
       as.character() %>%
       stringr::str_extract("heatmap_matrix_[0-9]{1,2}")
 
-    x = 1:ncol(ordered_df)
-    y = 1:nrow(ordered_df)
+    x <- 1:ncol(ordered_df)
+    y <- 1:nrow(ordered_df)
 
     grid::downViewport(ht_vp)
     grid::pushViewport(grid::dataViewport(x,y))

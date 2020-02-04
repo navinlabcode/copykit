@@ -1,6 +1,9 @@
 #' Filter noise cells
 #'
-#' filterCells uses a k-nearest-neighbor approach to remove cells with random CNA profiles, largely due to noise data. It calculates a correlation matrix and sets a resolution below which non neighbors will be classified as noise cells.
+#' filterCells uses a k-nearest-neighbor approach to remove cells
+#' with random CNA profiles, largely due to noise data.
+#' It calculates a correlation matrix and sets a resolution below which non neighbors
+#'  will be classified as noise cells.
 #'
 #' @author Hua-Jun Wu
 #' @author Darlan Conterno Minussi
@@ -26,7 +29,7 @@ filterCells <- function(scCNA,
                         n_threads = parallel::detectCores() / 4) {
   # checks
   if (n_threads < 1) {
-    n_threads = 1
+    n_threads <- 1
   }
 
   if (!is.numeric(resolution)) {
@@ -40,8 +43,8 @@ filterCells <- function(scCNA,
   seg <- copykit::segment_ratios(scCNA)
 
   message("Calculating correlation matrix.")
-  dst = cor(seg)
-  dst_knn_df = apply(as.matrix(dst), 1, function(x) {
+  dst <- cor(seg)
+  dst_knn_df <- apply(as.matrix(dst), 1, function(x) {
     mean(sort(x, decreasing = T)[2:(k + 1)])
   }) %>%
     tibble::enframe(name = "sample",

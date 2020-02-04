@@ -2,7 +2,8 @@
 
 ###################################################################
 # ape has no formal definition of the phylo-class that can be used for @importClassesFrom
-# the solution adopted here is the same as the one from phyloseq package, which creates S3 and S4 placeholders for the phylo class
+# the solution adopted here is the same as the one from phyloseq package
+# which creates S3 and S4 placeholders for the phylo class
 
 #' @export
 #' @keywords internal
