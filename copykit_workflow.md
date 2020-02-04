@@ -323,10 +323,8 @@ First we will add that information to the metadata
 # saving to a data.frame
 spatial_info <- as.data.frame(SummarizedExperiment::colData(breast_tumor))
 # removing the extra information
-spatial_info$sample_edited <- stringr::str_extract(spatial_info$sample,
-                                                   "tn20_[0-9]_s[0-9]")
-spatial_info$spatial_location <- stringr::str_extract(spatial_info$sample_edited,
-                                                      "(s[0-9])")
+spatial_info$spatial_location <- stringr::str_extract(spatial_info$sample,
+                                                   "(s[0-9]){1}")
 
 SummarizedExperiment::colData(breast_tumor)$spatial_location <- spatial_info$spatial_location
 ```
@@ -341,8 +339,6 @@ plotUmap(breast_tumor,
     ## Coloring by: spatial_location
 
     ## Plotting Umap.
-
-    ## Warning: Removed 281 rows containing missing values (geom_point).
 
 ![](copykit_workflow_files/figure-gfm/plot_umap_label-1.png)<!-- -->
 

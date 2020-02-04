@@ -80,7 +80,7 @@ After the information is calculated and saved in the scCNA object it can be visu
 copykit::plotMetrics(breast_tumor)
 ```
 
-`copykit::plotMetrics()` can color information regarding any column available in the metadata.
+`copykit::plotMetrics()` can color information according to any column available in the metadata.
 ```{r plot_metrics_label}
 copykit::plotMetrics(breast_tumor,
                      label = "rmse")
@@ -157,10 +157,8 @@ First we will add that information to the metadata
 # saving to a data.frame
 spatial_info <- as.data.frame(SummarizedExperiment::colData(breast_tumor))
 # removing the extra information
-spatial_info$sample_edited <- stringr::str_extract(spatial_info$sample,
-                                                   "tn20_[0-9]_s[0-9]")
-spatial_info$spatial_location <- stringr::str_extract(spatial_info$sample_edited,
-                                                      "(s[0-9])")
+spatial_info$spatial_location <- stringr::str_extract(spatial_info$sample,
+                                                   "(s[0-9]){1}")
 
 SummarizedExperiment::colData(breast_tumor)$spatial_location <- spatial_info$spatial_location
 ```
