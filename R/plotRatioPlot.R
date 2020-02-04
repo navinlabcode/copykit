@@ -9,9 +9,8 @@
 #' @param sample_name character vector with the name of the sample to be visualized
 #'
 #' @return A violin plot with the segment ratios for the genes of interest.
-#' @import BiocGenerics
-#' @import S4Vectors
 #' @import grid
+#' @import dplyr
 #'
 #' @export
 #'

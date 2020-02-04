@@ -8,8 +8,8 @@
 #' @param genes vector containing the HUGO Symbol for the genes of interest.
 #'
 #' @return A violin plot with the segment ratios for the genes of interest.
-#' @import BiocGenerics
-#' @import S4Vectors
+#' @importFrom BiocGenerics subset
+#' @importFrom S4Vectors subjectHits
 #'
 #' @export
 #'

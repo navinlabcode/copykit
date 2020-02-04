@@ -29,7 +29,10 @@ Adds a filtered cells label to the scCNA metadata. Cells that pass the filtering
 Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 }
 \description{
-filterCells uses a k-nearest-neighbor approach to remove cells with random CNA profiles, largely due to noise data. It calculates a correlation matrix and sets a resolution below which non neighbors will be classified as noise cells.
+filterCells uses a k-nearest-neighbor approach to remove cells
+with random CNA profiles, largely due to noise data.
+It calculates a correlation matrix and sets a resolution below which non neighbors
+ will be classified as noise cells.
 }
 \examples{
 

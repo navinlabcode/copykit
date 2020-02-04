@@ -27,7 +27,7 @@ setMethod("bin_counts", "scCNA", function(x, withDimnames = TRUE) {
 setMethod("phylo", "scCNA", function(x) {
   # accessor for the phylo slot
   out <- x@phylo
-  out
+           out
 })
 
 #' @export

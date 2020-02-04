@@ -16,9 +16,10 @@
 #' @return Bin counts can be acessed with \code{copykit::bin_counts}.
 #' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 #'
-#' @import GenomeInfoDb
 #' @import dplyr
-#' @import data.table
+#' @importFrom GenomicRanges seqnames
+#' @importFrom data.table fread
+#' @importFrom fs dir_ls
 #' @export
 #'
 #' @examples
@@ -146,7 +147,7 @@ readVarbinCNA <- function(dir,
   key_query <- paste0(rg$chrom,
                       '_',
                       rg$chrompos)
-  key_ref   <- paste0(seqnames(gr_varbin_full),
+  key_ref   <- paste0(GenomicRanges::seqnames(gr_varbin_full),
                       '_',
                       IRanges::start(gr_varbin_full))
   idx <- match(key_query, key_ref)
