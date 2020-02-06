@@ -19,6 +19,8 @@
 #' @import GenomeInfoDb
 #' @import dplyr
 #' @import data.table
+#' @import rlang
+#' @import fs
 #' @export
 #'
 #' @examples
