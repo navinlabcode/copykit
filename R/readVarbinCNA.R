@@ -19,6 +19,8 @@
 #' @import GenomeInfoDb
 #' @import dplyr
 #' @import data.table
+#' @import rlang
+#' @import fs
 #' @export
 #'
 #' @examples
@@ -173,44 +175,44 @@ readVarbinCNA <- function(dir,
   SummarizedExperiment::colData(cna_obj)$sample <- names(seg_data)
 
   # reading metrics
-  if (fs::file_exists(fs::dir_ls(
-    path = dir,
-    recurse = T,
-    glob = "*stat_metrics.txt"
-  ))) {
-    message("Importing metrics.")
-    dat_metrics <- data.table::fread(
-      fs::dir_ls(
-        path = dir,
-        recurse = T,
-        glob = "*stat_metrics.txt"
-      ),
-      showProgress = TRUE,
-      integer64 = "double"
-    ) %>%
-      janitor::clean_names() %>%
-      dplyr::rename(sample = "sample_name") %>%
-      dplyr::mutate(sample = janitor::make_clean_names(sample)) %>%
-    as.data.frame()
-
-    # adding metrics to metadata
-    # making sure they have the same order
-    dat_metrics <- dat_metrics[match(SummarizedExperiment::colData(cna_obj)$sample,
-                                     dat_metrics$sample),]
-
-    if (identical(dat_metrics$sample,
-                  SummarizedExperiment::colData(cna_obj)$sample)) {
-
-      SummarizedExperiment::colData(cna_obj)$total_reads <- dat_metrics$total_reads
-      SummarizedExperiment::colData(cna_obj)$reads_kept <- dat_metrics$reads_kept
-      SummarizedExperiment::colData(cna_obj)$pcr_duplicates <- round(dat_metrics$dups_removed/dat_metrics$total_reads,2)
-
-    }
-
-  } else {
+  if (rlang::is_empty(
+    fs::dir_ls(path = dir, recurse = T, glob = "*stat_metrics.txt"))){
     warning("No metrics file found. \n
             Metrics are needed if you'd like to run copykit::runMetrics()\n
             Make sure folder metrics with file all_stat_metrics.txt can be found by copykit::runVarbinCNA()")
+  } else {
+    if (fs::file_exists(
+      fs::dir_ls(path = dir, recurse = T, glob = "*stat_metrics.txt"))) {
+      message("Importing metrics.")
+      dat_metrics <- data.table::fread(
+        fs::dir_ls(
+          path = dir,
+          recurse = T,
+          glob = "*stat_metrics.txt"
+        ),
+        showProgress = TRUE,
+        integer64 = "double"
+      ) %>%
+        janitor::clean_names() %>%
+        dplyr::rename(sample = "sample_name") %>%
+        dplyr::mutate(sample = janitor::make_clean_names(sample)) %>%
+        as.data.frame()
+
+      # adding metrics to metadata
+      # making sure they have the same order
+      dat_metrics <- dat_metrics[match(SummarizedExperiment::colData(cna_obj)$sample,
+                                       dat_metrics$sample),]
+
+      if (identical(dat_metrics$sample,
+                    SummarizedExperiment::colData(cna_obj)$sample)) {
+
+        SummarizedExperiment::colData(cna_obj)$total_reads <- dat_metrics$total_reads
+        SummarizedExperiment::colData(cna_obj)$reads_kept <- dat_metrics$reads_kept
+        SummarizedExperiment::colData(cna_obj)$pcr_duplicates <- round(dat_metrics$dups_removed/dat_metrics$total_reads,2)
+
+      }
+
+    }
   }
 
   if (remove_Y == TRUE) {
