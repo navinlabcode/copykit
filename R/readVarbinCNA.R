@@ -17,11 +17,12 @@
 #' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 #'
 #' @import dplyr
-<<<<<<< HEAD
+#' @importFrom GenomicRanges seqnames
+#' @importFrom data.table fread
+#' @importFrom fs dir_ls
 #' @import data.table
 #' @import rlang
 #' @import fs
->>>>>>> 8cf20f7a87591b2e8b911c2af22fd4f9408a33dd
 #' @export
 #'
 #' @examples
