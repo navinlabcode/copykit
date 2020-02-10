@@ -26,8 +26,12 @@ setMethod("bin_counts", "scCNA", function(x, withDimnames = TRUE) {
 #' @export
 setMethod("phylo", "scCNA", function(x) {
   # accessor for the phylo slot
-  out <- x@phylo
-           out
+  tryCatch({
+    out <- x@phylo
+    out
+  },
+  error = stop("Phylo slot is empty. Please run copykit::runPhylo()")
+  )
 })
 
 #' @export

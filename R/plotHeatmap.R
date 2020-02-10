@@ -71,7 +71,9 @@ plotHeatmap <- function(scCNA,
       phylo(scCNA),
       error = function(e) {
         message("No phylogeny detected in scCNA object.")
-        runPhylo(scCNA)
+      },
+      finally = {
+        scCNA <- runPhylo(scCNA)
       }
     )
 
