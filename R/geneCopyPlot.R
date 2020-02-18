@@ -9,6 +9,7 @@
 #'
 #' @return A violin plot with the segment ratios for the genes of interest.
 #' @importFrom BiocGenerics subset
+#' @importFrom BiocGenerics `%in%`
 #' @importFrom S4Vectors subjectHits
 #'
 #' @export
