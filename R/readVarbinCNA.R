@@ -20,7 +20,6 @@
 #' @importFrom GenomicRanges seqnames
 #' @importFrom data.table fread
 #' @importFrom fs dir_ls
-#' @import data.table
 #' @import rlang
 #' @import fs
 #' @export
