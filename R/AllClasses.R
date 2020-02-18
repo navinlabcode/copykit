@@ -43,7 +43,7 @@ setOldClass("igraph")
 scCNA <- function(segment_ratios,
                   ratios,
                   bin_counts,
-                  phylo = structure("list", class = "phylo"),
+                  phylo = structure(list(), class = "phylo"),
                   distMat = dist(matrix(0,0,0)),
                   graph = igraph::graph.empty(),
                   ...) {
