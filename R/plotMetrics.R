@@ -24,7 +24,7 @@ plotMetrics <- function(scCNA,
   # check if runMetrics was run
   if (is.null(df$rmse)) {
     message("Metrics not detected.")
-    message("Please run copykit::runMetrics()")
+    stop("Please run copykit::runMetrics()")
   }
 
   # check if label exists
