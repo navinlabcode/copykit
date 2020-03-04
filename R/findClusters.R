@@ -14,6 +14,8 @@
 #'
 #' @return Metadata cluster information that can be found in \code{SummarizedExperiment::colData(scCNA)$major_clusters} for the major clusters and \code{SummarizedExperiment::colData(scCNA)$minor_clusters} for the minor clusters. Major clusters are named with capital letters whereas minor clusters are named with a numbers but as a character vector.
 #'
+#' @import leidenbase
+#'
 #' @export
 #'
 #' @examples
@@ -60,7 +62,17 @@ findClusters <- function(scCNA,
       paste(LETTERS[as.numeric(y)], collapse = ''))
 
   #minor
-  leid <- leiden::leiden(g_adj, seed = seed)
+  # leid <- try(leiden::leiden(g_adj, seed = seed))
+  leid_obj <- try(leiden_find_partition(
+    g_minor,
+    partition_type = 'RBConfigurationVertexPartition',
+    resolution_parameter = 1))
+  if (inherits(leid, "try-error")) {
+    leid <- g_clusters
+    warning('Running leiden fails. Copy major clusters to minor clusters.')
+  } else {
+    leid <- leid_obj$membership
+  }
 
   # storing info
   SummarizedExperiment::colData(scCNA)$major_clusters <- g_clusters
