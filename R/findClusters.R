@@ -66,7 +66,8 @@ findClusters <- function(scCNA,
   leid_obj <- try(leiden_find_partition(
     g_minor,
     partition_type = 'RBConfigurationVertexPartition',
-    resolution_parameter = 1))
+    resolution_parameter = 1,
+	seed=seed))
   if (inherits(leid_obj, "try-error")) {
     leid <- g_clusters
     warning('Running leiden fails. Copy major clusters to minor clusters.')
@@ -76,7 +77,7 @@ findClusters <- function(scCNA,
 
   # storing info
   SummarizedExperiment::colData(scCNA)$major_clusters <- g_clusters
-  SummarizedExperiment::colData(scCNA)$minor_clusters <- leid
+  SummarizedExperiment::colData(scCNA)$minor_clusters <- as.character(leid)
 
   message("Done.")
 
