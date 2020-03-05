@@ -63,7 +63,7 @@ geneCopyPlot <- function(scCNA,
     warning(base::paste("Genes:",
                         paste(missing_genes,
                               collapse = ", "),
-                        "could not be found, maybe you need to use a different gene alias?"))
+                        ",could not be found. Maybe you need to use a different gene alias?"))
     }
 
   #finding overlaps
@@ -81,6 +81,18 @@ geneCopyPlot <- function(scCNA,
            pos = S4Vectors::subjectHits(olaps),
     ) %>%
     dplyr::distinct(gene, .keep_all = TRUE)
+
+  # checking for genes that might have been blacklisted from the varbin pipeline
+  blk_list <- genes[genes %!in% missing_genes]
+  blk_list <- blk_list[blk_list %!in% df$gene]
+
+  if (!rlang::is_empty(blk_list)) {
+    warning(base::paste("Genes:",
+                        paste(blk_list,
+                              collapse = ", "),
+                        "are in blacklisted regions of the Varbin pipeline and can't be plotted."))
+  }
+
 
   # obtaining seg ratios and sbsetting for the genes
   seg_data <- segment_ratios(scCNA)
