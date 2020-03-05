@@ -11,6 +11,8 @@
 #' @importFrom BiocGenerics subset
 #' @importFrom BiocGenerics `%in%`
 #' @importFrom S4Vectors subjectHits
+#' @importFrom forcats fct_reorder
+#' @import ggplot2
 #'
 #' @export
 #'
@@ -25,7 +27,10 @@ geneCopyPlot <- function(scCNA,
   my_theme <- list(
     ggplot2::theme(
       axis.title.x = element_text(colour = "gray28", size = 20),
-      axis.text.x = element_text(size = 15),
+      axis.text.x = element_text(size = 15,
+                                 vjust = 0.5,
+                                 hjust = 1,
+                                 angle = 90),
       axis.title.y = element_text(colour = "gray28", size = 20),
       axis.text.y = element_text(size = 15),
       axis.line.x = element_blank(),
@@ -44,6 +49,22 @@ geneCopyPlot <- function(scCNA,
   # hg19_genes genomic range is saved inside sysdata.rda to avoid loading a lot of annotation packages
   hg19_genes_features <- BiocGenerics:::subset(hg19_genes,
                                 SYMBOL %in% genes)
+
+  # Checking genes that could not be found and returned an error message
+  `%!in%` <- base::Negate(`%in%`)
+
+  all_genes <- hg19_genes$SYMBOL %>%
+    unlist() %>%
+    unname()
+
+  missing_genes <- genes[genes %!in% all_genes]
+
+  if (!rlang::is_empty(missing_genes)) {
+    warning(base::paste("Genes:",
+                        paste(missing_genes,
+                              collapse = ", "),
+                        "could not be found, maybe you need to use a different gene alias?"))
+    }
 
   #finding overlaps
   olaps <-
@@ -73,7 +94,7 @@ geneCopyPlot <- function(scCNA,
                             value = "segratio",
                             -gene)
   #plotting
-  p <- ggplot2::ggplot(seg_long, aes(x = gene,
+  p <- ggplot2::ggplot(seg_long, aes(x = forcats::fct_reorder(gene, segratio),
                        y = segratio + 1e-3)) +
     ggplot2::geom_violin() +
     ggplot2::theme_classic() +
