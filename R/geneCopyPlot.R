@@ -18,7 +18,7 @@
 #'
 #' @examples
 #'
-# git test
+
 
 geneCopyPlot <- function(scCNA,
                          genes) {
