@@ -52,7 +52,7 @@ plotRatioPlot <- function(scCNA,
                         dplyr::select(xstart,
                                       xend))
 
-  if (length(chrom_rects) == 24) {
+  if (nrow(chrom_rects) == 24) {
     chrom_rects$colors <- rep(c("white", "gray"),
                               length(chr_lengths) / 2)
   } else {
