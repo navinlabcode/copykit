@@ -238,32 +238,28 @@ copykit::geneCopyPlot(breast_tumor,
 
 `geneCopyPlot()` can also be colored by any information available in the metadata (`SummarizedExperiment::colData()`). 
 ```{r}
-p1 <- copykit::geneCopyPlot(breast_tumor,
-                            genes = c("KRAS",
-                                      "MYC",
-                                      "TP53",
-                                      "ERBB2"),
-                            label = "major_clusters")
+copykit::geneCopyPlot(breast_tumor,
+                      genes = c("KRAS",
+                                "MYC",
+                                "TP53",
+                                "ERBB2"),
+                      label = "major_clusters")
 
-p2 <-  copykit::geneCopyPlot(breast_tumor,
-                             genes = c("KRAS",
-                                       "MYC",
-                                       "TP53",
-                                       "ERBB2"),
-                             label = "minor_clusters")
+copykit::geneCopyPlot(breast_tumor,
+                      genes = c("KRAS",
+                                "MYC",
+                                "TP53",
+                                "ERBB2"),
+                      label = "minor_clusters")
 
-p3 <-  copykit::geneCopyPlot(breast_tumor,
-                             genes = c("KRAS",
-                                       "MYC",
-                                       "TP53",
-                                       "ERBB2"),
-                             label = "spatial_location")
+copykit::geneCopyPlot(breast_tumor,
+                      genes = c("KRAS",
+                                "MYC",
+                                "TP53",
+                                "ERBB2"),
+                      label = "spatial_location")
 ```
 
-```{r echo = FALSE}
-library(patchwork)
-p1+p2+p3
-```
 
 
 

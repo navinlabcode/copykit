@@ -491,12 +491,12 @@ copykit::geneCopyPlot(breast_tumor,
 metadata (`SummarizedExperiment::colData()`).
 
 ``` r
-p1 <- copykit::geneCopyPlot(breast_tumor,
-                            genes = c("KRAS",
-                                      "MYC",
-                                      "TP53",
-                                      "ERBB2"),
-                            label = "major_clusters")
+copykit::geneCopyPlot(breast_tumor,
+                      genes = c("KRAS",
+                                "MYC",
+                                "TP53",
+                                "ERBB2"),
+                      label = "major_clusters")
 ```
 
     ## Coloring by: major_clusters
@@ -504,12 +504,12 @@ p1 <- copykit::geneCopyPlot(breast_tumor,
 ![](copykit_workflow_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
-p2 <-  copykit::geneCopyPlot(breast_tumor,
-                             genes = c("KRAS",
-                                       "MYC",
-                                       "TP53",
-                                       "ERBB2"),
-                             label = "minor_clusters")
+copykit::geneCopyPlot(breast_tumor,
+                      genes = c("KRAS",
+                                "MYC",
+                                "TP53",
+                                "ERBB2"),
+                      label = "minor_clusters")
 ```
 
     ## Coloring by: minor_clusters
@@ -517,16 +517,14 @@ p2 <-  copykit::geneCopyPlot(breast_tumor,
 ![](copykit_workflow_files/figure-gfm/unnamed-chunk-14-2.png)<!-- -->
 
 ``` r
-p3 <-  copykit::geneCopyPlot(breast_tumor,
-                             genes = c("KRAS",
-                                       "MYC",
-                                       "TP53",
-                                       "ERBB2"),
-                             label = "spatial_location")
+copykit::geneCopyPlot(breast_tumor,
+                      genes = c("KRAS",
+                                "MYC",
+                                "TP53",
+                                "ERBB2"),
+                      label = "spatial_location")
 ```
 
     ## Coloring by: spatial_location
 
 ![](copykit_workflow_files/figure-gfm/unnamed-chunk-14-3.png)<!-- -->
-
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
