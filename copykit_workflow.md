@@ -16,17 +16,6 @@ You can install the development version of CopyKit from github with:
 
     devtools::install_github("navinlabcode/copykit")
 
-# Getting Started
-
-**CopyKit** provides a toolkit for the analysis of single-cell copy
-number datasets. It includes functions to read data from
-[Varbin](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4417119/) or [10X
-CNA datasets](https://www.10xgenomics.com/solutions/single-cell-cnv/).
-
-A common workflow with **CopyKit** consists in reading the dataset and
-using to filter the noisy cells out, clustering and plotting heatmaps
-for further analysis.
-
 ## Reading Varbin dataset
 
 Datasets generated with the varbin pipeline can be read with the
@@ -158,7 +147,7 @@ copykit::plotMetrics(breast_tumor)
 
 ![](copykit_workflow_files/figure-gfm/plot_metrics-1.png)<!-- -->
 
-`copykit::plotMetrics()` can color information regarding any column
+`copykit::plotMetrics()` can color information according to any column
 available in the metadata.
 
 ``` r
@@ -486,14 +475,58 @@ copykit::plotRatioPlot(breast_tumor,
 
 It might be of interest to check for the heterogeneity in the number of
 copies across all the samples for different genes. **CopyKit** provides
-the function `geneCopyPlot()`.
+the function `geneCopyPlot()`. With two different geoms: “swarm”
+(default) or “violin”.
 
 ``` r
 copykit::geneCopyPlot(breast_tumor,
+                      geom = "violin",
                       genes = c("KRAS",
                                 "MYC",
                                 "TP53",
                                 "ERBB2"))
 ```
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+`geneCopyPlot()` can also be colored by any information available in the
+metadata (`SummarizedExperiment::colData()`).
+
+``` r
+p1 <- copykit::geneCopyPlot(breast_tumor,
+                            genes = c("KRAS",
+                                      "MYC",
+                                      "TP53",
+                                      "ERBB2"),
+                            label = "major_clusters")
+```
+
+    ## Coloring by: major_clusters
+
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+``` r
+p2 <-  copykit::geneCopyPlot(breast_tumor,
+                             genes = c("KRAS",
+                                       "MYC",
+                                       "TP53",
+                                       "ERBB2"),
+                             label = "minor_clusters")
+```
+
+    ## Coloring by: minor_clusters
+
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-14-2.png)<!-- -->
+
+``` r
+p3 <-  copykit::geneCopyPlot(breast_tumor,
+                             genes = c("KRAS",
+                                       "MYC",
+                                       "TP53",
+                                       "ERBB2"),
+                             label = "spatial_location")
+```
+
+    ## Coloring by: spatial_location
+
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-14-3.png)<!-- -->
+
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->

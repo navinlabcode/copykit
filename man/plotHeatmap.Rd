@@ -8,6 +8,8 @@ plotHeatmap(scCNA, order_cells = "graph_search")
 }
 \arguments{
 \item{scCNA}{scCNA object.}
+
+\item{order_cells}{Methods to order the cells within the heatmap. Accepted values are "phylogeny", "hclust", "graph_search". Defaults to "phylogeny".}
 }
 \value{
 A heatmap visualization.

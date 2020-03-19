@@ -226,16 +226,44 @@ copykit::plotRatioPlot(breast_tumor,
 
 # Visualize specific genes
 
-It might be of interest to check for the heterogeneity in the number of copies across all the samples for different genes. **CopyKit** provides the function `geneCopyPlot()`.
+It might be of interest to check for the heterogeneity in the number of copies across all the samples for different genes. **CopyKit** provides the function `geneCopyPlot()`. With two different geoms: "swarm" (default) or "violin".
 ```{r}
 copykit::geneCopyPlot(breast_tumor,
+                      geom = "violin",
                       genes = c("KRAS",
                                 "MYC",
                                 "TP53",
                                 "ERBB2"))
 ```
 
+`geneCopyPlot()` can also be colored by any information available in the metadata (`SummarizedExperiment::colData()`). 
+```{r}
+p1 <- copykit::geneCopyPlot(breast_tumor,
+                            genes = c("KRAS",
+                                      "MYC",
+                                      "TP53",
+                                      "ERBB2"),
+                            label = "major_clusters")
 
+p2 <-  copykit::geneCopyPlot(breast_tumor,
+                             genes = c("KRAS",
+                                       "MYC",
+                                       "TP53",
+                                       "ERBB2"),
+                             label = "minor_clusters")
+
+p3 <-  copykit::geneCopyPlot(breast_tumor,
+                             genes = c("KRAS",
+                                       "MYC",
+                                       "TP53",
+                                       "ERBB2"),
+                             label = "spatial_location")
+```
+
+```{r echo = FALSE}
+library(patchwork)
+p1+p2+p3
+```
 
 
 
