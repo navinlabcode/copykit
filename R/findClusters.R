@@ -71,7 +71,7 @@ findClusters <- function(scCNA,
       paste(LETTERS[as.numeric(y)], collapse = ''))
 
   #minor
-  leid_obj <- try(leiden_find_partition(
+  leid_obj <- try(leidenbase::leiden_find_partition(
     g_minor,
     partition_type = 'RBConfigurationVertexPartition',
     resolution_parameter = 1,
