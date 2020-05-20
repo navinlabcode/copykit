@@ -21,6 +21,12 @@ devtools::install_github("navinlabcode/copykit")
 library(copykit)
 ```
 
+CopyKit requires instalattion of the `leidenbase` package from Cole Trapnell lab. please install with prior to using CopyKit.
+```{r eval = FALSE}
+devtools::install_github('cole-trapnell-lab/leidenbase')
+```
+
+
 ## Reading Varbin dataset
 
   Datasets generated with the varbin pipeline can be read with the function `readVarbinCNA()`. It creates an S4 class `scCNA` from the output directory of the copy number pipeline.
@@ -34,7 +40,8 @@ library(copykit)
   It is possible to exclude the information from ChrY (important when working with XX samples) by setting the argument `remove_Y` to `TRUE`. Ex: `readVarbinCNA("~/path_to_varbin_output/", remove_Y = TRUE)`.
 
 ``` {r reading_data, eval = FALSE, warning=FALSE}
-breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/")
+breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/", 
+                                       remove_Y = TRUE)
 ```
 
 ```{r echo = FALSE, warning=FALSE}

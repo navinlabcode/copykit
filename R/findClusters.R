@@ -15,17 +15,14 @@
 #' @return Metadata cluster information that can be found in \code{SummarizedExperiment::colData(scCNA)$major_clusters} for the major clusters and \code{SummarizedExperiment::colData(scCNA)$minor_clusters} for the minor clusters. Major clusters are named with capital letters whereas minor clusters are named with a numbers but as a character vector.
 #'
 #' @export
+#' @import leidenbase
 #'
 #' @examples
 
 findClusters <- function(scCNA,
-                         k_major = 35,
-                         k_minor = 21,
+                         k_major = NULL,
+                         k_minor = NULL,
                          seed = 17) {
-  # checks
-  if (!is.numeric(k_minor) || !is.numeric(k_major)) {
-    stop("k_minor and k_major must be numeric values.")
-  }
 
   # obtaining data from reducedDim slot
   if (!is.null(SingleCellExperiment::reducedDim(scCNA))) {
@@ -35,6 +32,20 @@ findClusters <- function(scCNA,
 
   } else
     stop("Reduced dimensions slot is NULL. Use runUmap() to create it.")
+
+  # settting k defaults
+  if (is.null(k_major)) {
+    k_major <- 0.05*nrow(umap_df)
+  }
+
+  if (is.null(k_minor)) {
+    k_minor <- 0.02*nrow(umap_df)
+  }
+
+  # checks
+  if (!is.numeric(k_minor) || !is.numeric(k_major)) {
+    stop("k_minor and k_major must be numeric values.")
+  }
 
   # building graph
   message("Building SNN graph.")
@@ -60,7 +71,16 @@ findClusters <- function(scCNA,
       paste(LETTERS[as.numeric(y)], collapse = ''))
 
   #minor
-  leid <- leiden::leiden(g_adj, seed = seed)
+  leid_obj <- try(leiden_find_partition(
+    g_minor,
+    partition_type = 'RBConfigurationVertexPartition',
+    resolution_parameter = 1,
+    seed=seed))
+  if (inherits(leid_obj, "try-error")) {
+    stop('Running leiden failed.')
+  } else {
+    leid <- leid_obj$membership
+  }
 
   # storing info
   SummarizedExperiment::colData(scCNA)$major_clusters <- g_clusters
