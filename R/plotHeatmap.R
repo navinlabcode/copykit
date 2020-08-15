@@ -147,7 +147,7 @@ plotHeatmap <- function(scCNA,
 
 
   # plotting
-  if (is.null(SummarizedExperiment::colData(scCNA)$minor_clusters)) {
+  if (is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
     # plotting without clusters
 
     message("No cluster information detected, use findClusters() to create it.")
@@ -178,14 +178,14 @@ plotHeatmap <- function(scCNA,
     metadata <- metadata[rownames(seg_data_ordered), ]
 
     metadata_anno_df <- metadata %>%
-      dplyr::select(major_clusters,
-                    minor_clusters)
+      dplyr::select(superclones,
+                    subclones)
 
     cluster_anno <-
       ComplexHeatmap::rowAnnotation(
         df = metadata_anno_df,
-        col = list(major_clusters = major_palette,
-                   minor_clusters = minor_palette),
+        col = list(superclones = major_palette,
+                   subclones = minor_palette),
         show_annotation_name = FALSE
       )
 

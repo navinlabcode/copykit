@@ -12,6 +12,7 @@
 #' @export
 #'
 #' @import uwot
+#' @import ggnewscale
 #' @examples
 #'
 
@@ -32,7 +33,6 @@ plotUmap <- function(scCNA,
       axis.ticks.y = element_blank(),
       axis.line = element_blank(),
       legend.position = "right",
-      legend.title = element_blank(),
       legend.text = element_text(size = 14)
     ),
     xlab("umap1"),
@@ -58,7 +58,7 @@ plotUmap <- function(scCNA,
 
   message("Plotting Umap.")
 
-  if (is.null(label) && is.null(SummarizedExperiment::colData(scCNA)$minor_clusters)) {
+  if (is.null(label) && is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
     # if label is not provided and clusters were not run
 
     message("No cluster information detected, use findClusters() to create it.")
@@ -68,7 +68,7 @@ plotUmap <- function(scCNA,
       theme_classic() +
       my_theme
 
-  } else if (is.null(label) && !is.null(SummarizedExperiment::colData(scCNA)$minor_clusters)) {
+  } else if (is.null(label) && !is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
     # if label is not provided but findClusters was run
 
     message("Using colData(scCNA) cluster information.")
@@ -78,18 +78,20 @@ plotUmap <- function(scCNA,
         aes(
           x = V1,
           y = V2,
-          color = SummarizedExperiment::colData(scCNA)$major_clusters
+          color = SummarizedExperiment::colData(scCNA)$superclones
         ),
         alpha = 1,
         size = 10
       ) +
+      scale_color_manual(values = c(major_palette)) +
+      ggnewscale::new_scale_color() +
       geom_point(aes(
         x = V1,
         y = V2,
-        color = as.factor(SummarizedExperiment::colData(scCNA)$minor_clusters)
+        color = as.factor(SummarizedExperiment::colData(scCNA)$subclones)
       ),
       alpha = .8) +
-    scale_color_manual(values = c(major_palette, minor_palette)) + # palettes are in sysdata.rda
+    scale_color_manual(values = c(minor_palette)) + # palettes are in sysdata.rda
     theme_classic() +
       my_theme
 

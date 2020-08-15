@@ -84,8 +84,8 @@ runMetrics <- function(scCNA,
     })
 
   brkpt_by_chrom_df <- dplyr::bind_rows(brkpt_by_chrom) %>%
+    t() %>%
     as.data.frame()
-  rownames(brkpt_by_chrom_df) <- colnames(dat_seg_cp)
 
   brkpt_by_chrom_l <- brkpt_by_chrom_df %>%
     tibble::rownames_to_column(var = "sample") %>%

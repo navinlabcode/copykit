@@ -55,7 +55,8 @@ Imports:
     stringr,
     Metrics,
     ggbeeswarm,
-    leidenbase
+    leidenbase,
+    dbscan
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr
 Depends: 
