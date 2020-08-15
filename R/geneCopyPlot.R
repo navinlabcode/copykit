@@ -169,7 +169,7 @@ geneCopyPlot <- function(scCNA,
                        var = label)
 
 
-   if (label == "major_clusters") {
+   if (label == "superclones") {
       # coloring for discrete variable label
       p <- p +
         ggbeeswarm::geom_quasirandom(aes(color = rep(lab,
@@ -182,7 +182,7 @@ geneCopyPlot <- function(scCNA,
 
       print(p)
 
-    } else if (label == "minor_clusters") {
+    } else if (label == "subclones") {
       # coloring for discrete variable label
       p <- p +
         ggbeeswarm::geom_quasirandom(aes(color = as.character(rep(lab,
