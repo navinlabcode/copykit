@@ -45,8 +45,6 @@ breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/",
 ```
 
 ```{r echo = FALSE, warning=FALSE}
-library(reticulate)
-use_python("/volumes/lab/users/dminussi/software/pythonenv/env/bin/python", required = T)
 suppressPackageStartupMessages(library(tidyverse))
 dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/"
 breast_tumor <- copykit::readVarbinCNA(dir, remove_Y = TRUE)
