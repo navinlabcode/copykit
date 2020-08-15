@@ -8,18 +8,23 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
+#' @param method Which method should be used for clustering, options are "hdbscan" or "leiden". Defaults to "hdbscan".
 #' @param k_major k-nearest-neighbor value that will be used to find the major clusters. Must be higher than k_minor (Defaults to 35).
 #' @param k_minor k-nearest-neighbor value that will be used to find the minor clusters (Defaults to 21).
 #' @param seed Seed passed on to leiden algorithm (Defaults to 17).
 #'
-#' @return Metadata cluster information that can be found in \code{SummarizedExperiment::colData(scCNA)$major_clusters} for the major clusters and \code{SummarizedExperiment::colData(scCNA)$minor_clusters} for the minor clusters. Major clusters are named with capital letters whereas minor clusters are named with a numbers but as a character vector.
+#' @return Metadata cluster information that can be found in \code{SummarizedExperiment::colData(scCNA)$superclones} for the major clusters and \code{SummarizedExperiment::colData(scCNA)$subclones} for the minor clusters. Major clusters are named with capital letters whereas minor clusters are named with a numbers but as a character vector.
 #'
 #' @export
 #' @import leidenbase
+#' @importFrom tidyr gather
+#' @importFrom dbscan hdbscan
+#' @importFrom tibble rownames_to_column
 #'
 #' @examples
 
 findClusters <- function(scCNA,
+                         method = "hdbscan",
                          k_major = NULL,
                          k_minor = NULL,
                          seed = 17) {
@@ -64,30 +69,80 @@ findClusters <- function(scCNA,
 
   # finding clusters
   #  major
-  message("Finding clusters.")
-  g_clusters <- igraph::membership(igraph::components(g_major))
-  g_clusters <-
-    sapply(strsplit(paste(g_clusters), ''), function(y)
+  message(paste("Finding clusters, using method:", method))
+  superclones <- igraph::membership(igraph::components(g_major))
+  superclones <-
+    sapply(strsplit(paste(superclones), ''), function(y)
       paste(LETTERS[as.numeric(y)], collapse = ''))
 
-  #minor
-  leid_obj <- try(leidenbase::leiden_find_partition(
-    g_minor,
-    partition_type = 'RBConfigurationVertexPartition',
-    resolution_parameter = 1,
-    seed=seed))
-  if (inherits(leid_obj, "try-error")) {
-    stop('Running leiden failed.')
-  } else {
-    leid <- leid_obj$membership
+  # using leiden
+  if (method == "leiden") {
+    #minor
+    leid_obj <- try(leidenbase::leiden_find_partition(
+      g_minor,
+      partition_type = 'RBConfigurationVertexPartition',
+      resolution_parameter = 1,
+      seed=seed))
+    if (inherits(leid_obj, "try-error")) {
+      stop('Running leiden failed.')
+    } else {
+      subclones <- leid_obj$membership
+    }
+  }
+
+  # using hdbscan
+  if (method == "hdbscan") {
+
+    set.seed(seed)
+    hdb <- dbscan::hdbscan(umap_df,
+                           minPts = k_minor)
+    hdb_clusters <- as.character(hdb$cluster)
+
+    # hdbscan is an outlier aware clustering algorithm. Copykit assumes that filterCells already took care of removing bad cells
+    # this is why any outlier is added to the ones classified as outliers to the closest cluster possible according to euclidean distance
+
+    dist_umap <- dist(umap_df) %>%
+      as.matrix() %>%
+      as.data.frame() %>%
+      tibble::rownames_to_column("cell2") %>%
+      tidyr::gather(key = "cell1",
+                    value = "dist",
+                    -cell2) %>%
+      dplyr::filter(cell1 != cell2)
+
+    hdb_df <- data.frame(cell = rownames(umap_df),
+                         hdb = hdb_clusters)
+
+    dist_min <- dist_umap %>%
+      right_join(hdb_df, by = c("cell2" = "cell")) %>%
+      filter(hdb != "0") %>%
+      group_by(cell1) %>%
+      slice_min(dist) %>%
+      ungroup()
+
+    for (i in 1:nrow(umap_df)) {
+
+      if(hdb_df$hdb[i] == "0") {
+        cellname <- rownames(umap_df)[i]
+        closest_cell <- filter(dist_min, cell1 == rownames(umap_df)[i])$cell2
+        closest_cell_cluster <- filter(hdb_df, cell == closest_cell)$hdb
+        hdb_df$hdb[i] <- closest_cell_cluster
+      }
+
+      subclones <- hdb_df$hdb
+
+    }
+
   }
 
   # storing info
-  SummarizedExperiment::colData(scCNA)$major_clusters <- g_clusters
-  SummarizedExperiment::colData(scCNA)$minor_clusters <- leid
+  SummarizedExperiment::colData(scCNA)$superclones <- superclones
+  SummarizedExperiment::colData(scCNA)$subclones <- subclones
 
   message("Done.")
 
   return(scCNA)
 
 }
+
+
