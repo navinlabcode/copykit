@@ -83,7 +83,8 @@ plotUmap <- function(scCNA,
         alpha = 1,
         size = 10
       ) +
-      scale_color_manual(values = c(major_palette)) +
+      scale_color_manual(values = c(major_palette),
+                         name = "superclones") +
       ggnewscale::new_scale_color() +
       geom_point(aes(
         x = V1,
@@ -91,7 +92,8 @@ plotUmap <- function(scCNA,
         color = as.factor(SummarizedExperiment::colData(scCNA)$subclones)
       ),
       alpha = .8) +
-    scale_color_manual(values = c(minor_palette)) + # palettes are in sysdata.rda
+    scale_color_manual(values = c(minor_palette),
+                       name = "subclones") + # palettes are in sysdata.rda
     theme_classic() +
       my_theme
 
