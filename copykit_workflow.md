@@ -16,6 +16,13 @@ You can install the development version of CopyKit from github with:
 
     devtools::install_github("navinlabcode/copykit")
 
+CopyKit requires instalattion of the `leidenbase` package from Cole
+Trapnell lab. please install with prior to using CopyKit.
+
+``` r
+devtools::install_github('cole-trapnell-lab/leidenbase')
+```
+
 ## Reading Varbin dataset
 
 Datasets generated with the varbin pipeline can be read with the
@@ -39,7 +46,8 @@ working with XX samples) by setting the argument `remove_Y` to `TRUE`.
 Ex: `readVarbinCNA("~/path_to_varbin_output/", remove_Y = TRUE)`.
 
 ``` r
-breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/")
+breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/", 
+                                       remove_Y = TRUE)
 ```
 
     ## Importing segment ratios.
@@ -296,7 +304,7 @@ plotUmap(breast_tumor)
 
     ## No cluster information detected, use findClusters() to create it.
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 `plotUmap()` can also be used to display information according to the
 metadata
@@ -336,9 +344,13 @@ plotUmap(breast_tumor,
 **CopyKit** uses a graph based approacht to search for clusters in the
 scCNA dataset. `findClusters()` builds an SNN graph of the k-nearest
 neighbors and attempts to find two different level of clustering: Major
-and minor subpopulations. Major clusters are found by looking at the
-graph connected components, whereas minor clusters uses the Leiden
-algorithm to detect connected communities within the major clusters. To
+and minor subpopulations. Superclones are found by looking at the graph
+connected components and aim to identify the groups with largest copy
+number variations, whereas subclusters uses the
+[hdbscan](https://hdbscan.readthedocs.io/en/latest/how_hdbscan_works.html)
+algorithm to detect connected communities within the major clusters as
+default, but the option to use the leiden algorithm is also implemented.
+Subclones aim to find smaller differences within those superclones. To
 run `findClusters()` you first need `runUmap()`. **CopyKit** applies the
 clustering on top of the UMAP embedding. Check
 `?copykit::findClusters()` for help on how to change the clustering
@@ -350,7 +362,7 @@ breast_tumor <- copykit::findClusters(breast_tumor)
 
     ## Building SNN graph.
 
-    ## Finding clusters.
+    ## Finding clusters, using method: hdbscan
 
     ## Done.
 
@@ -386,14 +398,14 @@ head(SummarizedExperiment::colData(breast_tumor))
     ## tn20_2_s2_c2_s386_r1_001  0.957232362114731        kept               s2
     ## tn20_2_s2_c20_s404_r1_001 0.960377831040763        kept               s2
     ## tn20_2_s2_c21_s405_r1_001 0.970281747303508        kept               s2
-    ##                           major_clusters minor_clusters
-    ##                              <character>      <numeric>
-    ## tn20_2_s2_c10_s394_r1_001              A              3
-    ## tn20_2_s2_c11_s395_r1_001              A              3
-    ## tn20_2_s2_c19_s403_r1_001              A             12
-    ## tn20_2_s2_c2_s386_r1_001               B              8
-    ## tn20_2_s2_c20_s404_r1_001              B              8
-    ## tn20_2_s2_c21_s405_r1_001              A              3
+    ##                           superclones subclones
+    ##                           <character>  <factor>
+    ## tn20_2_s2_c10_s394_r1_001           A        15
+    ## tn20_2_s2_c11_s395_r1_001           A        15
+    ## tn20_2_s2_c19_s403_r1_001           A        15
+    ## tn20_2_s2_c2_s386_r1_001            B        14
+    ## tn20_2_s2_c20_s404_r1_001           B        14
+    ## tn20_2_s2_c21_s405_r1_001           A        15
 
 `plotUmap()` will display cluster information if it is available.
 
@@ -405,7 +417,7 @@ plotUmap(breast_tumor)
 
     ## Using colData(scCNA) cluster information.
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 # Running phylogenetic analysis
 
@@ -430,7 +442,7 @@ Which can be easily visualized with
 plot(phylo(breast_tumor), cex = 0.1)
 ```
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 # Plotting heatmap
 
@@ -496,12 +508,12 @@ copykit::geneCopyPlot(breast_tumor,
                                 "MYC",
                                 "TP53",
                                 "ERBB2"),
-                      label = "major_clusters")
+                      label = "superclones")
 ```
 
-    ## Coloring by: major_clusters
+    ## Coloring by: superclones
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 copykit::geneCopyPlot(breast_tumor,
@@ -509,12 +521,12 @@ copykit::geneCopyPlot(breast_tumor,
                                 "MYC",
                                 "TP53",
                                 "ERBB2"),
-                      label = "minor_clusters")
+                      label = "subclones")
 ```
 
-    ## Coloring by: minor_clusters
+    ## Coloring by: subclones
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-14-2.png)<!-- -->
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->
 
 ``` r
 copykit::geneCopyPlot(breast_tumor,
@@ -527,4 +539,4 @@ copykit::geneCopyPlot(breast_tumor,
 
     ## Coloring by: spatial_location
 
-![](copykit_workflow_files/figure-gfm/unnamed-chunk-14-3.png)<!-- -->
+![](copykit_workflow_files/figure-gfm/unnamed-chunk-15-3.png)<!-- -->

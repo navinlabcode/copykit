@@ -46,7 +46,7 @@ breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/",
 
 ```{r echo = FALSE, warning=FALSE}
 suppressPackageStartupMessages(library(tidyverse))
-dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/"
+dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/TN20_output/"
 breast_tumor <- copykit::readVarbinCNA(dir, remove_Y = TRUE)
 ```
 
@@ -173,7 +173,7 @@ plotUmap(breast_tumor,
 # Finding clusters
 
 **CopyKit** uses a graph based approacht to search for clusters in the scCNA dataset. `findClusters()` builds an SNN graph of the k-nearest neighbors and attempts to find two different level of clustering: Major and minor subpopulations.
-Major clusters are found by looking at the graph connected components, whereas minor clusters uses the Leiden algorithm to detect connected communities within the major clusters.
+Superclones are found by looking at the graph connected components and aim to identify the groups with largest copy number variations, whereas subclusters uses the [hdbscan](https://hdbscan.readthedocs.io/en/latest/how_hdbscan_works.html) algorithm to detect connected communities within the major clusters as default, but the option to use the leiden algorithm is also implemented. Subclones aim to find smaller differences within those superclones.
 To run `findClusters()` you first need `runUmap()`. **CopyKit** applies the clustering on top of the UMAP embedding.
 Check `?copykit::findClusters()` for help on how to change the clustering parameters arguments.
 
@@ -248,14 +248,14 @@ copykit::geneCopyPlot(breast_tumor,
                                 "MYC",
                                 "TP53",
                                 "ERBB2"),
-                      label = "major_clusters")
+                      label = "superclones")
 
 copykit::geneCopyPlot(breast_tumor,
                       genes = c("KRAS",
                                 "MYC",
                                 "TP53",
                                 "ERBB2"),
-                      label = "minor_clusters")
+                      label = "subclones")
 
 copykit::geneCopyPlot(breast_tumor,
                       genes = c("KRAS",
