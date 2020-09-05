@@ -4,10 +4,18 @@
 \alias{findClusters}
 \title{Find Clusters}
 \usage{
-findClusters(scCNA, k_major = 35, k_minor = 21, seed = 17)
+findClusters(
+  scCNA,
+  method = "hdbscan",
+  k_major = NULL,
+  k_minor = NULL,
+  seed = 17
+)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
+
+\item{method}{Which method should be used for clustering, options are "hdbscan" or "leiden". Defaults to "hdbscan".}
 
 \item{k_major}{k-nearest-neighbor value that will be used to find the major clusters. Must be higher than k_minor (Defaults to 35).}
 
@@ -16,7 +24,7 @@ findClusters(scCNA, k_major = 35, k_minor = 21, seed = 17)
 \item{seed}{Seed passed on to leiden algorithm (Defaults to 17).}
 }
 \value{
-Metadata cluster information that can be found in \code{SummarizedExperiment::colData(scCNA)$major_clusters} for the major clusters and \code{SummarizedExperiment::colData(scCNA)$minor_clusters} for the minor clusters. Major clusters are named with capital letters whereas minor clusters are named with a numbers but as a character vector.
+Metadata cluster information that can be found in \code{SummarizedExperiment::colData(scCNA)$superclones} for the major clusters and \code{SummarizedExperiment::colData(scCNA)$subclones} for the minor clusters. Major clusters are named with capital letters whereas minor clusters are named with a numbers but as a character vector.
 }
 \description{
 Search for clusters in the scCNA data by using a graph based approach. \code{findClusters()} builds an SNN graph of the k-nearest neighbors and attempts to find two different configuration of clusters. Major and minor subpopulations.

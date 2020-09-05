@@ -18,6 +18,10 @@
 #' @export
 #' @import leidenbase
 #' @importFrom tidyr gather
+#' @importFrom dplyr filter slice_min group_by right_join
+#' @importFrom SingleCellExperiment reducedDim
+#' @importFrom SummarizedExperiment colData
+#' @importFrom scran buildSNNGraph
 #' @importFrom dbscan hdbscan
 #' @importFrom tibble rownames_to_column
 #'
@@ -114,18 +118,18 @@ findClusters <- function(scCNA,
                          hdb = hdb_clusters)
 
     dist_min <- dist_umap %>%
-      right_join(hdb_df, by = c("cell2" = "cell")) %>%
-      filter(hdb != "0") %>%
-      group_by(cell1) %>%
-      slice_min(dist) %>%
+      dplyr::right_join(hdb_df, by = c("cell2" = "cell")) %>%
+      dplyr::filter(hdb != "0") %>%
+      dplyr::group_by(cell1) %>%
+      dplyr::slice_min(dist) %>%
       ungroup()
 
     for (i in 1:nrow(umap_df)) {
 
       if(hdb_df$hdb[i] == "0") {
         cellname <- rownames(umap_df)[i]
-        closest_cell <- filter(dist_min, cell1 == rownames(umap_df)[i])$cell2
-        closest_cell_cluster <- filter(hdb_df, cell == closest_cell)$hdb
+        closest_cell <- dplyr::filter(dist_min, cell1 == rownames(umap_df)[i])$cell2
+        closest_cell_cluster <- dplyr::filter(hdb_df, cell == closest_cell)$hdb
         hdb_df$hdb[i] <- closest_cell_cluster
       }
 
