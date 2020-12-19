@@ -39,7 +39,7 @@ findOptimalK <- function(scCNA,
       dist_umap <-
         dist(tmp_data_df[, c(1:2)]) %>% as.matrix() %>% as.data.frame() %>%
         rownames_to_column("cell2") %>%
-        dplyr::gather(key = "cell1",
+        tidyr::gather(key = "cell1",
                value = "dist",-cell2) %>%
         dplyr::filter(cell1 != cell2)
 
