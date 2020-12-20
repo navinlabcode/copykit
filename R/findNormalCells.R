@@ -18,7 +18,7 @@ findNormalCells <- function(scCNA) {
 
   seg <- segment_ratios(scCNA) %>% t() %>% as.data.frame()
 
-  seg_cl <- split(seg, colData(scCNA)$subclones)
+  seg_cl <- split(seg, as.character(colData(scCNA)$subclones))
 
   seg_cl_complete <- bind_rows(seg_cl, .id = "cluster")
 
