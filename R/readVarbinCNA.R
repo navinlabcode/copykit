@@ -11,6 +11,7 @@
 #' @param remove_Y (default == FALSE) If set to TRUE, removes information from the chrY from the dataset.
 #' @param genome_version Name of the genome assembly. Default: 'hg19'.
 #' @param bin_size The resolution of the VarBin method. Default: '200k'. Available options: '100k', '200k'.
+#' @param clean_names Clean sample names using \code{\link{janitor::clean_names}}.
 #' @return Segment ratios can be acessed with \code{copykit::segment_ratios}.
 #' @return Ratios can be acessed with \code{copykit::ratios}.
 #' @return Bin counts can be acessed with \code{copykit::bin_counts}.
@@ -29,7 +30,8 @@
 readVarbinCNA <- function(dir,
                           remove_Y = FALSE,
                           genome_version = c('hg19'),
-                          bin_size = c('200k', '100k')) {
+                          bin_size = c('200k', '100k'),
+                          clean_names = TRUE) {
   # Reads a copy number directory and produces
   # a scCNA object as output
 
@@ -66,9 +68,11 @@ readVarbinCNA <- function(dir,
     ),
     showProgress = TRUE,
     integer64 = "double") %>%
-    janitor::clean_names() %>%
     as.data.frame()
 
+  if (clean_names == TRUE) {
+    dat <- janitor::clean_names(dat)
+  }
 
   if (remove_Y == TRUE) {
     dat <- dat %>%
@@ -113,8 +117,11 @@ readVarbinCNA <- function(dir,
   ),
   showProgress = TRUE,
   integer64 = "double") %>%
-    janitor::clean_names() %>%
     as.data.frame()
+
+  if (clean_names == TRUE) {
+    dat_bin <- janitor::clean_names(dat_bin)
+  }
 
   if (remove_Y == TRUE) {
     dat_bin <- dat_bin %>%
@@ -196,10 +203,14 @@ readVarbinCNA <- function(dir,
         showProgress = TRUE,
         integer64 = "double"
       ) %>%
-        janitor::clean_names() %>%
         dplyr::rename(sample = "sample_name") %>%
-        dplyr::mutate(sample = janitor::make_clean_names(sample)) %>%
         as.data.frame()
+
+      if (clean_names == TRUE) {
+        dat_metrics <- dat_metrics %>%
+          janitor::clean_names() %>%
+          dplyr::mutate(sample = janitor::make_clean_names(sample))
+      }
 
       # adding metrics to metadata
       # making sure they have the same order
