@@ -203,12 +203,13 @@ readVarbinCNA <- function(dir,
         showProgress = TRUE,
         integer64 = "double"
       ) %>%
-        dplyr::rename(sample = "sample_name") %>%
+        dplyr::rename(sample = "Sample Name")
         as.data.frame()
 
       if (clean_names == TRUE) {
         dat_metrics <- dat_metrics %>%
           janitor::clean_names() %>%
+          dplyr::rename(sample = "sample_name") %>%
           dplyr::mutate(sample = janitor::make_clean_names(sample))
       }
 
