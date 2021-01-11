@@ -11,7 +11,6 @@
 #' @param scCNA scCNA object.
 #' @param k K-nearest-neighbor, defaults to 5.
 #' @param resolution Set's how strict the correlation cut off will be. Defaults to 0.8.
-#' @param n_threads Number of parallel threads to calculate distances with \code{amap::Dist()}. Defaults to 1/4 of the cores available in your system.
 #'
 #' @return Adds a filtered cells label to the scCNA metadata. Cells that pass the filtering criteria receive the label "kept", whereas cells that do not pass the filtering criteria receive the label "removed".
 #' @return Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
@@ -23,12 +22,7 @@
 
 filterCells <- function(scCNA,
                         k = 5,
-                        resolution = 0.8,
-                        n_threads = parallel::detectCores() / 4) {
-  # checks
-  if (n_threads < 1) {
-    n_threads <- 1
-  }
+                        resolution = 0.8) {
 
   if (!is.numeric(resolution)) {
     stop("Resolution needs to be a number between 0 and 1")
@@ -41,6 +35,15 @@ filterCells <- function(scCNA,
   seg <- copykit::segment_ratios(scCNA)
 
   message("Calculating correlation matrix.")
+
+  # correction to avoid correlations calculations with standard deviation zero
+  zero_sd_idx <- which(apply(seg,2,sd) == 0)
+
+  if (length(zero_sd_idx) >=1) {
+    seg[1,zero_sd_idx] <- seg[1,zero_sd_idx]+1e-3
+  }
+
+  # calculating correlations
   dst <- cor(seg)
   dst_knn_df <- apply(as.matrix(dst), 1, function(x) {
     mean(sort(x, decreasing = T)[2:(k + 1)])
