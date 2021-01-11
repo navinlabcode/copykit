@@ -177,6 +177,12 @@ Superclones are found by looking at the graph connected components and aim to id
 To run `findClusters()` you first need `runUmap()`. **CopyKit** applies the clustering on top of the UMAP embedding.
 Check `?copykit::findClusters()` for help on how to change the clustering parameters arguments.
 
+```{r}
+findOptimalK(breast_tumor,
+             k_range = 13:30)
+```
+
+
 ```{r warning=FALSE }
 breast_tumor <- copykit::findClusters(breast_tumor)
 ```

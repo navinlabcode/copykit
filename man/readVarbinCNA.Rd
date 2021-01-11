@@ -8,7 +8,8 @@ readVarbinCNA(
   dir,
   remove_Y = FALSE,
   genome_version = c("hg19"),
-  bin_size = c("200k", "100k")
+  bin_size = c("200k", "100k"),
+  clean_names = TRUE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ readVarbinCNA(
 \item{genome_version}{Name of the genome assembly. Default: 'hg19'.}
 
 \item{bin_size}{The resolution of the VarBin method. Default: '200k'. Available options: '100k', '200k'.}
+
+\item{clean_names}{Clean sample names using \code{\link{janitor::clean_names}}.}
 }
 \value{
 Segment ratios can be acessed with \code{copykit::segment_ratios}.

@@ -5,7 +5,11 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param order_cells Methods to order the cells within the heatmap. Accepted values are "phylogeny", "hclust", "graph_search". Defaults to "phylogeny".
+#' @param order_cells Methods to order the cells within the heatmap. Accepted values are "phylogeny", "hclust", "graph_search". Defaults to "hclust".
+#' @param label Character. Annotate heatmap by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
+#' @param label_colors List. Named list with colors for the label annotation. Must match label length
+#' @param row_split Character. Element of the metadata to split the heatmap. Must have length = 1.
+#' @param use_default_colors Boolean. Use the default colors when annotating superclones, subclones or filtering.
 #'
 #' @return A heatmap visualization.
 #'
@@ -16,9 +20,31 @@
 #'
 
 plotHeatmap <- function(scCNA,
-                        order_cells = "graph_search") {
+                        order_cells = "hclust",
+                        label = NULL,
+                        label_colors = NULL,
+                        use_default_colors = TRUE,
+                        row_split = NULL) {
+  # check annotation colors
+  if (is.null(label) & !is.null(label_colors)) {
+    stop("Please provide a label argument if colors are being specified for it.")
+  }
 
-    #obtaining data
+  if (!is.null(label_colors) & !is.list(label_colors)) {
+    stop("label_colors argument must be a named list.")
+  }
+
+  if (!is.null(label_colors)) {
+    if (length(label_colors) != length(label)) {
+      stop("Label and Label colors arguments must have the same length.")
+    }
+  }
+
+  if (!is.character(label)) {
+    stop("Label must be a character vector.")
+  }
+
+  #obtaining data
   seg_data <- t(segment_ratios(scCNA))
 
   #chromosome bar aesthetic
@@ -58,7 +84,7 @@ plotHeatmap <- function(scCNA,
     ComplexHeatmap::HeatmapAnnotation(
       chr_text = ComplexHeatmap::anno_text(v[1:ncol(seg_data)],
                                            gp = grid::gpar(fontsize = 14)),
-      df = as.character(chr[1:nrow(chr),]),
+      df = as.character(chr[1:nrow(chr), ]),
       show_legend = FALSE,
       show_annotation_name = FALSE,
       which = "column",
@@ -85,7 +111,7 @@ plotHeatmap <- function(scCNA,
     tree_tips_order <- tree$tip.label[ordered_tips_index] %>% rev()
 
     # ordering data
-    seg_data_ordered <- seg_data[tree_tips_order, ]
+    seg_data_ordered <- seg_data[tree_tips_order,]
 
   }
 
@@ -106,12 +132,11 @@ plotHeatmap <- function(scCNA,
     hc <- fastcluster::hclust(distMat(scCNA),
                               method = "ward.D2")
 
-    seg_data_ordered <- seg_data[hc$order, ]
+    seg_data_ordered <- seg_data[hc$order,]
 
   }
 
   if (order_cells == "graph_search") {
-
     if (is.null(SingleCellExperiment::reducedDim(scCNA,
                                                  'umap',
                                                  withDimnames = F))) {
@@ -126,9 +151,11 @@ plotHeatmap <- function(scCNA,
       }
     )
 
-    if(igraph::gorder(graph(scCNA)) != ncol(copykit::segment_ratios(scCNA))) {
-      stop("Number of vertices in graph different than number of samples.
-           Please run copykit::findClusters() and try again.")
+    if (igraph::gorder(graph(scCNA)) != ncol(copykit::segment_ratios(scCNA))) {
+      stop(
+        "Number of vertices in graph different than number of samples.
+           Please run copykit::findClusters() and try again."
+      )
     }
 
     umap_df <-
@@ -140,17 +167,14 @@ plotHeatmap <- function(scCNA,
 
     g_ord <- as.numeric(g_bs$order)
 
-    seg_data_ordered <- seg_data[g_ord, ]
+    seg_data_ordered <- seg_data[g_ord,]
 
   }
 
-
-
   # plotting
-  if (is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
+  if (is.null(label)) {
     # plotting without clusters
 
-    message("No cluster information detected, use findClusters() to create it.")
     message("Plotting Heatmap.")
 
     ComplexHeatmap::Heatmap(
@@ -172,43 +196,76 @@ plotHeatmap <- function(scCNA,
     )
   } else {
     #cluster annotation
+
+    # retrieving metadata
     metadata <- SummarizedExperiment::colData(scCNA) %>%
       as.data.frame()
 
     metadata <- metadata[rownames(seg_data_ordered), ]
 
     metadata_anno_df <- metadata %>%
-      dplyr::select(superclones,
-                    subclones)
+      dplyr::select(dplyr::all_of(label))
 
-    cluster_anno <-
-      ComplexHeatmap::rowAnnotation(
-        df = metadata_anno_df,
-        col = list(superclones = major_palette,
-                   subclones = minor_palette),
-        show_annotation_name = FALSE
+    if (use_default_colors == TRUE) {
+      label_colors <- c(
+        list(superclones = major_palette,
+             subclones = minor_palette,
+             filtered = c("kept" = "green2",
+                          "removed" = "firebrick3")),
+        label_colors
       )
+    }
 
-    #plotting
-    ComplexHeatmap::Heatmap(
-      log2(seg_data_ordered + 1e-3),
-      use_raster = TRUE,
-      left_annotation = cluster_anno,
-      column_title = "Genomic coordinates",
-      column_title_gp = grid::gpar(fontsize = 18),
-      column_title_side = "bottom",
-      row_title = "Single-Cells",
-      row_title_gp = grid::gpar(fontsize = 18),
-      heatmap_legend_param = list(title = "log2(segratio)"),
-      top_annotation = chr_bar,
-      cluster_rows = FALSE,
-      border = TRUE,
-      cluster_columns = FALSE,
-      show_column_names = FALSE,
-      show_row_names = FALSE,
-      show_heatmap_legend = TRUE
-    )
+    if (is.null(label_colors)) {
+      cluster_anno <-
+        ComplexHeatmap::rowAnnotation(df = metadata_anno_df,
+                                      show_annotation_name = FALSE)
+    } else {
+      cluster_anno <-
+        ComplexHeatmap::rowAnnotation(df = metadata_anno_df,
+                                      col = label_colors,
+                                      show_annotation_name = FALSE)
+    }
 
+  }
+
+  #plotting
+  complex_args <- list(
+    use_raster = TRUE,
+    left_annotation = cluster_anno,
+    column_title = "Genomic coordinates",
+    column_title_gp = grid::gpar(fontsize = 18),
+    column_title_side = "bottom",
+    row_title = "Single-Cells",
+    row_title_gp = grid::gpar(fontsize = 18),
+    heatmap_legend_param = list(title = "log2 (segratio)"),
+    top_annotation = chr_bar,
+    cluster_rows = FALSE,
+    border = TRUE,
+    cluster_columns = FALSE,
+    show_column_names = FALSE,
+    show_row_names = FALSE,
+    show_heatmap_legend = TRUE
+  )
+
+
+  if (!is.null(row_split)) {
+    if (length(row_split) > 1) {
+      stop("row_split length must be 1")
+    } else {
+      do.call(ComplexHeatmap::Heatmap,
+              c(
+                list(
+                  matrix = log2(seg_data_ordered + 1e-3),
+                  row_split = dplyr::pull(metadata_anno_df, row_split)
+                ),
+                complex_args
+              ))
+    }
+  } else {
+    do.call(ComplexHeatmap::Heatmap, c(list(matrix = log2(
+      seg_data_ordered + 1e-3
+    )), complex_args))
   }
 
 }
