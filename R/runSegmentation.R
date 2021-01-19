@@ -4,13 +4,33 @@
 #'
 #' @param scCNA The scCNA object
 #' @param method Character. Segmentation method of choice.
+#' @param n_threads Number of threads used to calculate the distance matrix. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.
 #'
 #' @return The segment profile for all cells inside the scCNA object. Can be retrieved with \link{\code{copykit::segment_ratios()}}
 #' @export
 #'
 #' @examples
 runSegmentation <- function(scCNA,
-                            method = "CBS") {
+                            method = "CBS",
+                            n_threads = parallel::detectCores() / 4) {
+
+  # checks
+
+  if (!is.numeric(n_threads)) {
+    stop("n_threads argument must be numeric.")
+  }
+
+  if (n_threads > parallel::detectCores()) {
+    stop(paste(
+      "n_threads argument must be smaller than",
+      parallel::detectCores()
+    ))
+  }
+
+  if (n_threads < 1) {
+    n_threads <- 1
+  }
+
   ratios_df <- copykit::ratios(scCNA)
 
   if (method == "CBS") {
@@ -36,7 +56,7 @@ runSegmentation <- function(scCNA,
       log_seg_mean_LOWESS <-
         rep(short_cbs$seg.mean, short_cbs$num.mark)
       merge_obj <-
-        MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
+        .MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
       merge_ratio <- 2 ^ merge_obj
 
     }, mc.cores = n_threads)
