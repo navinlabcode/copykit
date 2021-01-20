@@ -146,15 +146,20 @@ geneCopyPlot <- function(scCNA,
     p <- p +
       ggplot2::geom_violin()
 
+    print(p)
+
   } else if (geom == "violin" & !is.null(label)) {
     warning("Coloring by label argument is only available for geom = 'swarm'.")
 
     p <- p +
       ggplot2::geom_violin()
 
+    print(p)
+
   }
 
   # geom swarm
+
 
   if (geom == "swarm" & is.null(label)) {
     p <- p +
