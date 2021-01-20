@@ -72,37 +72,26 @@ runVarbin <- function(dir,
   names(varbin_counts_list) <- files_names
   names(varbin_reads_list) <- files_names
 
-  varbin_reads_list <- lapply(varbin_reads_list)
+  #LOWESS GC normalization
 
-  # filtering low read counts
+  varbin_counts_list_gccor <- parallel::mclapply(varbin_counts_list, function(x) {
+    gc_cor <- lowess(rg$gc_content, log(x + 1e-3), f = 0.05)
+    gc_cor_z <- approx(gc_cor$x, gc_cor$y, rg$gc_content)
+    exp(log(x) - gc_cor_z$y)*median(x)
+  },
+  mc.cores = n_threads)
+
   bam_metrics <- dplyr::bind_cols(varbin_reads_list)
 
+  varbin_counts_df <- dplyr::bind_cols(varbin_counts_list_gccor)
+  # filtering low read counts
+  varbin_counts_df <- varbin_counts_df[which(colSums(varbin_counts_df) != 0)]
 
-  varbin_counts_df <- dplyr::bind_cols(varbin_counts_list)
-
-  # segmenting
-  ratios_df <- sweep(varbin_counts_df, 2, apply(varbin_counts_df, 2, median), '/')
-
-  CBS_seg <- parallel::mclapply(ratios_df, function(x) {
-    CNA_object <- DNAcopy::CNA(log(x+1e-3, base=2), as.numeric(stringr::str_remove(hg38_rg$chr, "chr")), hg38_rg$start, data.type="logratio",
-                 sampleid=names(x))
-    smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
-    segment_smoothed_CNA_object <- DNAcopy::segment(smoothed_CNA_object, alpha=0.01, min.width=5, undo.splits="prune", undo.prune=0.05)
-    short_cbs <- segment_smoothed_CNA_object[[2]]
-    log_seg_mean_LOWESS <- rep(short_cbs$seg.mean, short_cbs$num.mark)
-    merge_obj <- MergeLevels(smoothed_CNA_object[,3],log_seg_mean_LOWESS)$vecMerged
-
-  }, mc.cores = n_threads
-)
-
-  cbs_seg_df <- bind_cols(CBS_seg) %>%
-    as.data.frame()
-
-  cna_obj <-   cna_obj <- scCNA(
-    segment_ratios = seg_data,
-    ratios = dat_rat,
+  cna_obj <-  scCNA(
+    segment_ratios = matrix(nrow = nrow(varbin_counts_df), ncol = ncol(varbin_counts_df)),
+    ratios = matrix(nrow = nrow(varbin_counts_df), ncol = ncol(varbin_counts_df)),
     bin_counts = varbin_counts_df,
-    rowRanges = g
+    rowRanges = GenomicRanges::makeGRangesFromDataFrame(hg38_rg)
   )
 
 }
