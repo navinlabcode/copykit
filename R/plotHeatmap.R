@@ -40,7 +40,7 @@ plotHeatmap <- function(scCNA,
     }
   }
 
-  if (!is.character(label)) {
+  if (!is.null(label) & !is.character(label)) {
     stop("Label must be a character vector.")
   }
 
