@@ -43,11 +43,17 @@ runSegmentation <- function(scCNA,
 
     hg38_rg <- readRDS(here("data/hg38rg.rds"))
 
+    #match for chrY presence
+    chr_sccna <- as.character(as.data.frame(SummarizedExperiment::rowRanges(scCNA))$seqnames)
+    hg38_rg <- hg38_rg[which(hg38_rg$chr %in% chr_sccna),]
+
     hg38_rg <- hg38_rg %>%
       mutate(chr = str_replace(chr, "X", "23"),
              chr = str_replace(chr, "Y", "24"))
 
     chr_info <-  as.numeric(stringr::str_remove(hg38_rg$chr, "chr"))
+
+    ref <- hg38_rg
 
   }
 
@@ -56,11 +62,17 @@ runSegmentation <- function(scCNA,
 
     hg19_rg <- readRDS(here("data/hg19rg.rds"))
 
+    #match for chrY presence
+    chr_sccna <- as.character(as.data.frame(SummarizedExperiment::rowRanges(scCNA))$seqnames)
+    hg19_rg <- hg19_rg[which(hg19_rg$chr %in% chr_sccna),]
+
     hg19_rg <- hg19_rg %>%
       mutate(chr = str_replace(chr, "X", "23"),
              chr = str_replace(chr, "Y", "24"))
 
     chr_info <-  as.numeric(stringr::str_remove(hg19_rg$chr, "chr"))
+
+    ref <- hg19_rg
 
   }
 
@@ -72,7 +84,7 @@ runSegmentation <- function(scCNA,
         DNAcopy::CNA(
           log(x + 1e-3, base = 2),
           chr_info,
-          hg38_rg$start,
+          ref$start,
           data.type = "logratio",
           sampleid = names(x)
         )
@@ -82,8 +94,9 @@ runSegmentation <- function(scCNA,
           smoothed_CNA_object,
           alpha = 0.01,
           min.width = 5,
-          undo.splits = "prune",
-          undo.prune = 0.05
+          undo.splits = "sdundo",
+          undo.SD = 1,
+          # undo.prune = 0.05
         )
       short_cbs <- segment_smoothed_CNA_object[[2]]
       log_seg_mean_LOWESS <-
