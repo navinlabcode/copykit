@@ -27,8 +27,13 @@ runVarbin <- function(dir,
                       bin_size = "200kb",
                       n_threads = 1 ) {
 
+  #checks
+  if (genome %!in% c("hg19", "hg38")) {
+    stop("Genome assembly must be 'hg19' or 'hg38'")
+  }
+
   # Reading hg38 VarBin ranges
-  if (geneome == "hg38") {
+  if (genome == "hg38") {
 
     hg38_rg <- readRDS(here("data/hg38rg.rds"))
 
@@ -43,6 +48,21 @@ runVarbin <- function(dir,
       mutate(GeneID = 1:nrow(hg38_rg))
 
   }
+
+  # reading hg19 varbin ranges
+  if (genome == "hg19") {
+
+    hg19_rg <- readRDS(here("data/hg19rg.rds"))
+
+    hg19_rg <- hg19_rg %>%
+      mutate(chr = str_replace(chr, "X", "23"),
+             chr = str_replace(chr, "Y", "24"))
+
+    rg <- hg19_rg %>%
+      mutate(GeneID = 1:nrow(hg19_rg))
+
+  }
+
    dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/TN20_2020_06_19_combine_new_run_output/output/sort/"
 
   files <- list.files(dir, pattern = "*.bam", full.names = T)[1:10]

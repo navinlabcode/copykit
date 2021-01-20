@@ -4,6 +4,7 @@
 #'
 #' @param scCNA The scCNA object
 #' @param method Character. Segmentation method of choice.
+#' @param genome Character. Genome assembly to be used, current accepted "hg19" or "hg38".
 #' @param n_threads Number of threads used to calculate the distance matrix. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.
 #'
 #' @return The segment profile for all cells inside the scCNA object. Can be retrieved with \link{\code{copykit::segment_ratios()}}
@@ -12,6 +13,7 @@
 #' @examples
 runSegmentation <- function(scCNA,
                             method = "CBS",
+                            genome = "hg38",
                             n_threads = parallel::detectCores() / 4) {
 
   # checks
@@ -31,6 +33,37 @@ runSegmentation <- function(scCNA,
     n_threads <- 1
   }
 
+  if (genome %!in% c("hg19", "hg38")) {
+    stop("Genome assembly must be 'hg19' or 'hg38'")
+  }
+
+  # genome assembly
+  # Reading hg38 VarBin ranges
+  if (genome == "hg38") {
+
+    hg38_rg <- readRDS(here("data/hg38rg.rds"))
+
+    hg38_rg <- hg38_rg %>%
+      mutate(chr = str_replace(chr, "X", "23"),
+             chr = str_replace(chr, "Y", "24"))
+
+    chr_info <-  as.numeric(stringr::str_remove(hg38_rg$chr, "chr"))
+
+  }
+
+  # reading hg19 varbin ranges
+  if (genome == "hg19") {
+
+    hg19_rg <- readRDS(here("data/hg19rg.rds"))
+
+    hg19_rg <- hg19_rg %>%
+      mutate(chr = str_replace(chr, "X", "23"),
+             chr = str_replace(chr, "Y", "24"))
+
+    chr_info <-  as.numeric(stringr::str_remove(hg19_rg$chr, "chr"))
+
+  }
+
   ratios_df <- copykit::ratios(scCNA)
 
   if (method == "CBS") {
@@ -38,7 +71,7 @@ runSegmentation <- function(scCNA,
       CNA_object <-
         DNAcopy::CNA(
           log(x + 1e-3, base = 2),
-          as.numeric(stringr::str_remove(hg38_rg$chr, "chr")),
+          chr_info,
           hg38_rg$start,
           data.type = "logratio",
           sampleid = names(x)
@@ -64,7 +97,9 @@ runSegmentation <- function(scCNA,
     cbs_seg_df <- bind_cols(CBS_seg) %>%
       as.data.frame()
 
-    copykit::segment_ratios(scCNA) <- cbs_seg_df
+    assay(scCNA, 'segment_ratios') <- cbs_seg_df
+
+    return(scCNA)
 
   }
 
