@@ -8,6 +8,7 @@
 #' @param n_threads Number of threads used to calculate the distance matrix. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.
 #'
 #' @return The segment profile for all cells inside the scCNA object. Can be retrieved with \link{\code{copykit::segment_ratios()}}
+#' @importFrom DNAcopy CNA smooth.CNA segment
 #' @export
 #'
 #' @examples
