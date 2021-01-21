@@ -4,10 +4,12 @@
 \alias{findNormalCells}
 \title{identifies possible normal cells in the dataset based on coefficient of variation}
 \usage{
-findNormalCells(scCNA)
+findNormalCells(scCNA, resolution = 0.05)
 }
 \arguments{
 \item{scCNA}{scCNA object}
+
+\item{resolution}{Numeric. Threshold which will be used to detect normal cells. Lower values are more likely to be normal cells. Defaults to 0.05.}
 }
 \value{
 Adds is_normal column to the scCNA metadata. Can be accessed with colData(scCNA)

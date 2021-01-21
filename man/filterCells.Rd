@@ -4,12 +4,7 @@
 \alias{filterCells}
 \title{Filter noise cells}
 \usage{
-filterCells(
-  scCNA,
-  k = 5,
-  resolution = 0.8,
-  n_threads = parallel::detectCores()/4
-)
+filterCells(scCNA, k = 5, resolution = 0.8)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
@@ -17,8 +12,6 @@ filterCells(
 \item{k}{K-nearest-neighbor, defaults to 5.}
 
 \item{resolution}{Set's how strict the correlation cut off will be. Defaults to 0.8.}
-
-\item{n_threads}{Number of parallel threads to calculate distances with \code{amap::Dist()}. Defaults to 1/4 of the cores available in your system.}
 }
 \value{
 Adds a filtered cells label to the scCNA metadata. Cells that pass the filtering criteria receive the label "kept", whereas cells that do not pass the filtering criteria receive the label "removed".
