@@ -11,6 +11,12 @@ setGeneric("ratios", function(x, ...) standardGeneric("ratios"))
 setGeneric("bin_counts", function(x, ...) standardGeneric("bin_counts"))
 
 #' @export
+setGeneric("consensus", function(x, ...) standardGeneric("consensus"))
+
+#' @export
+setGeneric("consensus<-", function(x, ..., value) standardGeneric("consensus<-"))
+
+#' @export
 setGeneric("phylo", function(x, ...) standardGeneric("phylo"))
 
 #' @export
