@@ -227,45 +227,45 @@ plotHeatmap <- function(scCNA,
                                       show_annotation_name = FALSE)
     }
 
-  }
-
-  #plotting
-  complex_args <- list(
-    use_raster = TRUE,
-    left_annotation = cluster_anno,
-    column_title = "Genomic coordinates",
-    column_title_gp = grid::gpar(fontsize = 18),
-    column_title_side = "bottom",
-    row_title = "Single-Cells",
-    row_title_gp = grid::gpar(fontsize = 18),
-    heatmap_legend_param = list(title = "log2 (segratio)"),
-    top_annotation = chr_bar,
-    cluster_rows = FALSE,
-    border = TRUE,
-    cluster_columns = FALSE,
-    show_column_names = FALSE,
-    show_row_names = FALSE,
-    show_heatmap_legend = TRUE
-  )
+    #plotting
+    complex_args <- list(
+      use_raster = TRUE,
+      left_annotation = cluster_anno,
+      column_title = "Genomic coordinates",
+      column_title_gp = grid::gpar(fontsize = 18),
+      column_title_side = "bottom",
+      row_title = "Single-Cells",
+      row_title_gp = grid::gpar(fontsize = 18),
+      heatmap_legend_param = list(title = "log2 (segratio)"),
+      top_annotation = chr_bar,
+      cluster_rows = FALSE,
+      border = TRUE,
+      cluster_columns = FALSE,
+      show_column_names = FALSE,
+      show_row_names = FALSE,
+      show_heatmap_legend = TRUE
+    )
 
 
-  if (!is.null(row_split)) {
-    if (length(row_split) > 1) {
-      stop("row_split length must be 1")
+    if (!is.null(row_split)) {
+      if (length(row_split) > 1) {
+        stop("row_split length must be 1")
+      } else {
+        do.call(ComplexHeatmap::Heatmap,
+                c(
+                  list(
+                    matrix = log2(seg_data_ordered + 1e-3),
+                    row_split = dplyr::pull(metadata_anno_df, row_split)
+                  ),
+                  complex_args
+                ))
+      }
     } else {
-      do.call(ComplexHeatmap::Heatmap,
-              c(
-                list(
-                  matrix = log2(seg_data_ordered + 1e-3),
-                  row_split = dplyr::pull(metadata_anno_df, row_split)
-                ),
-                complex_args
-              ))
+      do.call(ComplexHeatmap::Heatmap, c(list(matrix = log2(
+        seg_data_ordered + 1e-3
+      )), complex_args))
     }
-  } else {
-    do.call(ComplexHeatmap::Heatmap, c(list(matrix = log2(
-      seg_data_ordered + 1e-3
-    )), complex_args))
+
   }
 
 }
