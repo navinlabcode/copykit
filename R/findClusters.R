@@ -141,7 +141,7 @@ findClusters <- function(scCNA,
 
   # storing info
   SummarizedExperiment::colData(scCNA)$superclones <- superclones
-  SummarizedExperiment::colData(scCNA)$subclones <- subclones
+  SummarizedExperiment::colData(scCNA)$subclones <- droplevels(subclones)
 
   message("Done.")
 
