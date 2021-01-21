@@ -9,6 +9,7 @@
 #' @param label Character. Annotate heatmap by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #' @param label_colors List. Named list with colors for the label annotation. Must match label length
 #' @param row_split Character. Element of the metadata to split the heatmap. Must have length = 1.
+#' @param consensus Boolean. Indicates if the consensus heatmap should be plotted.
 #' @param use_default_colors Boolean. Use the default colors when annotating superclones, subclones or filtering.
 #'
 #' @return A heatmap visualization.
@@ -24,6 +25,7 @@ plotHeatmap <- function(scCNA,
                         label = NULL,
                         label_colors = NULL,
                         use_default_colors = TRUE,
+                        consensus = FALSE,
                         row_split = NULL) {
   # check annotation colors
   if (is.null(label) & !is.null(label_colors)) {
@@ -91,85 +93,93 @@ plotHeatmap <- function(scCNA,
       col = list(df = c("1" = "grey88", "2" = "black"))
     )
 
-  # ordering cells
-  if (order_cells == "phylogeny") {
-    tryCatch(
-      phylo(scCNA),
-      error = function(e) {
-        message("No phylogeny detected in scCNA object.")
-      },
-      finally = {
-        scCNA <- runPhylo(scCNA)
-      }
-    )
+  # consensus and not consensus logic
+  if (consensus == FALSE) {
 
-    tree <- phylo(scCNA)
+    # ordering cells
+    if (order_cells == "phylogeny") {
+      tryCatch(
+        phylo(scCNA),
+        error = function(e) {
+          message("No phylogeny detected in scCNA object.")
+        },
+        finally = {
+          scCNA <- runPhylo(scCNA)
+        }
+      )
 
-    # getting order
-    is_tip <- tree$edge[, 2] <= length(tree$tip.label)
-    ordered_tips_index <- tree$edge[is_tip, 2]
-    tree_tips_order <- tree$tip.label[ordered_tips_index] %>% rev()
+      tree <- phylo(scCNA)
 
-    # ordering data
-    seg_data_ordered <- seg_data[tree_tips_order,]
+      # getting order
+      is_tip <- tree$edge[, 2] <= length(tree$tip.label)
+      ordered_tips_index <- tree$edge[is_tip, 2]
+      tree_tips_order <- tree$tip.label[ordered_tips_index] %>% rev()
 
-  }
+      # ordering data
+      seg_data_ordered <- seg_data[tree_tips_order,]
 
-  if (order_cells == "hclust") {
-    # checking distance matrix
-    if (length(copykit::distMat(scCNA)) == 0) {
-      message("No distance matrix detected in the scCNA object.")
-      scCNA <-  runDistMat(scCNA, metric = "euclidean")
     }
 
-    if (nrow(as.matrix(copykit::distMat(scCNA))) != ncol(scCNA)) {
-      stop(
-        "Number of samples in the distance matrix different from number of samples in the scCNA object.
+    if (order_cells == "hclust") {
+      # checking distance matrix
+      if (length(copykit::distMat(scCNA)) == 0) {
+        message("No distance matrix detected in the scCNA object.")
+        scCNA <-  runDistMat(scCNA, metric = "euclidean")
+      }
+
+      if (nrow(as.matrix(copykit::distMat(scCNA))) != ncol(scCNA)) {
+        stop(
+          "Number of samples in the distance matrix different from number of samples in the scCNA object.
         Perhaps you filtered your dataset? use copykit::runDistMat() to update it."
-      )
-    }
-
-    hc <- fastcluster::hclust(distMat(scCNA),
-                              method = "ward.D2")
-
-    seg_data_ordered <- seg_data[hc$order,]
-
-  }
-
-  if (order_cells == "graph_search") {
-    if (is.null(SingleCellExperiment::reducedDim(scCNA,
-                                                 'umap',
-                                                 withDimnames = F))) {
-      message("No umap detected, running copykit::runUmap()")
-      scCNA <- copykit::runUmap(scCNA)
-    }
-
-    tryCatch(
-      copykit::graph(scCNA),
-      error = function(e) {
-        stop("No graph detected. Please run copykit::findClusters()")
+        )
       }
-    )
 
-    if (igraph::gorder(graph(scCNA)) != ncol(copykit::segment_ratios(scCNA))) {
-      stop(
-        "Number of vertices in graph different than number of samples.
-           Please run copykit::findClusters() and try again."
-      )
+      hc <- fastcluster::hclust(distMat(scCNA),
+                                method = "ward.D2")
+
+      seg_data_ordered <- seg_data[hc$order,]
+
     }
 
-    umap_df <-
-      SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = F)
+    if (order_cells == "graph_search") {
+      if (is.null(SingleCellExperiment::reducedDim(scCNA,
+                                                   'umap',
+                                                   withDimnames = F))) {
+        message("No umap detected, running copykit::runUmap()")
+        scCNA <- copykit::runUmap(scCNA)
+      }
 
-    g_minor  <- copykit::graph(scCNA)
+      tryCatch(
+        copykit::graph(scCNA),
+        error = function(e) {
+          stop("No graph detected. Please run copykit::findClusters()")
+        }
+      )
 
-    g_bs <- igraph::bfs(g_minor, 1)
+      if (igraph::gorder(graph(scCNA)) != ncol(copykit::segment_ratios(scCNA))) {
+        stop(
+          "Number of vertices in graph different than number of samples.
+           Please run copykit::findClusters() and try again."
+        )
+      }
 
-    g_ord <- as.numeric(g_bs$order)
+      umap_df <-
+        SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = F)
 
-    seg_data_ordered <- seg_data[g_ord,]
+      g_minor  <- copykit::graph(scCNA)
 
+      g_bs <- igraph::bfs(g_minor, 1)
+
+      g_ord <- as.numeric(g_bs$order)
+
+      seg_data_ordered <- seg_data[g_ord,]
+
+    }
+
+  } else {
+    seg_data_ordered <- as.data.frame(t(consensus(scCNA)))
   }
+
 
   # plotting
   if (is.null(label)) {
@@ -201,10 +211,28 @@ plotHeatmap <- function(scCNA,
     metadata <- SummarizedExperiment::colData(scCNA) %>%
       as.data.frame()
 
-    metadata <- metadata[rownames(seg_data_ordered), ]
+    if (consensus == FALSE) {
+      metadata <- metadata[rownames(seg_data_ordered), ]
+    }
 
     metadata_anno_df <- metadata %>%
       dplyr::select(dplyr::all_of(label))
+
+    if (consensus == TRUE) {
+
+      # Uses the hidden consensus_by attribute from the calcConsensus function
+      # to guarantee the same order
+      cons_attr <- attr(consensus(scCNA), "consensus_by")
+
+      metadata_anno_df <- metadata_anno_df[label] %>%
+        dplyr::distinct()
+
+      rownames(metadata_anno_df) <- metadata_anno_df %>%
+        dplyr::pull(!!cons_attr)
+
+      metadata_anno_df <- metadata_anno_df[names(consensus(scCNA)),,drop = FALSE]
+
+    }
 
     if (use_default_colors == TRUE) {
       label_colors <- c(

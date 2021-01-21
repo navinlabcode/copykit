@@ -34,7 +34,8 @@ setOldClass("igraph")
                    slots = representation(
                      phylo = "phylo",
                      distMat = "dist",
-                     graph = "igraph"
+                     graph = "igraph",
+                     consensus = "data.frame"
                    ),
                    contains = "SingleCellExperiment")
 
@@ -43,6 +44,7 @@ setOldClass("igraph")
 scCNA <- function(segment_ratios,
                   ratios,
                   bin_counts,
+                  consensus = data.frame(),
                   phylo = structure(list(), class = "phylo"),
                   distMat = dist(matrix(0,0,0)),
                   graph = igraph::graph.empty(),
@@ -55,7 +57,8 @@ scCNA <- function(segment_ratios,
   .scCNA(cna,
          phylo = phylo,
          distMat = distMat,
-         graph = graph)
+         graph = graph,
+         consensus = consensus)
 }
 
 

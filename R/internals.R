@@ -24,6 +24,20 @@ setMethod("bin_counts", "scCNA", function(x, withDimnames = TRUE) {
 })
 
 #' @export
+setMethod("consensus", "scCNA", function(x, withDimnames = TRUE) {
+  # accessor for the consensus data slot
+  out <- x@consensus
+  out
+})
+
+#' @export
+setReplaceMethod("consensus", "scCNA", function(x, value) {
+  # setter method for phylo slot
+  x@consensus <- value
+  x
+})
+
+#' @export
 setMethod("phylo", "scCNA", function(x) {
   # accessor for the phylo slot
       out <- x@phylo
@@ -72,7 +86,8 @@ setMethod("show", "scCNA", function(object) {
   cat(
     "rowRanges has: ", length(SummarizedExperiment::rowRanges(object)), " ranges\n",
     sep = "",
-    "Phylo:"
+    "Phylo:", phylo(object), "\n",
+    "consensus: ", nrow(consensus(object)), " ", ncol(consensus(object))
   )
 })
 

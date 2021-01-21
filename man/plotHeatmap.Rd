@@ -10,6 +10,7 @@ plotHeatmap(
   label = NULL,
   label_colors = NULL,
   use_default_colors = TRUE,
+  consensus = FALSE,
   row_split = NULL
 )
 }
@@ -23,6 +24,8 @@ plotHeatmap(
 \item{label_colors}{List. Named list with colors for the label annotation. Must match label length}
 
 \item{use_default_colors}{Boolean. Use the default colors when annotating superclones, subclones or filtering.}
+
+\item{consensus}{Boolean. Indicates if the consensus heatmap should be plotted.}
 
 \item{row_split}{Character. Element of the metadata to split the heatmap. Must have length = 1.}
 }
