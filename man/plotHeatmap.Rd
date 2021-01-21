@@ -4,12 +4,27 @@
 \alias{plotHeatmap}
 \title{Plot heatmap}
 \usage{
-plotHeatmap(scCNA, order_cells = "graph_search")
+plotHeatmap(
+  scCNA,
+  order_cells = "hclust",
+  label = NULL,
+  label_colors = NULL,
+  use_default_colors = TRUE,
+  row_split = NULL
+)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{order_cells}{Methods to order the cells within the heatmap. Accepted values are "phylogeny", "hclust", "graph_search". Defaults to "phylogeny".}
+\item{order_cells}{Methods to order the cells within the heatmap. Accepted values are "phylogeny", "hclust", "graph_search". Defaults to "hclust".}
+
+\item{label}{Character. Annotate heatmap by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
+
+\item{label_colors}{List. Named list with colors for the label annotation. Must match label length}
+
+\item{use_default_colors}{Boolean. Use the default colors when annotating superclones, subclones or filtering.}
+
+\item{row_split}{Character. Element of the metadata to split the heatmap. Must have length = 1.}
 }
 \value{
 A heatmap visualization.

@@ -97,24 +97,19 @@ By default, **CopyKit** automatically outputs a heatmap so you can visually asse
 
 To control how strict the filtering, change the argument `resolution`. Ex: `filterCells(resolution = 0.9)`
 
-```{r filtering_cells, eval = FALSE, warning=FALSE }
+```{r filtering_cells}
 breast_tumor <- copykit::filterCells(breast_tumor,
                                      resolution = 0.8)
 ```
 
-```{r filtering_cells_parallel, echo = FALSE, warning=FALSE}
-breast_tumor <- copykit::filterCells(
-  breast_tumor,
-  resolution = 0.8,
-  n_threads = 40,
-  plot_heatmap = TRUE
-)
-```
-
-The information is stored as metadata and can be accessed with `SummarizedExperiment::colData()`.
+The information is stored as metadata and can be accessed with `SummarizedExperiment::colData()`. and can be visualized with a heatmap
 
 ```{r  warning=FALSE }
 head(SummarizedExperiment::colData(breast_tumor))
+```
+
+```{r}
+copykit::plotHeatmap(breast_tumor, label = "filtered", row_split = "filtered")
 ```
 
 If you are satisfied with the filtering you can simply subset the object based on the `SummarizedExperiment::colData(bt)$filtered` column
