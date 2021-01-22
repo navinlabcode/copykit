@@ -177,8 +177,9 @@ geneCopyPlot <- function(scCNA,
    if (label == "superclones") {
       # coloring for discrete variable label
       p <- p +
-        ggbeeswarm::geom_quasirandom(aes(color = rep(lab,
-                                                     each = length(df$gene))))
+        ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
+                                                     each = length(df$gene))),
+                                     shape = 21)
 
       color_lab <-
         list(ggplot2::scale_color_manual(values = superclones_pal()))
@@ -190,8 +191,9 @@ geneCopyPlot <- function(scCNA,
     } else if (label == "subclones") {
       # coloring for discrete variable label
       p <- p +
-        ggbeeswarm::geom_quasirandom(aes(color = as.character(rep(lab,
-                                                     each = length(df$gene)))))
+        ggbeeswarm::geom_quasirandom(aes(fill = as.character(rep(lab,
+                                                     each = length(df$gene)))),
+                                     shape = 21)
 
       color_lab <-
         list(ggplot2::scale_color_manual(values = subclones_pal()))
@@ -203,8 +205,9 @@ geneCopyPlot <- function(scCNA,
     } else if (is.numeric(lab))  {
 
         p <- p +
-          ggbeeswarm::geom_quasirandom(aes(color = rep(lab,
-                                                       each = length(df$gene))))
+          ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
+                                                       each = length(df$gene))),
+                                       shape = 21)
 
         color_lab <- list(ggplot2::scale_color_viridis_c())
 
@@ -215,8 +218,9 @@ geneCopyPlot <- function(scCNA,
     } else {
       # coloring for discrete variable label
       p <- p +
-        ggbeeswarm::geom_quasirandom(aes(color = rep(lab,
-                                                     each = length(df$gene))))
+        ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
+                                                     each = length(df$gene))),
+                                     shape = 21)
 
       color_lab <- list(ggplot2::scale_color_viridis_d())
 
