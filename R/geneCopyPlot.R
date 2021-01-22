@@ -55,7 +55,7 @@ geneCopyPlot <- function(scCNA,
       legend.text = element_text(size = 16)
     ),
     xlab(""),
-    ylab("Segment ratio")
+    ylab("segment ratio")
   )
 
   # getting ranges from scCNA object
@@ -181,7 +181,7 @@ geneCopyPlot <- function(scCNA,
                                                      each = length(df$gene))))
 
       color_lab <-
-        list(ggplot2::scale_color_manual(values = major_palette))
+        list(ggplot2::scale_color_manual(values = superclones_pal()))
 
       p <- p + color_lab
 
@@ -194,7 +194,7 @@ geneCopyPlot <- function(scCNA,
                                                      each = length(df$gene)))))
 
       color_lab <-
-        list(ggplot2::scale_color_manual(values = minor_palette))
+        list(ggplot2::scale_color_manual(values = subclones_pal()))
 
       p <- p + color_lab
 

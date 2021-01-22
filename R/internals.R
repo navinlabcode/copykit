@@ -328,3 +328,35 @@ setMethod("show", "scCNA", function(object) {
   # Return list of results
   return(list(vecMerged=vecPredNow,mnNow=mnNow,sq=sq,ansari=ansari))
 }
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# colors
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @export
+#superclones palette
+superclones_pal <- function() {
+  structure(
+    c("#66C5CC", "#F6CF71", "#F89C74", "#DCB0F2", "#87C55F", "#9EB9F3",
+      "#FE88B1", "#C9DB74", "#8BE0A4", "#B497E7", "#D3B484", "#B3B3B3",
+      "#88CCEE", "#CC6677", "#DDCC77", "#117733", "#332288", "#AA4499",
+      "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888"),
+    names = paste0('s', 1:24)
+  )
+}
+
+#' @export
+#subclones palette
+subclones_pal <- function() {
+  structure(
+    c("#5050FF", "#CE3D32", "#749B58", "#F0E685", "#466983", "#BA6338", "#5DB1DD",
+      "#802268", "#6BD76B", "#D595A7", "#924822", "#837B8D", "#C75127", "#D58F5C",
+      "#7A65A5", "#E4AF69", "#3B1B53", "#CDDEB7", "#612A79", "#AE1F63", "#E7C76F",
+      "#5A655E", "#CC9900", "#99CC00", "#A9A9A9", "#CC9900", "#99CC00", "#33CC00",
+      "#00CC33", "#00CC99", "#0099CC", "#0A47FF", "#4775FF", "#FFC20A", "#FFD147",
+      "#990033", "#991A00", "#996600", "#809900", "#339900", "#00991A", "#009966",
+      "#008099", "#003399", "#1A0099", "#660099", "#990080", "#D60047", "#FF1463",
+      "#00D68F", "#14FFB1"),
+    names = paste0('c', 1:51)
+  )
+}

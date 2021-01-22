@@ -74,10 +74,7 @@ findClusters <- function(scCNA,
   # finding clusters
   #  major
   message(paste("Finding clusters, using method:", method))
-  superclones <- igraph::membership(igraph::components(g_major))
-  superclones <-
-    sapply(strsplit(paste(superclones), ''), function(y)
-      paste(LETTERS[as.numeric(y)], collapse = ''))
+  superclones <- as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
 
   # using leiden
   if (method == "leiden") {
@@ -90,7 +87,7 @@ findClusters <- function(scCNA,
     if (inherits(leid_obj, "try-error")) {
       stop('Running leiden failed.')
     } else {
-      subclones <- leid_obj$membership
+      subclones <- as.factor(paste0('c', leid_obj$membership))
     }
   }
 
@@ -133,7 +130,7 @@ findClusters <- function(scCNA,
         hdb_df$hdb[i] <- closest_cell_cluster
       }
 
-      subclones <- hdb_df$hdb
+      subclones <- as.factor(paste0('c',hdb_df$hdb))
 
     }
 
