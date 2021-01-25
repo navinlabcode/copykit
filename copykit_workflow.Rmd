@@ -27,38 +27,63 @@ devtools::install_github('cole-trapnell-lab/leidenbase')
 ```
 
 
-## Reading Varbin dataset
+## Running VarBin
 
-  Datasets generated with the varbin pipeline can be read with the function `readVarbinCNA()`. It creates an S4 class `scCNA` from the output directory of the copy number pipeline.
-  `readVarbinCNA()` searches for the uber*.seg uber.bin and uber.ratio files in the provided directory.
-  
-  The scCNA object will contain 3 different assays: **segment ratios** (accessed with `copykit::segment_ratios()`), **ratios** (accessed with `copykit::ratios()`) and **bincounts** (accessed with `copykit::bin_counts()`) where each bin is row and each sample (cell) is a column.
-  
-  CopyKit stores the genomic ranges as a GRanges object containing chromosome number, start coordinate, end coordinate and absolute genomic position. 
-  Each row represents the coordinates for one bin.
-  
-  It is possible to exclude the information from ChrY (important when working with XX samples) by setting the argument `remove_Y` to `TRUE`. Ex: `readVarbinCNA("~/path_to_varbin_output/", remove_Y = TRUE)`.
+CopyKit workflows start from using **.bam** files as input. CopyKit will count the reads that align within the pre-determined bins from the VarBin pipeline, excluding reads marked as duplicates. `copykit::runVarbin` creates an S4 class `scCNA` where all of the bin counts will be stored and it can be run with genome assembly *hg38* or *hg19*
+
+The genomic ranges is stored as a GRanges object containing chromosome number, start coordinate, end coordinate and absolute genomic position, as well as metadata for each bin from the VarBin pipeline. Each row represents the coordinates for one bin.
+
+After `runVarbin()` The scCNA object will contain a matrix of bincounts that can be accessed with `copykit::bin_counts()`. Each bin is row and each sample (cell) is a column. Cells with extremely low bincounts will be automatically filtered out.
+
+It is possible to exclude the information from ChrY (important when working with XX samples) by setting the argument `remove_Y` to `TRUE`. Ex: `readVarbinCNA("~/path_to_varbin_output/", remove_Y = TRUE)`.
 
 ``` {r reading_data, eval = FALSE, warning=FALSE}
-breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/", 
-                                       remove_Y = TRUE)
+breast_tumor <- copykit::runVarbin("~/PATH/TO/BAM/",
+                                   genome = "hg38",
+                                   remove_Y = TRUE)
 ```
 
 ```{r echo = FALSE, warning=FALSE}
-suppressPackageStartupMessages(library(tidyverse))
-dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/TN20_output/"
-breast_tumor <- copykit::readVarbinCNA(dir, remove_Y = TRUE)
+
 ```
 
+A quick view on the object:
 ```{r viewing_object}
 breast_tumor
 ```
 
-**CopyKit** stores the bin information within a rowRanges object, which can be accessed with `SummarizedExperiment::rowRanges()`:
+And the bin information that can be accessed with `SummarizedExperiment::rowRanges()`:
 
 ```{r rowRanges}
 SummarizedExperiment::rowRanges(breast_tumor)
 ```
+
+## Variance Stabilization Transformation
+
+The negative binomial nature of the data leads to overdispersion at the higher levels counts, for this reason it is advisable to perform a variance stabilization transformation. Copykit performs a simple transformation with the freeman-tukey transformation. This step is not necessary but leads to improved sample clustering and better copy number calls at high level amplifications.
+
+```{r vst}
+breast_tumor <- runVst(breast_tumor)
+```
+
+## Calculating ratios
+
+After `runVarbin()` we can use the bincounts data to calculate ratios. It is possible to select the assay that will be used to calculate the ratios. For this tutorial we use the variance stabilized transformed bincounts by setting the argument assay to 'vst'. To use the original bincount matrix the argument assay can be set to 'bin_counts'. `calcRatios()` will store the calculated ratios within the scCNA object, which can be accessed with `ratios()`
+
+```{r}
+breast_tumor <- calcRatios(breast_tumor, assay = "vst")
+breast_tumor
+```
+
+Finally, we can run a segmentation algorithm to find copy number segments. This can be achived with `runSegmentation()`. By default, CopyKit uses the CBS algorithm from the package `DNAcopy`. The resulting segmentation will be stored in the slot **segment ratios** that can be accessed with `copykit::segment_ratios()`.
+
+The segment_ratios slot will be used for downstream analysis
+
+```{r}
+breast_tumor <- runSegmentation(breast_tumor, genome = "hg38")
+breast_tumor
+```
+
 
 ## Obtain metrics
 **Copykit** can provide some quick metrics about the data. That can be done with `copykit::runMetrics()`. It returns informative plots regarding the data
@@ -163,14 +188,14 @@ plotUmap(breast_tumor,
          label = "spatial_location")
 ```
 
-
-
 # Finding clusters
 
 **CopyKit** uses a graph based approacht to search for clusters in the scCNA dataset. `findClusters()` builds an SNN graph of the k-nearest neighbors and attempts to find two different level of clustering: Major and minor subpopulations.
 Superclones are found by looking at the graph connected components and aim to identify the groups with largest copy number variations, whereas subclusters uses the [hdbscan](https://hdbscan.readthedocs.io/en/latest/how_hdbscan_works.html) algorithm to detect connected communities within the major clusters as default, but the option to use the leiden algorithm is also implemented. Subclones aim to find smaller differences within those superclones.
 To run `findClusters()` you first need `runUmap()`. **CopyKit** applies the clustering on top of the UMAP embedding.
 Check `?copykit::findClusters()` for help on how to change the clustering parameters arguments.
+
+`findClusters()` requires two *k* parameters. **k_superclones** and **k_subclones**. Both values are passed downstream to the respective algorithms that perform the two levels of clustering available in CopyKit. To determine which value to be used, CopyKit provides a helper function to determine the value of ***k_subclones**. `findOptimalK()` performs a grid search and calculates jaccard similarity values across a range of *k* and returns the most stable. This function includes a bootstrapping step and can be time consuming. To speed up CopyKit by default performs only 100 bootstraps, this can be increased with the argument *B* which should yield a better suggestion of k at the cost of speed.
 
 ```{r}
 findOptimalK(breast_tumor,
@@ -179,7 +204,9 @@ findOptimalK(breast_tumor,
 
 
 ```{r warning=FALSE }
-breast_tumor <- copykit::findClusters(breast_tumor)
+breast_tumor <- copykit::findClusters(breast_tumor,
+                                      k_superclones = 30,
+                                      k_subclones = 17)
 ```
 
 Clustering information is stored as metadata and can be accessed with `SummarizedExperiment::colData(scCNA).
@@ -208,10 +235,16 @@ plot(phylo(breast_tumor), cex = 0.1)
 
 # Plotting heatmap
 
-Plotting heatmap with **CopyKit** is done with the `plotHeatmap()` function. By default `plotHeatmap()` orders the cells according to a neighbor joining phylogenetic tree. `plotHeatmap()` also checks for the existence of cluster information and will automatically add it as an annotation to the heatmap if available.
+Plotting heatmap with **CopyKit** is done with the `plotHeatmap()` function. By default `plotHeatmap()` orders the cells according to hierarchical clustering. 
 
 ```{r plotHeatmap, warning = FALSE}
 copykit::plotHeatmap(breast_tumor)
+```
+
+Any information from the metadata can be added as annotation to `plotHeatmap()`:
+
+```{r plotHeatmap_label, warning = FALSE}
+copykit::plotHeatmap(breast_tumor, label = c("superclones", "subclones"))
 ```
 
 # Plotting ratio plot
@@ -235,7 +268,7 @@ copykit::plotRatioPlot(breast_tumor,
 It might be of interest to check for the heterogeneity in the number of copies across all the samples for different genes. **CopyKit** provides the function `geneCopyPlot()`. With two different geoms: "swarm" (default) or "violin".
 ```{r}
 copykit::geneCopyPlot(breast_tumor,
-                      geom = "violin",
+                      geom = "swarm",
                       genes = c("KRAS",
                                 "MYC",
                                 "TP53",
@@ -267,7 +300,29 @@ copykit::geneCopyPlot(breast_tumor,
 ```
 
 
+## Read Varbin pipeline Legacy
 
+  Datasets generated with the old varbin pipeline can be read with the function `readVarbinCNA()`. It creates an S4 class `scCNA` from the output directory of the copy number pipeline.
+  `readVarbinCNA()` searches for the uber*.seg uber.bin and uber.ratio files in the provided directory.
+  
+  The scCNA object will contain 3 different assays: **segment ratios** (accessed with `copykit::segment_ratios()`), **ratios** (accessed with `copykit::ratios()`) and **bincounts** (accessed with `copykit::bin_counts()`) where each bin is row and each sample (cell) is a column.
+  
+  CopyKit stores the genomic ranges as a GRanges object containing chromosome number, start coordinate, end coordinate and absolute genomic position. 
+  Each row represents the coordinates for one bin.
+  
+  It is possible to exclude the information from ChrY (important when working with XX samples) by setting the argument `remove_Y` to `TRUE`. Ex: `readVarbinCNA("~/path_to_varbin_output/", remove_Y = TRUE)`.
 
+``` {r reading_data, eval = FALSE, warning=FALSE}
+breast_tumor <- copykit::readVarbinCNA("~/path_to_varbin_output/", 
+                                       remove_Y = TRUE)
+```
+
+```{r echo = FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(tidyverse))
+dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/TN20_output/"
+breast_tumor <- copykit::readVarbinCNA(dir, remove_Y = TRUE)
+```
+
+This function remains as a legacy and will only receive critical breakig updates.
 
 
