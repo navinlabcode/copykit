@@ -7,6 +7,8 @@
 #' @return A ratio matrix within the slot \link{\code{assay(scCNA, 'ratios')}} can be accessed with \link{\code{copykit::ratios(scCNA)}}.
 #' @export
 #'
+#' @importFrom SummarizedExperiment assay
+#'
 #' @examples
 calcRatios <- function(scCNA,
                        assay = "vst",

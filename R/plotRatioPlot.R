@@ -9,8 +9,10 @@
 #' @param sample_name character vector with the name of the sample to be visualized
 #'
 #' @return A violin plot with the segment ratios for the genes of interest.
-#' @import grid
-#' @import dplyr
+#' @importFrom grid grid.locator convertX convertY current.vpTree
+#' @importFrom dplyr group_by arrange filter ungroup
+#' @importFrom stringr str_extract
+#' @importFrom tidyr gather
 #'
 #' @export
 #'

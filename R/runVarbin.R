@@ -15,6 +15,9 @@
 #' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 #'
 #' @importFrom Rsubread featureCounts
+#' @importFrom stringr str_replace
+#' @importFrom dplyr rename mutate
+#' @importFrom GenomicRanges makeGRangesFromDataFrame
 #'
 #' @export
 #'
@@ -38,14 +41,14 @@ runVarbin <- function(dir,
     hg38_rg <- readRDS(here("data/hg38rg.rds"))
 
     hg38_rg <- hg38_rg %>%
-      mutate(chr = str_replace(chr, "X", "23"),
+      dplyr::mutate(chr = str_replace(chr, "X", "23"),
              chr = str_replace(chr, "Y", "24"))
 
     rg <- hg38_rg %>%
       dplyr::rename(Chr = "chr",
                     Start = "start",
                     End = "end") %>%
-      mutate(GeneID = 1:nrow(hg38_rg))
+      dplyr::mutate(GeneID = 1:nrow(hg38_rg))
 
   }
 
@@ -55,11 +58,11 @@ runVarbin <- function(dir,
     hg19_rg <- readRDS(here("data/hg19rg.rds"))
 
     hg19_rg <- hg19_rg %>%
-      mutate(chr = str_replace(chr, "X", "23"),
+      dplyr::mutate(chr = str_replace(chr, "X", "23"),
              chr = str_replace(chr, "Y", "24"))
 
     rg <- hg19_rg %>%
-      mutate(GeneID = 1:nrow(hg19_rg))
+      dplyr::mutate(GeneID = 1:nrow(hg19_rg))
 
   }
 

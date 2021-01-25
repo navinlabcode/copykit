@@ -8,6 +8,8 @@
 #' @param seed Sets a seed for the pseudorandom number generator.
 #' @param ... Additional parameters passed to \code{uwot::umap}.
 #'
+#' @importFrom uwot umap
+#'
 #' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)}
 #' @export
 #'

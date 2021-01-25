@@ -11,8 +11,7 @@
 #'
 #' @export
 #'
-#' @import uwot
-#' @import ggnewscale
+#' @importFrom ggnewscale new_scale_color
 #' @examples
 #'
 
