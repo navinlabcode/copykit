@@ -9,8 +9,8 @@
 #'
 #' @param scCNA scCNA object.
 #' @param method Which method should be used for clustering, options are "hdbscan" or "leiden". Defaults to "hdbscan".
-#' @param k_major k-nearest-neighbor value that will be used to find the major clusters. Must be higher than k_minor (Defaults to 35).
-#' @param k_minor k-nearest-neighbor value that will be used to find the minor clusters (Defaults to 21).
+#' @param k_superclones k-nearest-neighbor value that will be used to find the major clusters.(Defaults to 35).
+#' @param k_subclones k-nearest-neighbor value that will be used to find the minor clusters (Defaults to 21).
 #' @param seed Seed passed on to leiden algorithm (Defaults to 17).
 #'
 #' @return Metadata cluster information that can be found in \code{SummarizedExperiment::colData(scCNA)$superclones} for the major clusters and \code{SummarizedExperiment::colData(scCNA)$subclones} for the minor clusters. Major clusters are named with capital letters whereas minor clusters are named with a numbers but as a character vector.
@@ -29,8 +29,8 @@
 
 findClusters <- function(scCNA,
                          method = "hdbscan",
-                         k_major = NULL,
-                         k_minor = NULL,
+                         k_superclones = NULL,
+                         k_subclones = NULL,
                          seed = 17) {
 
   # obtaining data from reducedDim slot
@@ -43,29 +43,23 @@ findClusters <- function(scCNA,
     stop("Reduced dimensions slot is NULL. Use runUmap() to create it.")
 
   # settting k defaults
-  if (is.null(k_major)) {
-    k_major <- 0.05*nrow(umap_df)
+  if (is.null(k_superclones)) {
+    k_superclones <- 0.05*nrow(umap_df)
   }
 
-  if (is.null(k_minor)) {
-    k_minor <- 0.02*nrow(umap_df)
+  if (is.null(k_subclones)) {
+    k_subclones <- 0.02*nrow(umap_df)
   }
 
   # checks
-  if (!is.numeric(k_minor) || !is.numeric(k_major)) {
-    stop("k_minor and k_major must be numeric values.")
-  }
-
-  # building graph
-  message("Building SNN graph.")
-  if (k_major < k_minor) {
-    stop("k_major argument needs to be equal or higher than k_minor argument.")
+  if (!is.numeric(k_subclones) || !is.numeric(k_superclones)) {
+    stop("k_subclones and k_superclones must be numeric values.")
   }
 
   g_major <-
-    scran::buildSNNGraph(umap_df, k = k_major, transposed = T)
+    scran::buildSNNGraph(umap_df, k = k_superclones, transposed = T)
   g_minor  <-
-    scran::buildSNNGraph(umap_df, k = k_minor, transposed = T)
+    scran::buildSNNGraph(umap_df, k = k_subclones, transposed = T)
   g_adj <- igraph::as_adjacency_matrix(g_minor)
 
   # saving g_minor graph
@@ -96,7 +90,7 @@ findClusters <- function(scCNA,
 
     set.seed(seed)
     hdb <- dbscan::hdbscan(umap_df,
-                           minPts = k_minor)
+                           minPts = k_subclones)
     hdb_clusters <- as.character(hdb$cluster)
 
     # hdbscan is an outlier aware clustering algorithm. Copykit assumes that filterCells already took care of removing bad cells
