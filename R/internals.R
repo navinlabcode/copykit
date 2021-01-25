@@ -91,6 +91,8 @@ setMethod("show", "scCNA", function(object) {
   )
 })
 
+#' @export
+`%!in%` <- Negate(`%in%`)
 
 #' @export
 # Internal function that plots the interactively heatmap for plotRatioPlot
