@@ -4,7 +4,7 @@
 #' @param assay The assay that will be used
 #' @param fun Character. Function used to calculate the ratios, defaults to "median"
 #'
-#' @return A ratio matrix within the slot \link{\code{assay(scCNA, 'ratios')}} can be accessed with \link{\code{copykit::ratios(scCNA)}}.
+#' @return A ratio matrix within the slot \code{assay(scCNA, 'ratios')} can be accessed with \code{copykit::ratios(scCNA)}.
 #' @export
 #'
 #' @importFrom SummarizedExperiment assay

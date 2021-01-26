@@ -14,7 +14,7 @@ calcRatios(scCNA, assay = "vst", fun = "median")
 \item{fun}{Character. Function used to calculate the ratios, defaults to "median"}
 }
 \value{
-A ratio matrix within the slot \link{\code{assay(scCNA, 'ratios')}} can be accessed with \link{\code{copykit::ratios(scCNA)}}.
+A ratio matrix within the slot \code{assay(scCNA, 'ratios')} can be accessed with \code{copykit::ratios(scCNA)}.
 }
 \description{
 Calculates the ratios from a matrix of counts

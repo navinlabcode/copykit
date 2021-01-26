@@ -7,8 +7,8 @@
 findClusters(
   scCNA,
   method = "hdbscan",
-  k_major = NULL,
-  k_minor = NULL,
+  k_superclones = NULL,
+  k_subclones = NULL,
   seed = 17
 )
 }
@@ -17,9 +17,9 @@ findClusters(
 
 \item{method}{Which method should be used for clustering, options are "hdbscan" or "leiden". Defaults to "hdbscan".}
 
-\item{k_major}{k-nearest-neighbor value that will be used to find the major clusters. Must be higher than k_minor (Defaults to 35).}
+\item{k_superclones}{k-nearest-neighbor value that will be used to find the major clusters.(Defaults to 35).}
 
-\item{k_minor}{k-nearest-neighbor value that will be used to find the minor clusters (Defaults to 21).}
+\item{k_subclones}{k-nearest-neighbor value that will be used to find the minor clusters (Defaults to 21).}
 
 \item{seed}{Seed passed on to leiden algorithm (Defaults to 17).}
 }
