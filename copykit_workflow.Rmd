@@ -188,6 +188,16 @@ plotUmap(breast_tumor,
          label = "spatial_location")
 ```
 
+# Finding normal cells
+Some datasets contain cells with flat profiles that are likely to be diploid cells. CopyKit provides a function to automatically detect those cells. With `findNormalCells()` copykit classifies the samples according to the coefficient of variation from the segment ratios. By default, copykit automatically attempts to find a resolution value that will detect those cells. After running this function it is highly recommended to visually inspect the results using a heatmap (see `plotHeatmap()`) and umap.
+
+```{r}
+breast_tumor <- copykit::findNormalCells(breast_tumor)
+plotUmap(breast_tumor,
+         label = "is_normal")
+```
+
+
 # Finding clusters
 
 **CopyKit** uses a graph based approacht to search for clusters in the scCNA dataset. `findClusters()` builds an SNN graph of the k-nearest neighbors and attempts to find two different level of clustering: Major and minor subpopulations.
