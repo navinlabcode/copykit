@@ -93,6 +93,8 @@ findOptimalK <- function(scCNA,
       out
     }
 
+  message(cat("Calculating jaccard similarity for k range:", k_range))
+
   mean_jaccard <- parallel::mclapply(k_range, function(i) {
     df_clusterboot <-
       fpc::clusterboot(
@@ -111,7 +113,8 @@ findOptimalK <- function(scCNA,
 
   mean_jc_df <- tibble::enframe(unlist(mean_jaccard),
                                 name = "k",
-                                value = "mean_jaccard")
+                                value = "mean_jaccard") %>%
+    mutate(k = as.numeric(k))
 
   mean_jc_df <- mean_jc_df %>%
     filter(mean_jaccard == max(mean_jc_df$mean_jaccard))
