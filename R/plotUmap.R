@@ -105,8 +105,11 @@ plotUmap <- function(scCNA,
 
         p <- ggplot(umap_df) +
       geom_point(aes(V1, V2,
-                     color = lab)) +
+                     fill = lab),
+                 size = 1.7,
+                 shape = 21) +
       theme_classic() +
+      labs(fill = label) +
       my_theme
 
     # coloring by continuos variable
