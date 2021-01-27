@@ -43,7 +43,7 @@ findNormalCells <- function(scCNA,
   cv <-  sapply(seg, function(z) sd(z)/mean(z))
 
   if (simul == TRUE) {
-
+    set.seed(17)
     cv_simul <- rnorm(1000,
           mean = 0,
           sd = 0.01)
