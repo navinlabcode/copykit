@@ -115,17 +115,13 @@ plotUmap <- function(scCNA,
     # coloring by continuos variable
     if (is.numeric(lab)) {
 
-      color_lab <- list(ggplot2::scale_color_viridis_c())
+      color_lab <- list(ggplot2::scale_fill_viridis_c())
 
       p <- p + color_lab
 
       print(p)
 
     } else {
-      # coloring for discrete variable label
-      color_lab <- list(ggplot2::scale_color_viridis_d())
-
-      p <- p + color_lab
 
       print(p)
     }

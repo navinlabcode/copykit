@@ -239,7 +239,9 @@ plotHeatmap <- function(scCNA,
         list(superclones = superclones_pal(),
              subclones = subclones_pal(),
              filtered = c("kept" = "green2",
-                          "removed" = "firebrick3")),
+                          "removed" = "firebrick3"),
+             is_normal = c("FALSE" = "#F8766D",
+                           "TRUE" = "#00BFC4")),
         label_colors
       )
     }
