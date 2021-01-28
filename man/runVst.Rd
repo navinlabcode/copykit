@@ -4,10 +4,12 @@
 \alias{runVst}
 \title{Variance Stabilizing Transformation}
 \usage{
-runVst(scCNA)
+runVst(scCNA, transformation = "ft")
 }
 \arguments{
 \item{scCNA}{The scCNA object}
+
+\item{transformation}{Character. Transformation to be performed, available options are 'logratio' or 'freemantukey'}
 }
 \value{
 A slot into the scCNA object containing the variance stabilized matrix. Can be accessed with \code{assay(scCNA, 'vst')}

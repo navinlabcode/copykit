@@ -4,12 +4,16 @@
 \alias{findNormalCells}
 \title{identifies possible normal cells in the dataset based on coefficient of variation}
 \usage{
-findNormalCells(scCNA, resolution = 0.05)
+findNormalCells(scCNA, resolution = "auto", remove_XY = TRUE, simul = TRUE)
 }
 \arguments{
 \item{scCNA}{scCNA object}
 
-\item{resolution}{Numeric. Threshold which will be used to detect normal cells. Lower values are more likely to be normal cells. Defaults to 0.05.}
+\item{resolution}{Numeric. Threshold which will be used to detect normal cells.}
+
+\item{remove_XY}{Boolean. Removes chrX and chrY from the analysis. Recommended.}
+
+\item{simul}{Add a simulated normal dataset to boost identifying normal cells when a dataset has a small proportion of those.}
 }
 \value{
 Adds is_normal column to the scCNA metadata. Can be accessed with colData(scCNA)

@@ -68,10 +68,10 @@ breast_tumor <- runVst(breast_tumor)
 
 ## Calculating ratios
 
-After `runVarbin()` we can use the bincounts data to calculate ratios. It is possible to select the assay that will be used to calculate the ratios. For this tutorial we use the variance stabilized transformed bincounts by setting the argument assay to 'vst'. To use the original bincount matrix the argument assay can be set to 'bin_counts'. `calcRatios()` will store the calculated ratios within the scCNA object, which can be accessed with `ratios()`
+After `runVarbin()` we can use the bincounts data to calculate ratios. It is possible to select the assay that will be used to calculate the ratios. For this tutorial we use the variance stabilized transformed bincounts by setting the argument assay to 'ft'. To use the original bincount matrix the argument assay can be set to 'bin_counts'. `calcRatios()` will store the calculated ratios within the scCNA object, which can be accessed with `ratios()`
 
 ```{r}
-breast_tumor <- calcRatios(breast_tumor, assay = "vst")
+breast_tumor <- calcRatios(breast_tumor, assay = "ft")
 breast_tumor
 ```
 
@@ -195,8 +195,14 @@ Some datasets contain cells with flat profiles that are likely to be diploid cel
 breast_tumor <- copykit::findNormalCells(breast_tumor)
 plotUmap(breast_tumor,
          label = "is_normal")
+plotHeatmap(breast_tumor,
+            label = "is_normal")
 ```
 
+The information added to the metadata can now be used to filter these cells out of the dataset.
+```{r}
+breast_tumor <- breast_tumor[,SummarizedExperiment::colData(breast_tumor)$is_normal == FALSE]
+```
 
 # Finding clusters
 
@@ -208,15 +214,15 @@ Check `?copykit::findClusters()` for help on how to change the clustering parame
 `findClusters()` requires two *k* parameters. **k_superclones** and **k_subclones**. Both values are passed downstream to the respective algorithms that perform the two levels of clustering available in CopyKit. To determine which value to be used, CopyKit provides a helper function to determine the value of ***k_subclones**. `findOptimalK()` performs a grid search and calculates jaccard similarity values across a range of *k* and returns the most stable. This function includes a bootstrapping step and can be time consuming. To speed up CopyKit by default performs only 100 bootstraps, this can be increased with the argument *B* which should yield a better suggestion of k at the cost of speed.
 
 ```{r}
-findOptimalK(breast_tumor,
-             k_range = 13:30)
+opt_k <- findOptimalK(breast_tumor,
+             k_range = 13:30)$k
 ```
 
 
 ```{r warning=FALSE }
 breast_tumor <- copykit::findClusters(breast_tumor,
                                       k_superclones = 30,
-                                      k_subclones = 17)
+                                      k_subclones = opt_k)
 ```
 
 Clustering information is stored as metadata and can be accessed with `SummarizedExperiment::colData(scCNA).

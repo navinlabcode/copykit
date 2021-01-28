@@ -4,7 +4,7 @@
 \alias{calcRatios}
 \title{Calculates the ratios from a matrix of counts}
 \usage{
-calcRatios(scCNA, assay = "vst", fun = "median")
+calcRatios(scCNA, assay = "ft", fun = "median")
 }
 \arguments{
 \item{scCNA}{The scCNA object}
