@@ -11,8 +11,12 @@
 #'
 #' @examples
 calcRatios <- function(scCNA,
-                       assay = "vst",
+                       assay = "ft",
                        fun = "median") {
+
+  if (assay %!in% c("ft", "logratio")) {
+    stop("Run runVst() for either 'ft' or 'logratio'" )
+  }
 
   counts <- assay(scCNA, assay)
 

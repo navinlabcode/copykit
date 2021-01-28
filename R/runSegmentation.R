@@ -83,7 +83,7 @@ runSegmentation <- function(scCNA,
     CBS_seg <- parallel::mclapply(ratios_df, function(x) {
       CNA_object <-
         DNAcopy::CNA(
-          log(x + 1e-3, base = 2),
+          x,
           chr_info,
           ref$start,
           data.type = "logratio",
@@ -104,7 +104,7 @@ runSegmentation <- function(scCNA,
         rep(short_cbs$seg.mean, short_cbs$num.mark)
       merge_obj <-
         .MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
-      merge_ratio <- 2 ^ merge_obj
+      merge_ratio <- merge_obj
 
     }, mc.cores = n_threads)
 
