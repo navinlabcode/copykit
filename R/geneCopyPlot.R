@@ -182,7 +182,7 @@ geneCopyPlot <- function(scCNA,
                                      shape = 21)
 
       color_lab <-
-        list(ggplot2::scale_color_manual(values = superclones_pal()))
+        list(ggplot2::scale_fill_manual(values = superclones_pal()))
 
       p <- p + color_lab
 
@@ -196,7 +196,7 @@ geneCopyPlot <- function(scCNA,
                                      shape = 21)
 
       color_lab <-
-        list(ggplot2::scale_color_manual(values = subclones_pal()))
+        list(ggplot2::scale_fill_manual(values = subclones_pal()))
 
       p <- p + color_lab
 
