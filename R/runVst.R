@@ -20,10 +20,6 @@ runVst <- function(scCNA,
     counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) sqrt(x) + sqrt(x+1))
   }
 
-  if (transformation == 'logratio') {
-    counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) log2(x +1e-3))
-  }
-
   counts_df_ft <- as.data.frame(counts_df_ft)
 
   assay(scCNA, transformation) <- counts_df_ft

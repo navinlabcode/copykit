@@ -14,8 +14,8 @@ calcRatios <- function(scCNA,
                        assay = "ft",
                        fun = "median") {
 
-  if (assay %!in% c("ft", "logratio")) {
-    stop("Run runVst() for either 'ft' or 'logratio'" )
+  if (assay %!in% c("ft", "bincounts")) {
+    stop("Assay must be either 'ft' or 'bincounts'" )
   }
 
   counts <- assay(scCNA, assay)
