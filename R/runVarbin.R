@@ -15,7 +15,7 @@
 #' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 #'
 #' @importFrom Rsubread featureCounts
-#' @importFrom stringr str_replace
+#' @importFrom stringr str_replace str_remove
 #' @importFrom dplyr rename mutate
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #'
@@ -38,8 +38,6 @@ runVarbin <- function(dir,
   # Reading hg38 VarBin ranges
   if (genome == "hg38") {
 
-    hg38_rg <- readRDS(here("data/hg38rg.rds"))
-
     hg38_rg <- hg38_rg %>%
       dplyr::mutate(chr = str_replace(chr, "X", "23"),
              chr = str_replace(chr, "Y", "24"))
@@ -55,8 +53,6 @@ runVarbin <- function(dir,
   # reading hg19 varbin ranges
   if (genome == "hg19") {
 
-    hg19_rg <- readRDS(here("data/hg19rg.rds"))
-
     hg19_rg <- hg19_rg %>%
       dplyr::mutate(chr = str_replace(chr, "X", "23"),
              chr = str_replace(chr, "Y", "24"))
@@ -66,15 +62,13 @@ runVarbin <- function(dir,
 
   }
 
-   dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/TN20_2020_06_19_combine_new_run_output/output/sort/"
-
-  files <- list.files(dir, pattern = "*.bam", full.names = T)[1:10]
+  files <- list.files(dir, pattern = "*.bam", full.names = T)
 
   if (!str_detect(files, ".bam")) {
     stop("Directory does not contain .bam files.")
   }
 
-  files_names <- list.files(dir, pattern = "*.bam", full.names = F)[1:10]
+  files_names <- list.files(dir, pattern = "*.bam", full.names = F)
   files_names <- stringr::str_remove(files_names, ".bam")
 
   varbin_counts_list_all_fields <- parallel::mclapply(files, Rsubread::featureCounts,
@@ -110,11 +104,15 @@ runVarbin <- function(dir,
   # filtering low read counts
   varbin_counts_df <- varbin_counts_df[which(colSums(varbin_counts_df) != 0)]
 
+  rg_gr <- GenomicRanges::makeGRangesFromDataFrame(rg,
+                                                   ignore.strand = TRUE,
+                                                   keep.extra.columns = TRUE)
+
   cna_obj <-  scCNA(
     segment_ratios = matrix(nrow = nrow(varbin_counts_df), ncol = ncol(varbin_counts_df)),
     ratios = matrix(nrow = nrow(varbin_counts_df), ncol = ncol(varbin_counts_df)),
     bin_counts = varbin_counts_df,
-    rowRanges = GenomicRanges::makeGRangesFromDataFrame(hg38_rg)
+    rowRanges = rg_gr
   )
 
 }
