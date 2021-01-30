@@ -23,7 +23,7 @@ setOldClass("igraph")
 # defining scCNA class
 #'
 #'  @export
-#'  @import methods SingleCellExperiment
+#'  @importMethodsFrom SingleCellExperiment
 #'  @importClassesFrom SummarizedExperiment RangedSummarizedExperiment SingleCellExperiment
 #'  @importClassesFrom S4Vectors DataFrame SimpleList
 

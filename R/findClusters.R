@@ -18,7 +18,7 @@
 #' @export
 #' @import leidenbase
 #' @importFrom tidyr gather
-#' @importFrom dplyr filter slice_min group_by right_join
+#' @importFrom dplyr filter slice_min group_by right_join ungroup
 #' @importFrom SingleCellExperiment reducedDim
 #' @importFrom SummarizedExperiment colData
 #' @importFrom scran buildSNNGraph
