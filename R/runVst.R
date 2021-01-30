@@ -22,7 +22,7 @@ runVst <- function(scCNA,
 
   counts_df_ft <- as.data.frame(counts_df_ft)
 
-  assay(scCNA, transformation) <- counts_df_ft
+  SummarizedExperiment::assay(scCNA, transformation) <- counts_df_ft
 
   return(scCNA)
 

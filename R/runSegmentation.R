@@ -42,8 +42,6 @@ runSegmentation <- function(scCNA,
   # Reading hg38 VarBin ranges
   if (genome == "hg38") {
 
-    hg38_rg <- readRDS(here("data/hg38rg.rds"))
-
     #match for chrY presence
     chr_sccna <- as.character(as.data.frame(SummarizedExperiment::rowRanges(scCNA))$seqnames)
     hg38_rg <- hg38_rg[which(hg38_rg$chr %in% chr_sccna),]
@@ -60,8 +58,6 @@ runSegmentation <- function(scCNA,
 
   # reading hg19 varbin ranges
   if (genome == "hg19") {
-
-    hg19_rg <- readRDS(here("data/hg19rg.rds"))
 
     #match for chrY presence
     chr_sccna <- as.character(as.data.frame(SummarizedExperiment::rowRanges(scCNA))$seqnames)
