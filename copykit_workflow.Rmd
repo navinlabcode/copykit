@@ -293,21 +293,21 @@ copykit::geneCopyPlot(breast_tumor,
 
 `geneCopyPlot()` can also be colored by any information available in the metadata (`SummarizedExperiment::colData()`). 
 ```{r}
-copykit::geneCopyPlot(breast_tumor,
+copykit::plotGeneCopy(breast_tumor,
                       genes = c("KRAS",
                                 "MYC",
                                 "TP53",
                                 "ERBB2"),
                       label = "superclones")
 
-copykit::geneCopyPlot(breast_tumor,
+copykit::plotGeneCopy(breast_tumor,
                       genes = c("KRAS",
                                 "MYC",
                                 "TP53",
                                 "ERBB2"),
                       label = "subclones")
 
-copykit::geneCopyPlot(breast_tumor,
+copykit::plotGeneCopy(breast_tumor,
                       genes = c("KRAS",
                                 "MYC",
                                 "TP53",
@@ -339,6 +339,6 @@ dir = "/volumes/seq/projects/CNA_projects/DT_CNA/snap_frozen/Breast/TNBC/TN20/TN
 breast_tumor <- copykit::readVarbinCNA(dir, remove_Y = TRUE)
 ```
 
-This function remains as a legacy and will only receive critical breakig updates.
+This function remains as a legacy and will only receive critical breaking updates.
 
 

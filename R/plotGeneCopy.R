@@ -6,6 +6,7 @@
 #'
 #' @param scCNA scCNA object.
 #' @param genes Vector containing the HUGO Symbol for the genes of interest.
+#' @param genome Genome assembly, either hg19 or hg38
 #' @param geom Which geom should be used for plotting, options are "violin" or "swarm". Defaults to "swarm"
 #' @param label Color by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #'
@@ -21,8 +22,9 @@
 #' @examples
 #'
 
-geneCopyPlot <- function(scCNA,
+plotGeneCopy <- function(scCNA,
                          genes,
+                         genome = "hg19",
                          geom = "swarm",
                          label = NULL) {
   # checks
@@ -35,6 +37,15 @@ geneCopyPlot <- function(scCNA,
 
   if (!is.null(label) && !(label %in% colnames(metadata))) {
     stop(paste0("Label ", label, " is not a column of the scCNA object."))
+  }
+
+  # genome assembly
+  if (genome == "hg19") {
+    genes_assembly <- hg19_genes
+  }
+
+  if (genome == "hg38") {
+    genes_assembly <- hg38_genes
   }
 
   # theme setup
@@ -62,14 +73,13 @@ geneCopyPlot <- function(scCNA,
   ranges <- SummarizedExperiment::rowRanges(scCNA)
 
   # subsetting to only the desired genes
-  # hg19_genes genomic range is saved inside sysdata.rda to avoid loading a lot of annotation packages
-  hg19_genes_features <- BiocGenerics:::subset(hg19_genes,
-                                               SYMBOL %in% genes)
+  genes_features <- BiocGenerics:::subset(genes_assembly,
+                                               symbol %in% genes)
 
   # Checking genes that could not be found and returned an error message
   `%!in%` <- base::Negate(`%in%`)
 
-  all_genes <- hg19_genes$SYMBOL %>%
+  all_genes <- genes_assembly$symbol %>%
     unlist() %>%
     unname()
 
@@ -88,7 +98,7 @@ geneCopyPlot <- function(scCNA,
 
   #finding overlaps
   olaps <-
-    suppressWarnings(GenomicRanges::findOverlaps(hg19_genes_features,
+    suppressWarnings(GenomicRanges::findOverlaps(genes_features,
                                                  ranges,
                                                  ignore.strand = TRUE))
 
@@ -98,7 +108,7 @@ geneCopyPlot <- function(scCNA,
   # only one will be kept
   df <-
     tibble::tibble(
-      gene = as.character(hg19_genes_features$SYMBOL[S4Vectors::queryHits(olaps)]),
+      gene = as.character(genes_features$symbol[S4Vectors::queryHits(olaps)]),
       pos = S4Vectors::subjectHits(olaps),
     ) %>%
     dplyr::distinct(gene, .keep_all = TRUE)
