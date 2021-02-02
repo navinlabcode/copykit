@@ -1,7 +1,7 @@
 #' Finds the Optimal K value to be used for subclone clustering
 #'
 #' @param scCNA  scCNA object.
-#' @param k_range Range of values to be tested. Defaults to 10:30
+#' @param k_range Range of values to be tested. Defaults to 7 to the sqrt of the number of cells
 #' @param method Method which where the values will be tested. Only "hdbscan" available.
 #' @param seed Seed (Defaults to 17).
 #' @param B Number of bootstrapping. Defaults to 100. Higher values yield better results at a cost of performance
@@ -17,7 +17,7 @@
 #'
 #' @examples
 findOptimalK <- function(scCNA,
-                         k_range = 10:30,
+                         k_range = 7:sqrt(ncol(segment_ratios(scCNA))),
                          method = "hdbscan",
                          seed = 17,
                          B = 100,
@@ -29,6 +29,11 @@ findOptimalK <- function(scCNA,
         c1 <- dbscan::hdbscan(data, minPts, method = "dist", ...)
       else
         c1 <- dbscan::hdbscan(data, minPts, ...)
+
+      # check in case all of the cells are classified as outliers.
+      if(length(unique(c1$cluster))==1){
+        c1$cluster <- c1$cluster+1
+      }
 
       tmp_data_df <- as.data.frame(data)
       tmp_data_df$hdb <- c1$cluster
