@@ -1,4 +1,4 @@
-#' Plot ratio plot
+#' Plot ratio
 #'
 #' plotRatioPlot allows for a visualization of the segment ratios together with the ratios.
 #' It is helpful to observe the fit of the segmentation to the data.
@@ -19,11 +19,9 @@
 #' @examples
 #'
 
-plotRatioPlot <- function(scCNA,
-                          sample_name = NULL,
-                          interactively = FALSE) {
-
-
+plotRatio <- function(scCNA,
+                      sample_name = NULL,
+                      interactively = FALSE) {
   ####################
   ## aesthetic setup
   ####################
@@ -34,22 +32,24 @@ plotRatioPlot <- function(scCNA,
   chr_lengths <- rle(as.numeric(chr_ranges$seqnames))$lengths
 
   # obtaining first and last row of each chr
- chr_ranges_start <-  chr_ranges %>%
+  chr_ranges_start <-  chr_ranges %>%
     dplyr::group_by(seqnames) %>%
     dplyr::arrange(seqnames, start) %>%
     dplyr::filter(dplyr::row_number() == 1) %>%
     dplyr::ungroup()
 
- chr_ranges_end <-  chr_ranges %>%
-   dplyr::group_by(seqnames) %>%
-   dplyr::arrange(seqnames, start) %>%
-   dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
-   dplyr::ungroup()
+  chr_ranges_end <-  chr_ranges %>%
+    dplyr::group_by(seqnames) %>%
+    dplyr::arrange(seqnames, start) %>%
+    dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
+    dplyr::ungroup()
 
- # Creating data frame object for chromosome rectangles shadows
-  chrom_rects <- data.frame(chr = chr_ranges_start$seqnames,
-                            xstart = as.numeric(chr_ranges_start$abspos),
-                            xend = as.numeric(chr_ranges_end$abspos))
+  # Creating data frame object for chromosome rectangles shadows
+  chrom_rects <- data.frame(
+    chr = chr_ranges_start$seqnames,
+    xstart = as.numeric(chr_ranges_start$abspos),
+    xend = as.numeric(chr_ranges_end$abspos)
+  )
   xbreaks <- rowMeans(chrom_rects %>%
                         dplyr::select(xstart,
                                       xend))
@@ -74,23 +74,33 @@ plotRatioPlot <- function(scCNA,
         fill = colors
       ),
       alpha = .2
-    ), scale_fill_identity())
+    ),
+    scale_fill_identity())
 
   sec_breaks <- c(0, 0.5e9, 1e9, 1.5e9, 2e9, 2.5e9, 3e9)
   sec_labels <- c(0, 0.5, 1, 1.5, 2, 2.5, 3)
 
   # theme
   ggaes <- list(
-    scale_x_continuous(breaks = xbreaks,
-                       labels = gsub("chr", "", chrom_rects$chr),
-                       position = "top",
-                       expand = c(0,0),
-                       sec.axis = sec_axis(~., breaks = sec_breaks, labels = sec_labels, name = "Genome Position (Gb)")),
+    scale_x_continuous(
+      breaks = xbreaks,
+      labels = gsub("chr", "", chrom_rects$chr),
+      position = "top",
+      expand = c(0, 0),
+      sec.axis = sec_axis(
+        ~ .,
+        breaks = sec_breaks,
+        labels = sec_labels,
+        name = "Genome Position (Gb)"
+      )
+    ),
     theme_classic(),
     theme(
-      axis.text.x = element_text(angle = 0,
-                                 vjust = .5,
-                                 size = 15),
+      axis.text.x = element_text(
+        angle = 0,
+        vjust = .5,
+        size = 15
+      ),
       axis.text.y = element_text(size = 15),
       axis.title.y.right = element_text(margin = margin(l = 10)),
       legend.position = "none",
@@ -115,24 +125,19 @@ plotRatioPlot <- function(scCNA,
 
   # ggplot will need the long format tables, using gather
   dat_ratios_l <-
-    tidyr::gather(
-      data = dat_ratios,
-      key = "sample",
-      value = "ratio",
-      -abspos
-    )
+    tidyr::gather(data = dat_ratios,
+                  key = "sample",
+                  value = "ratio",-abspos)
   dat_seg_l <-
-    tidyr::gather(
-      data = dat_seg,
-      key = "sample",
-      value = "segment_ratio",
-      -abspos
-    )
+    tidyr::gather(data = dat_seg,
+                  key = "sample",
+                  value = "segment_ratio",-abspos)
 
   if (nrow(dat_ratios_l) == nrow(dat_seg_l)) {
     df <- dat_ratios_l %>%
       dplyr::mutate(segment_ratio = dat_seg_l$segment_ratio)
-  } else stop("Nrow in copykit::segment_ratios() assay different than nrow in copykit::ratios().")
+  } else
+    stop("Nrow in copykit::segment_ratios() assay different than nrow in copykit::ratios().")
 
   ###############
   ## Interactively
@@ -144,7 +149,6 @@ plotRatioPlot <- function(scCNA,
 
 
   if (interactively == TRUE) {
-
     message("Interactively set to TRUE.\nPlotting heatmap.")
     ordered_df <- .interactivelyHeatmap(scCNA)
 
@@ -157,16 +161,17 @@ plotRatioPlot <- function(scCNA,
     y <- 1:nrow(ordered_df)
 
     grid::downViewport(ht_vp)
-    grid::pushViewport(grid::dataViewport(x,y))
+    grid::pushViewport(grid::dataViewport(x, y))
 
     message("Click on the row of the sample you want to visualize the ratio plot.")
 
     tmp <- grid::grid.locator("in")
     tmp.n <- as.numeric(tmp)
-    tmp2.x <- as.numeric(grid::convertX( unit(x,'native'), 'in' ))
-    tmp2.y <- rev(as.numeric(grid::convertY( unit(y,'native'), 'in' )))
+    tmp2.x <- as.numeric(grid::convertX(unit(x, 'native'), 'in'))
+    tmp2.y <-
+      rev(as.numeric(grid::convertY(unit(y, 'native'), 'in')))
 
-    w <- which.min((tmp2.y-tmp.n[2])^2)
+    w <- which.min((tmp2.y - tmp.n[2]) ^ 2)
 
     sample_name <- rownames(ordered_df)[w]
 
@@ -185,12 +190,14 @@ plotRatioPlot <- function(scCNA,
   p <- ggplot(df %>% filter(sample == sample_name)) +
     ggchr_back +
     ggaes +
-    geom_point(aes(abspos, log2(ratio+1e-3)),
-               shape = 20,
-               col = "gray",
-               size = 1,
-               alpha = .7) +
-    geom_line(aes(abspos, log2(segment_ratio+1e-3)), col = "black",
+    geom_point(
+      aes(abspos, log2(ratio + 1e-3)),
+      shape = 20,
+      col = "gray",
+      size = 1,
+      alpha = .7
+    ) +
+    geom_line(aes(abspos, log2(segment_ratio + 1e-3)), col = "black",
               size = 1.2) +
     xlab("") +
     ylab("Log2(Ratios)") +
