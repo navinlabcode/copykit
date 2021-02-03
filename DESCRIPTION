@@ -57,7 +57,8 @@ Imports:
     ggbeeswarm,
     leidenbase,
     dbscan,
-    mixtools
+    mixtools,
+    shiny
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Depends: 

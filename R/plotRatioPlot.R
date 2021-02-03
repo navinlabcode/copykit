@@ -8,7 +8,7 @@
 #' @param scCNA scCNA object.
 #' @param sample_name character vector with the name of the sample to be visualized
 #'
-#' @return A violin plot with the segment ratios for the genes of interest.
+#' @return Ratio plot from the selected sample.
 #' @importFrom grid grid.locator convertX convertY current.vpTree
 #' @importFrom dplyr group_by arrange filter ungroup
 #' @importFrom stringr str_extract
