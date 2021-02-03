@@ -6,7 +6,7 @@
 \usage{
 findOptimalK(
   scCNA,
-  k_range = 10:30,
+  k_range = 7:sqrt(ncol(segment_ratios(scCNA))),
   method = "hdbscan",
   seed = 17,
   B = 100,
@@ -16,7 +16,7 @@ findOptimalK(
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{k_range}{Range of values to be tested. Defaults to 10:30}
+\item{k_range}{Range of values to be tested. Defaults to 7 to the sqrt of the number of cells}
 
 \item{method}{Method which where the values will be tested. Only "hdbscan" available.}
 
