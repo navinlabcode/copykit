@@ -22,7 +22,6 @@
 #' @importFrom data.table fread
 #' @importFrom fs dir_ls
 #' @import rlang
-#' @import fs
 #' @export
 #'
 #' @examples
