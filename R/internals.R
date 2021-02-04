@@ -52,6 +52,20 @@ setReplaceMethod("phylo", "scCNA", function(x, value) {
 })
 
 #' @export
+setMethod("consensusPhylo", "scCNA", function(x) {
+  # accessor for the consensusPhylo slot
+  out <- x@consensusPhylo
+  out
+})
+
+#' @export
+setReplaceMethod("consensusPhylo", "scCNA", function(x, value) {
+  # setter method for consensusPhylo slot
+  x@consensusPhylo <- value
+  x
+})
+
+#' @export
 setMethod("distMat", "scCNA", function(x) {
   # accessor for the distMat slot
   out <- x@distMat

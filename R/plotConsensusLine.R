@@ -7,7 +7,7 @@
 #'
 #' @import shiny
 #' @import ggplot2
-#' @importFrom miniUI miniPage miniContentPanel
+#' @importFrom miniUI miniPage miniContentPanel gadgetTitleBar
 #' @importFrom dplyr filter arrange ungroup group_by select row_number
 #' @importFrom shiny checkboxGroupInput plotOutput stopApp fillCol
 #' @importFrom tidyr gather
@@ -139,7 +139,8 @@ plotConsensusLine <- function(scCNA) {
       p <- ggplot(df_plot) +
         ggchr_back +
         ggaes +
-        geom_line(aes(abspos, segment_ratio, color = group)) +
+        geom_line(aes(abspos, segment_ratio, color = group),
+                  size = 1.2) +
         labs(x = "",
              y = "consensus segment ratio")
 

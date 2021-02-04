@@ -13,7 +13,7 @@ calcConsensus <- function(scCNA,
                           n_threads = parallel::detectCores() / 4) {
 
   if (consensus_by == 'subclones' & is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
-    stop("Calculating concensus requires cluster information. use findClusters(scCNA)")
+    stop("Calculating consensus requires cluster information. use findClusters(scCNA)")
   }
 
   if (consensus_by %!in% names(SummarizedExperiment::colData(scCNA))) {

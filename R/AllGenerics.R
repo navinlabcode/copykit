@@ -23,6 +23,12 @@ setGeneric("phylo", function(x, ...) standardGeneric("phylo"))
 setGeneric("phylo<-", function(x, ..., value) standardGeneric("phylo<-"))
 
 #' @export
+setGeneric("consensusPhylo", function(x, ...) standardGeneric("consensusPhylo"))
+
+#' @export
+setGeneric("consensusPhylo<-", function(x, ..., value) standardGeneric("consensusPhylo<-"))
+
+#' @export
 setGeneric("distMat", function(x, ...) standardGeneric("distMat"))
 
 #' @export
