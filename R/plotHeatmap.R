@@ -17,11 +17,12 @@
 #' @export
 #'
 #' @import ComplexHeatmap
+#' @importFrom dplyr select pull
 #' @examples
 #'
 
 plotHeatmap <- function(scCNA,
-                        order_cells = "hclust",
+                        order_cells = "consensus_tree",
                         label = NULL,
                         label_colors = NULL,
                         use_default_colors = TRUE,
@@ -129,7 +130,8 @@ plotHeatmap <- function(scCNA,
 
       if (nrow(as.matrix(copykit::distMat(scCNA))) != ncol(scCNA)) {
         stop(
-          "Number of samples in the distance matrix different from number of samples in the scCNA object.
+          "Number of samples in the distance matrix different
+          from number of samples in the scCNA object.
         Perhaps you filtered your dataset? use copykit::runDistMat() to update it."
         )
       }
@@ -138,6 +140,36 @@ plotHeatmap <- function(scCNA,
                                 method = "ward.D2")
 
       seg_data_ordered <- seg_data[hc$order,]
+
+    }
+
+    if (order_cells == "consensus_tree") {
+
+      if (is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
+        stop("Ordering by consensus requires cluster information. use findClusters(scCNA)")
+      }
+
+      if (nrow(consensus(scCNA)) == 0) {
+        scCNA <- calcConsensus(scCNA)
+        scCNA <- runConsensusPhylo(scCNA)
+      }
+
+      # metadata info
+      consensus_by <- attr(consensus(scCNA), "consensus_by")
+
+      meta <- as.data.frame(colData(scCNA)) %>%
+        dplyr::select(sample, !!consensus_by)
+      meta_info <- as.character(dplyr::pull(meta, !!consensus_by))
+
+      tree <- consensusPhylo(scCNA)
+
+      # getting order
+      is_tip <- tree$edge[, 2] <= length(tree$tip.label)
+      ordered_tips_index <- tree$edge[is_tip, 2]
+      tree_tips_order <- tree$tip.label[ordered_tips_index] %>% rev()
+
+      meta_o <- meta[order(match(meta_info, tree_tips_order)), ]
+      seg_data_ordered <- seg_data[meta_o$sample,]
 
     }
 

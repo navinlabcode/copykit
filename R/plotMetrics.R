@@ -40,10 +40,10 @@ plotMetrics <- function(scCNA,
   # theme setup
   my_theme <- list(
     ggplot2::theme(
-      axis.title.x = ggplot2::element_text(colour = "gray28", size = 20),
+      axis.title.x = ggplot2::element_text(colour = "gray28", size = 16),
       axis.text.x = ggplot2::element_blank(),
       axis.ticks.x =  ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_text(colour = "gray28", size = 20),
+      axis.title.y = ggplot2::element_text(colour = "gray28", size = 16),
       axis.text.y = ggplot2::element_text(size = 15),
       axis.line.x = ggplot2::element_blank(),
       legend.position = "right",
@@ -69,7 +69,7 @@ plotMetrics <- function(scCNA,
       ggplot2::theme_classic() +
       ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10),
                                   labels = scales::label_scientific()) +
-      ggplot2::ylab("Read Count") +
+      ggplot2::ylab("read count") +
       xlab("") +
       my_theme
   }
@@ -81,7 +81,7 @@ plotMetrics <- function(scCNA,
       ggplot2::theme_classic() +
       ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10),
                                   labels = scales::percent_format()) +
-      ggplot2::ylab("PCR Duplicates (%)") +
+      ggplot2::ylab("PCR duplicates") +
       xlab("") +
       my_theme
   }
@@ -91,7 +91,7 @@ plotMetrics <- function(scCNA,
       ggbeeswarm::geom_quasirandom() +
       ggplot2::theme_classic() +
       ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
-      ggplot2::ylab("Breakpoint Count Distribution") +
+      ggplot2::ylab("breakpoint count") +
       xlab("") +
       my_theme
   }
@@ -104,44 +104,44 @@ plotMetrics <- function(scCNA,
     # coloring by continuos variable
     if (is.numeric(lab)) {
 
-      color_lab <- list(ggplot2::scale_color_viridis_c())
+      color_lab <- list(ggplot2::scale_fill_viridis_c())
 
       p1 <- p1 +
-        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        ggbeeswarm::geom_quasirandom(aes(fill = lab), shape = 21) +
         color_lab
 
       p2 <- p2 +
-        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        ggbeeswarm::geom_quasirandom(aes(fill = lab), shape = 21) +
         color_lab
 
       p3 <- p3 +
-        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        ggbeeswarm::geom_quasirandom(aes(fill = lab), shape = 21) +
         color_lab
 
       p4 <- p4 +
-        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        ggbeeswarm::geom_quasirandom(aes(fill = lab), shape = 21) +
         color_lab
 
       print(cowplot::plot_grid(p1, p2, p3, p4, nrow = 2))
 
     } else {
       # coloring for discrete variable label
-      color_lab <- list(ggplot2::scale_color_viridis_d())
+      color_lab <- list(ggplot2::scale_fill_viridis_d())
 
       p1 <- p1 +
-        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        ggbeeswarm::geom_quasirandom(aes(fill = lab), shape = 21) +
         color_lab
 
       p2 <- p2 +
-        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        ggbeeswarm::geom_quasirandom(aes(fill = lab), shape = 21) +
         color_lab
 
       p3 <- p3 +
-        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        ggbeeswarm::geom_quasirandom(aes(fill = lab), shape = 21) +
         color_lab
 
       p4 <- p4 +
-        ggbeeswarm::geom_quasirandom(aes(color = lab)) +
+        ggbeeswarm::geom_quasirandom(aes(fill = lab), shape = 21) +
         color_lab
 
       print(cowplot::plot_grid(p1, p2, p3, p4, nrow = 2))
