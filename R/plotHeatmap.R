@@ -47,6 +47,12 @@ plotHeatmap <- function(scCNA,
     stop("Label must be a character vector.")
   }
 
+  if (is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
+    message("Ordering by consensus requires cluster information.\nSwitching to hclust")
+    order_cells <- "hclust"
+  }
+
+
   #obtaining data
   seg_data <- t(segment_ratios(scCNA))
 
@@ -144,10 +150,6 @@ plotHeatmap <- function(scCNA,
     }
 
     if (order_cells == "consensus_tree") {
-
-      if (is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
-        stop("Ordering by consensus requires cluster information. use findClusters(scCNA)")
-      }
 
       if (nrow(consensus(scCNA)) == 0) {
         scCNA <- calcConsensus(scCNA)
