@@ -16,6 +16,13 @@
 plotConsensusLine <- function(scCNA) {
 
   ####################
+  ## checks
+  ####################
+  if (nrow(consensus(scCNA)) == 0) {
+    stop("Slot consensus is empty. Run calcConsensus()")
+  }
+
+  ####################
   ## aesthetic setup
   ####################
 
@@ -94,10 +101,11 @@ plotConsensusLine <- function(scCNA) {
   # obtaining and wrangling data
   ####################
 
+
   con <- consensus(scCNA)
 
   con_l <- con %>%
-    mutate(abspos = chr_ranges$abspos) %>%
+    dplyr::mutate(abspos = chr_ranges$abspos) %>%
     tidyr::gather(key = "group",
                          value = "segment_ratio",
                   -abspos)
