@@ -6,7 +6,7 @@
 \usage{
 plotHeatmap(
   scCNA,
-  order_cells = "hclust",
+  order_cells = "consensus_tree",
   label = NULL,
   label_colors = NULL,
   use_default_colors = TRUE,
