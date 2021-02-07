@@ -9,6 +9,7 @@
 #'
 #' @return The segment profile for all cells inside the scCNA object. Can be retrieved with \code{copykit::segment_ratios()}
 #' @importFrom DNAcopy CNA smooth.CNA segment
+#' @importMethodsFrom SummarizedExperiment
 #' @export
 #'
 #' @examples
@@ -107,7 +108,7 @@ runSegmentation <- function(scCNA,
     cbs_seg_df <- bind_cols(CBS_seg) %>%
       as.data.frame()
 
-    assay(scCNA, 'segment_ratios') <- cbs_seg_df
+    SummarizedExperiment::assay(scCNA, 'segment_ratios') <- cbs_seg_df
 
     return(scCNA)
 

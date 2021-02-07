@@ -238,6 +238,7 @@ setMethod("show", "scCNA", function(object) {
 }
 
 #' @export
+#' @keywords internal
 # Merge Levels function
 .MergeLevels <- function(vecObs,vecPred,pv.thres=0.0001,ansari.sign=0.05){
 

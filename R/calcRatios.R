@@ -18,11 +18,11 @@ calcRatios <- function(scCNA,
     stop("Assay must be either 'ft' or 'bincounts'" )
   }
 
-  counts <- assay(scCNA, assay)
+  counts <- SummarizedExperiment::assay(scCNA, assay)
 
   ratios_df <- sweep(counts, 2, apply(counts, 2, fun), '/')
 
-  assay(scCNA, "ratios") <- ratios_df
+  SummarizedExperiment::assay(scCNA, "ratios") <- ratios_df
 
   return(scCNA)
 
