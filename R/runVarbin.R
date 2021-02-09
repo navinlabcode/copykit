@@ -28,7 +28,7 @@
 runVarbin <- function(dir,
                       genome = "hg38",
                       bin_size = "200kb",
-                      n_threads = 1 ) {
+                      n_threads =  parallel::detectCores() / 4) {
 
   #checks
   if (genome %!in% c("hg19", "hg38")) {
@@ -98,22 +98,32 @@ runVarbin <- function(dir,
   },
   mc.cores = n_threads)
 
-  bam_metrics <- dplyr::bind_cols(varbin_reads_list)
+  # bam_metrics <- dplyr::bind_cols(varbin_reads_list)
 
   varbin_counts_df <- dplyr::bind_cols(varbin_counts_list_gccor)
   # filtering low read counts
   varbin_counts_df <- varbin_counts_df[which(colSums(varbin_counts_df) != 0)]
+
+  rg <- rg %>%
+    dplyr::select(-strand,
+                  -GeneID)
 
   rg_gr <- GenomicRanges::makeGRangesFromDataFrame(rg,
                                                    ignore.strand = TRUE,
                                                    keep.extra.columns = TRUE)
 
   cna_obj <-  scCNA(
-    segment_ratios = matrix(nrow = nrow(varbin_counts_df), ncol = ncol(varbin_counts_df)),
-    ratios = matrix(nrow = nrow(varbin_counts_df), ncol = ncol(varbin_counts_df)),
-    bin_counts = varbin_counts_df,
+    segment_ratios = as.data.frame(matrix(nrow = nrow(varbin_counts_df), ncol = ncol(varbin_counts_df))),
+    ratios = as.data.frame(matrix(nrow = nrow(varbin_counts_df), ncol = ncol(varbin_counts_df))),
+    bin_counts = as.data.frame(varbin_counts_df),
     rowRanges = rg_gr
   )
+
+  #sample name to metadata
+  SummarizedExperiment::colData(cna_obj)$sample <- names(varbin_counts_df)
+
+  return(cna_obj)
+
 
 }
 
