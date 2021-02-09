@@ -1,6 +1,6 @@
 #' Plot ratio
 #'
-#' plotRatioPlot allows for a visualization of the segment ratios together with the ratios.
+#' plotRatio allows for a visualization of the segment ratios together with the ratios.
 #' It is helpful to observe the fit of the segmentation to the data.
 #'
 #' @author Darlan Conterno Minussi
@@ -9,9 +9,10 @@
 #' @param sample_name character vector with the name of the sample to be visualized
 #'
 #' @return Ratio plot from the selected sample.
-#' @importFrom grid grid.locator convertX convertY current.vpTree
-#' @importFrom dplyr group_by arrange filter ungroup
 #' @importFrom stringr str_extract
+#' @importFrom miniUI miniPage miniContentPanel gadgetTitleBar
+#' @importFrom dplyr filter arrange ungroup group_by select row_number
+#' @importFrom shiny checkboxGroupInput plotOutput stopApp fillCol
 #' @importFrom tidyr gather
 #'
 #' @export
@@ -19,9 +20,7 @@
 #' @examples
 #'
 
-plotRatio <- function(scCNA,
-                      sample_name = NULL,
-                      interactively = FALSE) {
+plotRatio <- function(scCNA) {
   ####################
   ## aesthetic setup
   ####################
@@ -91,7 +90,7 @@ plotRatio <- function(scCNA,
         ~ .,
         breaks = sec_breaks,
         labels = sec_labels,
-        name = "Genome Position (Gb)"
+        name = "genome position (Gb)"
       )
     ),
     theme_classic(),
@@ -127,11 +126,13 @@ plotRatio <- function(scCNA,
   dat_ratios_l <-
     tidyr::gather(data = dat_ratios,
                   key = "sample",
-                  value = "ratio",-abspos)
+                  value = "ratio",
+                  -abspos)
   dat_seg_l <-
     tidyr::gather(data = dat_seg,
                   key = "sample",
-                  value = "segment_ratio",-abspos)
+                  value = "segment_ratio",
+                  -abspos)
 
   if (nrow(dat_ratios_l) == nrow(dat_seg_l)) {
     df <- dat_ratios_l %>%
@@ -139,70 +140,58 @@ plotRatio <- function(scCNA,
   } else
     stop("Nrow in copykit::segment_ratios() assay different than nrow in copykit::ratios().")
 
+  choice <- unique(df$sample)
+
   ###############
-  ## Interactively
+  ## shiny logic
   ###############
-  # Interectively allows the user to click on plotHeatmap row and
-  # will return the clicked cell row as the ratio plot
-  # thanks to user Greg snow on stack overflow
-  # https://stackoverflow.com/questions/10526005/is-there-any-way-to-use-the-identify-command-with-ggplot-2
+
+  ui <- miniPage(gadgetTitleBar("ratio plot"),
+                 miniContentPanel(fillCol(
+                   selectInput(
+                     "sample_name",
+                     label = c("select cell:"),
+                     choices = choice,
+                     selected = choice[1]
+                   ),
+
+                   plotOutput("plot", height = "100%"),
+
+                   # col width
+                   flex = c(1, 2)
+
+                 )))
+
+  server <- function(input, output, session) {
+    # Render the plot
+    output$plot <- renderPlot({
+      p <- ggplot(df %>% filter(sample == input$sample_name)) +
+        ggchr_back +
+        ggaes +
+        geom_point(
+          aes(abspos, log2(ratio + 1e-3)),
+          shape = 20,
+          col = "gray",
+          size = 1,
+          alpha = .7
+        ) +
+        geom_line(aes(abspos, log2(segment_ratio + 1e-3)), col = "black",
+                  size = 1.2) +
+        xlab("") +
+        ylab("log2 (ratios)") +
+        ggtitle(paste(toupper(sample_name)))
+
+      print(p)
 
 
-  if (interactively == TRUE) {
-    message("Interactively set to TRUE.\nPlotting heatmap.")
-    ordered_df <- .interactivelyHeatmap(scCNA)
-
-    # capturing heatmap viewport
-    ht_vp <- grid::current.vpTree() %>%
-      as.character() %>%
-      stringr::str_extract("heatmap_matrix_[0-9]{1,2}")
-
-    x <- 1:ncol(ordered_df)
-    y <- 1:nrow(ordered_df)
-
-    grid::downViewport(ht_vp)
-    grid::pushViewport(grid::dataViewport(x, y))
-
-    message("Click on the row of the sample you want to visualize the ratio plot.")
-
-    tmp <- grid::grid.locator("in")
-    tmp.n <- as.numeric(tmp)
-    tmp2.x <- as.numeric(grid::convertX(unit(x, 'native'), 'in'))
-    tmp2.y <-
-      rev(as.numeric(grid::convertY(unit(y, 'native'), 'in')))
-
-    w <- which.min((tmp2.y - tmp.n[2]) ^ 2)
-
-    sample_name <- rownames(ordered_df)[w]
-
+    })
+    #
+    # Handle the Done button being pressed.
+    observeEvent(input$done, {
+      stopApp(message("Done."))
+    })
   }
 
-
-  ###############
-  ## Plot
-  ###############
-
-  # sample name check
-  if (is.null(sample_name) && interactively == FALSE) {
-    stop("Please provide a sample to the argument sample_name.")
-  }
-
-  p <- ggplot(df %>% filter(sample == sample_name)) +
-    ggchr_back +
-    ggaes +
-    geom_point(
-      aes(abspos, log2(ratio + 1e-3)),
-      shape = 20,
-      col = "gray",
-      size = 1,
-      alpha = .7
-    ) +
-    geom_line(aes(abspos, log2(segment_ratio + 1e-3)), col = "black",
-              size = 1.2) +
-    xlab("") +
-    ylab("Log2(Ratios)") +
-    ggtitle(paste(toupper(sample_name)))
-
-  print(p)
-
+  runGadget(ui, server)
 }
+

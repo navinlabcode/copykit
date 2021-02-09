@@ -167,7 +167,7 @@ plotConsensusLine <- function(scCNA) {
     #
     # Handle the Done button being pressed.
     observeEvent(input$done, {
-      stopApp(NULL)
+      stopApp(message("Done."))
     })
   }
 

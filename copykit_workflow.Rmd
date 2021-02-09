@@ -267,23 +267,14 @@ copykit::plotHeatmap(breast_tumor, label = c("superclones", "subclones"))
 
 It is important to make sure that the segmentation is correctly following the data. In **CopyKit** that can be done with `copykit::plotRatioPlot()` for any given cell:
 ```{r plotRatioPlot, warning = FALSE}
-copykit::plotRatioPlot(breast_tumor,
-                       sample_name = "tn20_2_s2_c10_s394_r1_001")
+copykit::plotRatio(breast_tumor)
 ```
-
-`copykit::plotRatioPlot()` can also be used interactively. In this mode, **CopyKit** will plot a heatmap of the dataset. When the heatmap plotting is done you can click on the cell you would like to visualize the ratio plot of: 
-
-```{r interactPlotRatioPlot, eval = FALSE}
-copykit::plotRatioPlot(breast_tumor,
-                       interactively = TRUE)
-```
-![plotRatioPlot interactive](docs/plotRatioPlotgif.gif)
 
 # Visualize specific genes
 
 It might be of interest to check for the heterogeneity in the number of copies across all the samples for different genes. **CopyKit** provides the function `geneCopyPlot()`. With two different geoms: "swarm" (default) or "violin".
 ```{r}
-copykit::geneCopyPlot(breast_tumor,
+copykit::plotGeneCopy(breast_tumor,
                       geom = "swarm",
                       genes = c("KRAS",
                                 "MYC",
