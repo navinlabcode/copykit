@@ -60,7 +60,7 @@ filterCells <- function(scCNA,
   )
   if (identical(SummarizedExperiment::colData(scCNA)$sample,
                 dst_knn_df$sample)) {
-    SummarizedExperiment::colData(scCNA)$filter_corr_value <- dst_knn_df$cor
+    SummarizedExperiment::colData(scCNA)$filter_corr_value <- round(dst_knn_df$cor, 3)
     SummarizedExperiment::colData(scCNA)$filtered <- dst_knn_df$filtered
 
   } else
