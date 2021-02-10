@@ -16,7 +16,7 @@
 #' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
 #'
 #' @importFrom Rsubread featureCounts
-#' @importFrom stringr str_replace str_remove
+#' @importFrom stringr str_replace str_remove str_detect
 #' @importFrom dplyr rename mutate
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #'
@@ -73,12 +73,22 @@ runVarbin <- function(dir,
 
   files <- list.files(dir, pattern = "*.bam", full.names = T)
 
-  if (!str_detect(files, ".bam")) {
+  # managing .bai files
+  if (any(sapply(files, function(x) !str_detect(x, ".bai")))) {
+    files <- files[!stringr::str_detect(files, ".bai")]
+  }
+
+  if (any(sapply(files, function(x) !stringr::str_detect(x, ".bam")))) {
     stop("Directory does not contain .bam files.")
   }
 
   files_names <- list.files(dir, pattern = "*.bam", full.names = F)
   files_names <- stringr::str_remove(files_names, ".bam")
+
+  # managing .bai files on filenames
+  if (any(sapply(files_names, function(x) !str_detect(x, ".bai")))) {
+    files_names <- files_names[!stringr::str_detect(files_names, ".bai")]
+  }
 
   varbin_counts_list_all_fields <- parallel::mclapply(files, Rsubread::featureCounts,
                                                       ignoreDup = TRUE,
