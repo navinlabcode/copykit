@@ -43,13 +43,14 @@ runSegmentation <- function(scCNA,
   # Reading hg38 VarBin ranges
   if (genome == "hg38") {
 
+    hg38_rg_mod <- hg38_rg
     #match for chrY presence
-    hg38_rg_mod <- hg38_rg %>%
-      mutate(chr = str_replace(chr, "X", "23"),
-             chr = str_replace(chr, "Y", "24"))
-
     chr_sccna <- as.character(as.data.frame(SummarizedExperiment::rowRanges(scCNA))$seqnames)
     hg38_rg_mod <- hg38_rg_mod[which(hg38_rg_mod$chr %in% chr_sccna),]
+
+    hg38_rg_mod <- hg38_rg_mod %>%
+      mutate(chr = str_replace(chr, "X", "23"),
+             chr = str_replace(chr, "Y", "24"))
 
     chr_info <-  as.numeric(stringr::str_remove(hg38_rg_mod$chr, "chr"))
 
@@ -60,13 +61,14 @@ runSegmentation <- function(scCNA,
   # reading hg19 varbin ranges
   if (genome == "hg19") {
 
-    hg19_rg_mod <- hg19_rg %>%
-      mutate(chr = str_replace(chr, "X", "23"),
-             chr = str_replace(chr, "Y", "24"))
-
+    hg19_rg_mod <- hg19_rg
     #match for chrY presence
     chr_sccna <- as.character(as.data.frame(SummarizedExperiment::rowRanges(scCNA))$seqnames)
     hg19_rg_mod <- hg19_rg_mod[which(hg19_rg_mod$chr %in% chr_sccna),]
+
+    hg19_rg_mod <- hg19_rg_mod %>%
+      mutate(chr = str_replace(chr, "X", "23"),
+             chr = str_replace(chr, "Y", "24"))
 
     chr_info <-  as.numeric(stringr::str_remove(hg19_rg_mod$chr, "chr"))
 

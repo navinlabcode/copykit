@@ -7,6 +7,7 @@
 #' @param dir A path for the directory containing .BAM files from short-read sequencing.
 #' @param genome Name of the genome assembly. Default: 'hg38'.
 #' @param bin_size The resolution of the VarBin method. Default: '200kb'.
+#' @param remove_Y (default == FALSE) If set to TRUE, removes information from the chrY from the dataset.
 #' @param n_threads Number of cores used to process files
 #'
 #' @return Segment ratios can be acessed with \code{copykit::segment_ratios}.
@@ -28,7 +29,9 @@
 runVarbin <- function(dir,
                       genome = "hg38",
                       bin_size = "200kb",
+                      remove_Y = FALSE,
                       n_threads =  parallel::detectCores() / 4) {
+
 
   #checks
   if (genome %!in% c("hg19", "hg38")) {
@@ -38,27 +41,33 @@ runVarbin <- function(dir,
   # Reading hg38 VarBin ranges
   if (genome == "hg38") {
 
-    hg38_rg <- hg38_rg %>%
-      dplyr::mutate(chr = str_replace(chr, "X", "23"),
-             chr = str_replace(chr, "Y", "24"))
-
     rg <- hg38_rg %>%
       dplyr::rename(Chr = "chr",
                     Start = "start",
                     End = "end") %>%
       dplyr::mutate(GeneID = 1:nrow(hg38_rg))
 
+    if (remove_Y == TRUE) {
+
+      rg <- dplyr::filter(rg,
+                          Chr != "chrY")
+
+    }
+
   }
 
   # reading hg19 varbin ranges
   if (genome == "hg19") {
 
-    hg19_rg <- hg19_rg %>%
-      dplyr::mutate(chr = str_replace(chr, "X", "23"),
-             chr = str_replace(chr, "Y", "24"))
-
     rg <- hg19_rg %>%
       dplyr::mutate(GeneID = 1:nrow(hg19_rg))
+
+    if (remove_Y == TRUE) {
+
+      rg <- dplyr::filter(rg,
+                          Chr != "chrY")
+
+    }
 
   }
 
@@ -112,6 +121,7 @@ runVarbin <- function(dir,
                                                    ignore.strand = TRUE,
                                                    keep.extra.columns = TRUE)
 
+
   cna_obj <-  scCNA(
     segment_ratios = as.data.frame(matrix(nrow = nrow(varbin_counts_df), ncol = ncol(varbin_counts_df))),
     ratios = as.data.frame(matrix(nrow = nrow(varbin_counts_df), ncol = ncol(varbin_counts_df))),
@@ -121,6 +131,7 @@ runVarbin <- function(dir,
 
   #sample name to metadata
   SummarizedExperiment::colData(cna_obj)$sample <- names(varbin_counts_df)
+  colnames(cna_obj) <- names(varbin_counts_df)
 
   return(cna_obj)
 
