@@ -95,6 +95,8 @@ plotRatio <- function(scCNA,
       )
     ),
     theme_classic(),
+    xlab(""),
+      ylab("log2 (ratios)"),
     theme(
       axis.text.x = element_text(
         angle = 0,
@@ -102,11 +104,11 @@ plotRatio <- function(scCNA,
         size = 15
       ),
       axis.text.y = element_text(size = 15),
-      axis.title.y.right = element_text(margin = margin(l = 10)),
       legend.position = "none",
       axis.ticks.x = element_blank(),
       axis.title = element_text(size = 15),
-      plot.title = element_text(size = 15)
+      plot.title = element_text(size = 15),
+      panel.border = element_rect(colour = "black", fill=NA, size = 1.3)
     )
   )
 
@@ -178,8 +180,6 @@ plotRatio <- function(scCNA,
         ) +
         geom_line(aes(abspos, log2(segment_ratio + 1e-3)), col = "black",
                   size = 1.2) +
-        xlab("") +
-        ylab("log2 (ratios)") +
         ggtitle(paste(toupper(sample_name)))
 
       print(p)
@@ -209,8 +209,6 @@ plotRatio <- function(scCNA,
       ) +
       geom_line(aes(abspos, log2(segment_ratio + 1e-3)), col = "black",
                 size = 1.2) +
-      xlab("") +
-      ylab("log2 (ratios)") +
       ggtitle(paste(toupper(sample_name)))
 
     print(p)

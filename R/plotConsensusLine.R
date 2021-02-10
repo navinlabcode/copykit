@@ -11,6 +11,7 @@
 #' @importFrom dplyr filter arrange ungroup group_by select row_number
 #' @importFrom shiny checkboxGroupInput plotOutput stopApp fillCol
 #' @importFrom tidyr gather
+#' @importFrom gtools mixedsort
 #'
 #' @examples
 plotConsensusLine <- function(scCNA) {
@@ -90,7 +91,7 @@ plotConsensusLine <- function(scCNA) {
                                  vjust = .5,
                                  size = 15),
       axis.text.y = element_text(size = 15),
-      axis.title.y.right = element_text(margin = margin(l = 10)),
+      panel.border = element_rect(colour = "black", fill=NA, size = 1.3),
       legend.position = "none",
       axis.ticks.x = element_blank(),
       axis.title = element_text(size = 15),
@@ -110,20 +111,37 @@ plotConsensusLine <- function(scCNA) {
                          value = "segment_ratio",
                   -abspos)
 
-  choice <- unique(con_l$group)
+  choice <- gtools::mixedsort(unique(con_l$group))
 
   ####################
   # shiny logic
   ####################
 
+  # tweaks, a list object to set up multicols for checkboxGroupInput
+  # alignment thanks to u/Peter
+  #https://stackoverflow.com/questions/29738975/how-to-align-a-group-of-checkboxgroupinput-in-r-shiny
+  tweaks <-
+    list(tags$head(tags$style(HTML("
+                                 .multicol {
+                                   height: 150px;
+                                   -webkit-column-count: 3; /* Chrome, Safari, Opera */
+                                   -moz-column-count: 3;    /* Firefox */
+                                   column-count: 5;
+                                   -moz-column-fill: auto;
+                                   -column-fill: auto;
+                                 }
+                                 "))
+    ))
+
   ui <- miniPage(
     gadgetTitleBar("Consensus line plot"),
-    miniContentPanel(
-      fillCol(
+    miniContentPanel(tweaks,
+      fillCol(       tags$div(align = 'left',
+                              class = 'multicol',
         checkboxGroupInput("checkbox",
                            label = c(""),
                            choices = choice,
-                           selected = choice[1]),
+                           selected = choice[1])),
 
         plotOutput("plot", height = "100%"),
 
