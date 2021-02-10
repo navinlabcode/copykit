@@ -6,7 +6,7 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param sample_name character vector with the name of the sample to be visualized
+#' @param sample_name Optional character vector with the name of the sample to be visualized
 #'
 #' @return Ratio plot from the selected sample.
 #' @importFrom stringr str_extract
@@ -20,7 +20,8 @@
 #' @examples
 #'
 
-plotRatio <- function(scCNA) {
+plotRatio <- function(scCNA,
+                      sample_name = NULL) {
   ####################
   ## aesthetic setup
   ####################
@@ -192,6 +193,29 @@ plotRatio <- function(scCNA) {
     })
   }
 
-  runGadget(ui, server)
+  # if no sample_name provided run app otherwise plot the requested cell
+  if (is.null(sample_name)) {
+    runGadget(ui, server)
+  } else {
+    p <- ggplot(df %>% filter(sample == sample_name)) +
+      ggchr_back +
+      ggaes +
+      geom_point(
+        aes(abspos, log2(ratio + 1e-3)),
+        shape = 20,
+        col = "gray",
+        size = 1,
+        alpha = .7
+      ) +
+      geom_line(aes(abspos, log2(segment_ratio + 1e-3)), col = "black",
+                size = 1.2) +
+      xlab("") +
+      ylab("log2 (ratios)") +
+      ggtitle(paste(toupper(sample_name)))
+
+    print(p)
+  }
+
+
 }
 
