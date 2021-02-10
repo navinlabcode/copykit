@@ -23,6 +23,12 @@ findOptimalK <- function(scCNA,
                          B = 100,
                          n_threads = parallel::detectCores() / 4) {
 
+  # obtaining data from reducedDim slot
+  if (is.null(SingleCellExperiment::reducedDim(scCNA))) {
+    stop("Reduced dimensions slot is NULL. Use runUmap().")
+  }
+
+
   hdbscanCBI <-
     function(data, minPts, diss = inherits(data, "dist"), ...) {
       if (diss)
