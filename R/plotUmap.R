@@ -90,7 +90,7 @@ plotUmap <- function(scCNA,
         y = V2,
         fill = as.factor(SummarizedExperiment::colData(scCNA)$subclones)
       ),
-      size = 1.7,
+      size = 1.8,
       shape = 21) +
     scale_fill_manual(values = c(subclones_pal()),
                        name = "subclones") + # palettes are in sysdata.rda
@@ -106,7 +106,7 @@ plotUmap <- function(scCNA,
         p <- ggplot(umap_df) +
       geom_point(aes(V1, V2,
                      fill = lab),
-                 size = 1.7,
+                 size = 1.8,
                  shape = 21) +
       theme_classic() +
       labs(fill = label) +
