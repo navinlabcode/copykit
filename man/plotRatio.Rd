@@ -4,18 +4,18 @@
 \alias{plotRatio}
 \title{Plot ratio}
 \usage{
-plotRatio(scCNA, sample_name = NULL, interactively = FALSE)
+plotRatio(scCNA, sample_name = NULL)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{sample_name}{character vector with the name of the sample to be visualized}
+\item{sample_name}{Optional character vector with the name of the sample to be visualized}
 }
 \value{
 Ratio plot from the selected sample.
 }
 \description{
-plotRatioPlot allows for a visualization of the segment ratios together with the ratios.
+plotRatio allows for a visualization of the segment ratios together with the ratios.
 It is helpful to observe the fit of the segmentation to the data.
 }
 \examples{

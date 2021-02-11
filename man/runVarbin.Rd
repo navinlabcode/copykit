@@ -4,7 +4,13 @@
 \alias{runVarbin}
 \title{Read BAM file and perform varbin analysis}
 \usage{
-runVarbin(dir, genome = "hg38", bin_size = "200kb", n_threads = 1)
+runVarbin(
+  dir,
+  genome = "hg38",
+  bin_size = "200kb",
+  remove_Y = FALSE,
+  n_threads = parallel::detectCores()/4
+)
 }
 \arguments{
 \item{dir}{A path for the directory containing .BAM files from short-read sequencing.}
@@ -12,6 +18,8 @@ runVarbin(dir, genome = "hg38", bin_size = "200kb", n_threads = 1)
 \item{genome}{Name of the genome assembly. Default: 'hg38'.}
 
 \item{bin_size}{The resolution of the VarBin method. Default: '200kb'.}
+
+\item{remove_Y}{(default == FALSE) If set to TRUE, removes information from the chrY from the dataset.}
 
 \item{n_threads}{Number of cores used to process files}
 }
