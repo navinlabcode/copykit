@@ -74,7 +74,7 @@ runVarbin <- function(dir,
   files <- list.files(dir, pattern = "*.bam", full.names = T)
 
   # managing .bai files
-  if (any(sapply(files, function(x) !str_detect(x, ".bai")))) {
+  if (any(sapply(files, function(x) !stringr::str_detect(x, ".bai")))) {
     files <- files[!stringr::str_detect(files, ".bai")]
   }
 
@@ -86,7 +86,7 @@ runVarbin <- function(dir,
   files_names <- stringr::str_remove(files_names, ".bam")
 
   # managing .bai files on filenames
-  if (any(sapply(files_names, function(x) !str_detect(x, ".bai")))) {
+  if (any(sapply(files_names, function(x) !stringr::str_detect(x, ".bai")))) {
     files_names <- files_names[!stringr::str_detect(files_names, ".bai")]
   }
 

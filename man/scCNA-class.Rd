@@ -5,12 +5,12 @@
 \alias{scCNA-class}
 \alias{.scCNA}
 \title{@export
- @importMethodsFrom SingleCellExperiment
+ @importMethodsFrom SingleCellExperiment SingleCellExperiment
  @importClassesFrom SummarizedExperiment RangedSummarizedExperiment SingleCellExperiment
  @importClassesFrom S4Vectors DataFrame SimpleList}
 \description{
 @export
- @importMethodsFrom SingleCellExperiment
+ @importMethodsFrom SingleCellExperiment SingleCellExperiment
  @importClassesFrom SummarizedExperiment RangedSummarizedExperiment SingleCellExperiment
  @importClassesFrom S4Vectors DataFrame SimpleList
 }

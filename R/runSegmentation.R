@@ -9,7 +9,7 @@
 #'
 #' @return The segment profile for all cells inside the scCNA object. Can be retrieved with \code{copykit::segment_ratios()}
 #' @importFrom DNAcopy CNA smooth.CNA segment
-#' @importMethodsFrom SummarizedExperiment
+#' @importMethodsFrom SummarizedExperiment assay
 #' @export
 #'
 #' @examples
@@ -17,6 +17,10 @@ runSegmentation <- function(scCNA,
                             method = "CBS",
                             genome = "hg38",
                             n_threads = parallel::detectCores() / 4) {
+
+  message(paste0("Running segmentation algorithm: ", method, " for genome", genome))
+  message(paste0("Using ", n_threads, "cores."))
+  message("Imagine a progress bar here ...")
 
   # checks
 
@@ -111,6 +115,8 @@ runSegmentation <- function(scCNA,
       as.data.frame()
 
     SummarizedExperiment::assay(scCNA, 'segment_ratios') <- cbs_seg_df
+
+    message("Done.")
 
     return(scCNA)
 
