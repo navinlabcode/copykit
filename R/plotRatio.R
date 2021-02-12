@@ -197,6 +197,11 @@ plotRatio <- function(scCNA,
   if (is.null(sample_name)) {
     runGadget(ui, server)
   } else {
+
+    if (sample_name %!in% colData(scCNA)$sample) {
+      stop("sample_name argument is not on dataset. Make sure to have the correct sample name")
+    }
+
     p <- ggplot(df %>% filter(sample == sample_name)) +
       ggchr_back +
       ggaes +
