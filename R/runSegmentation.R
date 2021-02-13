@@ -5,6 +5,7 @@
 #' @param scCNA The scCNA object
 #' @param method Character. Segmentation method of choice.
 #' @param genome Character. Genome assembly to be used, current accepted "hg19" or "hg38".
+#' @param seed Numeric. Set seed for CBS segmentation permutaton reproducibility.
 #' @param n_threads Number of threads used to calculate the distance matrix. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.
 #'
 #' @return The segment profile for all cells inside the scCNA object. Can be retrieved with \code{copykit::segment_ratios()}
@@ -16,10 +17,11 @@
 runSegmentation <- function(scCNA,
                             method = "CBS",
                             genome = "hg38",
+                            seed = 17,
                             n_threads = parallel::detectCores() / 4) {
 
-  message(paste0("Running segmentation algorithm: ", method, " for genome", genome))
-  message(paste0("Using ", n_threads, "cores."))
+  message(paste0("Running segmentation algorithm: ", method, " for genome ", genome))
+  message(paste0("Using ", n_threads, " cores."))
   message("Imagine a progress bar here ...")
 
   # checks
@@ -92,6 +94,7 @@ runSegmentation <- function(scCNA,
           data.type = "logratio",
           sampleid = names(x)
         )
+      set.seed(seed)
       smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
       segment_smoothed_CNA_object <-
         DNAcopy::segment(
