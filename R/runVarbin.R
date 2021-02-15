@@ -17,8 +17,9 @@
 #'
 #' @importFrom Rsubread featureCounts
 #' @importFrom stringr str_replace str_remove str_detect
-#' @importFrom dplyr rename mutate
+#' @importFrom dplyr rename mutate relocate
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
+#' @importFrom S4Vectors DataFrame
 #'
 #' @export
 #'
@@ -101,11 +102,8 @@ runVarbin <- function(dir,
                                '[[',
                                1)
 
-
-
   names(varbin_counts_list) <- files_names
 
-browser()
   #LOWESS GC normalization
 
   varbin_counts_list_gccor <- parallel::mclapply(varbin_counts_list, function(x) {
@@ -116,13 +114,9 @@ browser()
   mc.cores = n_threads)
 
   varbin_counts_df <- dplyr::bind_cols(varbin_counts_list_gccor)
-  # filtering low read counts
+
+  # filtering low read counts where the sum of bins does not reach 1
   varbin_counts_df <- varbin_counts_df[which(colSums(varbin_counts_df) != 0)]
-
-  #sample name to metadata
-  SummarizedExperiment::colData(cna_obj)$sample <- names(varbin_counts_df)
-  colnames(cna_obj) <- names(varbin_counts_df)
-
 
   rg <- rg %>%
     dplyr::select(-strand,
@@ -151,15 +145,46 @@ browser()
   names(varbin_reads_list) <- files_names
 
   # saving info and removing columns from list elements
-  metadata_info_names <- varbin_reads_list[[1]][,1]
-  varbin_reads_info <- lapply(varbin_reads_list, function(x)  x[,-1, drop = FALSE])
+  metadata_info_names <- varbin_reads_list[[1]][c(1,2,8,9,12,14),1]
+  metadata_info_names <- c("reads_assigned_bins", "reads_unmapped", "reads_duplicates",
+                           "reads_multimapped", "reads_unassigned", "reads_ambiguous")
 
-  bam_metrics <- cbind(metadata_info_names, dplyr::bind_cols(varbin_reads_info))
+  varbin_reads_info <- lapply(seq_along(varbin_reads_list), function(x)  {
 
+    # RSubread seems to change underlines to dot on some cases
+    # Have to make more complicated lapply to extract the name of the list
+    # and guarantee that the cell is properly named
+    name <- names(varbin_reads_list)[[x]]
+    df <- varbin_reads_list[[x]][c(1,2,8,9,12,14), -1, drop = FALSE]
+    names(df) <- name
+    df
+  })
 
+  names(varbin_reads_info) <- files_names
+
+  bam_metrics <- dplyr::bind_cols(varbin_reads_info)
+  rownames(bam_metrics) <- metadata_info_names
+
+  # filtering low read counts where the sum of bins does not reach 1 from metadata
+  bam_metrics <- bam_metrics[names(varbin_counts_df)]
+
+  bam_metrics <- as.data.frame(t(bam_metrics))
+
+  # adding total
+  reads_tot <- rowSums(bam_metrics)
+
+  bam_metrics$sample <- rownames(bam_metrics)
+  bam_metrics <- dplyr::relocate(bam_metrics, sample, before = "reads_assigned_bins")
+
+  bam_metrics <- bam_metrics %>%
+    dplyr::mutate(reads_total = reads_tot,
+                  percentage_duplicates = round(reads_duplicates/reads_total,2))
+
+  # adding to metadata
+  colnames(cna_obj) <- names(varbin_counts_df)
+  SummarizedExperiment::colData(cna_obj) <- S4Vectors::DataFrame(bam_metrics)
 
   return(cna_obj)
-
 
 }
 
