@@ -101,13 +101,11 @@ runVarbin <- function(dir,
                                '[[',
                                1)
 
-  varbin_reads_list <- lapply(varbin_counts_list_all_fields,
-                               '[[',
-                               4)
+
 
   names(varbin_counts_list) <- files_names
-  names(varbin_reads_list) <- files_names
 
+browser()
   #LOWESS GC normalization
 
   varbin_counts_list_gccor <- parallel::mclapply(varbin_counts_list, function(x) {
@@ -117,11 +115,14 @@ runVarbin <- function(dir,
   },
   mc.cores = n_threads)
 
-  # bam_metrics <- dplyr::bind_cols(varbin_reads_list)
-
   varbin_counts_df <- dplyr::bind_cols(varbin_counts_list_gccor)
   # filtering low read counts
   varbin_counts_df <- varbin_counts_df[which(colSums(varbin_counts_df) != 0)]
+
+  #sample name to metadata
+  SummarizedExperiment::colData(cna_obj)$sample <- names(varbin_counts_df)
+  colnames(cna_obj) <- names(varbin_counts_df)
+
 
   rg <- rg %>%
     dplyr::select(-strand,
@@ -139,9 +140,23 @@ runVarbin <- function(dir,
     rowRanges = rg_gr
   )
 
-  #sample name to metadata
-  SummarizedExperiment::colData(cna_obj)$sample <- names(varbin_counts_df)
-  colnames(cna_obj) <- names(varbin_counts_df)
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sun Feb 14 20:55:01 2021
+  # ADDING READS METRICS TO METADATA
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sun Feb 14 20:55:24 2021
+
+  varbin_reads_list <- lapply(varbin_counts_list_all_fields,
+                              '[[',
+                              4)
+
+  names(varbin_reads_list) <- files_names
+
+  # saving info and removing columns from list elements
+  metadata_info_names <- varbin_reads_list[[1]][,1]
+  varbin_reads_info <- lapply(varbin_reads_list, function(x)  x[,-1, drop = FALSE])
+
+  bam_metrics <- cbind(metadata_info_names, dplyr::bind_cols(varbin_reads_info))
+
+
 
   return(cna_obj)
 
