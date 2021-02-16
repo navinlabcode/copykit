@@ -181,8 +181,8 @@ runVarbin <- function(dir,
                   percentage_duplicates = round(reads_duplicates/reads_total,2))
 
   # adding to metadata
-  colnames(cna_obj) <- names(varbin_counts_df)
   SummarizedExperiment::colData(cna_obj) <- S4Vectors::DataFrame(bam_metrics)
+  colnames(cna_obj) <- names(varbin_counts_df)
 
   return(cna_obj)
 
