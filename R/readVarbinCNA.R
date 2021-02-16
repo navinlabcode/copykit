@@ -219,9 +219,9 @@ readVarbinCNA <- function(dir,
       if (identical(dat_metrics$sample,
                     SummarizedExperiment::colData(cna_obj)$sample)) {
 
-        SummarizedExperiment::colData(cna_obj)$total_reads <- dat_metrics$total_reads
-        SummarizedExperiment::colData(cna_obj)$reads_kept <- dat_metrics$reads_kept
-        SummarizedExperiment::colData(cna_obj)$pcr_duplicates <- round(dat_metrics$dups_removed/dat_metrics$total_reads,2)
+        SummarizedExperiment::colData(cna_obj)$reads_total <- dat_metrics$total_reads
+        SummarizedExperiment::colData(cna_obj)$reads_assigned_bins <- dat_metrics$reads_kept
+        SummarizedExperiment::colData(cna_obj)$percentage_duplicates <- round(dat_metrics$dups_removed/dat_metrics$total_reads,2)
 
       }
 

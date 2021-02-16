@@ -63,8 +63,8 @@ plotMetrics <- function(scCNA,
     my_theme
 
   # total_reads plot
-  if (!is.null(df$total_reads)) {
-    p2 <- ggplot2::ggplot(df, aes("tot_reads",total_reads)) +
+  if (!is.null(df$reads_total)) {
+    p2 <- ggplot2::ggplot(df, aes("tot_reads",reads_total)) +
       ggbeeswarm::geom_quasirandom() +
       ggplot2::theme_classic() +
       ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10),
@@ -75,8 +75,8 @@ plotMetrics <- function(scCNA,
   }
 
   # pcr_duplicates plot
-  if (!is.null(df$pcr_duplicates)) {
-    p3 <- ggplot2::ggplot(df, aes("pcr_dups",pcr_duplicates)) +
+  if (!is.null(df$percentage_duplicates)) {
+    p3 <- ggplot2::ggplot(df, aes("pcr_dups",percentage_duplicates)) +
       ggbeeswarm::geom_quasirandom() +
       ggplot2::theme_classic() +
       ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10),
