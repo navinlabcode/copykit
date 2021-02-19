@@ -1,8 +1,9 @@
 ### all clases for the copykit package
 
 ###################################################################
-# ape has no formal definition of the phylo-class that can be used for @importClassesFrom
-# the solution adopted here is the same as the one from phyloseq package
+# ape has no formal definition of the phylo-class
+# that can be used for @importClassesFrom
+# the solution adopted here is the same as the one adopted phyloseq package
 # which creates S3 and S4 placeholders for the phylo class
 
 #' @export

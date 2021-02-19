@@ -1,14 +1,18 @@
 #' Plot gene segment ratios
 #'
-#' geneCopyPlot is a way to visualize the number of copies for different genes across all the cells. It outputs a violin plot with the desired genes.
+#' geneCopyPlot is a way to visualize the number of copies
+#'  for different genes across all the cells.
+#'   It outputs a violin plot with the desired genes.
 #'
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
 #' @param genes Vector containing the HUGO Symbol for the genes of interest.
 #' @param genome Genome assembly, either hg19 or hg38
-#' @param geom Which geom should be used for plotting, options are "violin" or "swarm". Defaults to "swarm"
-#' @param label Color by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
+#' @param geom Which geom should be used for plotting.
+#' Options are "violin" or "swarm". Defaults to "swarm"
+#' @param label Color by an element of metadata.
+#' Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #'
 #' @return A violin plot with the segment ratios for the genes of interest.
 #' @importFrom BiocGenerics subset
@@ -74,7 +78,7 @@ plotGeneCopy <- function(scCNA,
 
   # subsetting to only the desired genes
   genes_features <- BiocGenerics:::subset(genes_assembly,
-                                               symbol %in% genes)
+                                          symbol %in% genes)
 
   # Checking genes that could not be found and returned an error message
   `%!in%` <- base::Negate(`%in%`)
@@ -107,10 +111,8 @@ plotGeneCopy <- function(scCNA,
   # some genes might overlap more than one range (more than one bin), in this case
   # only one will be kept
   df <-
-    tibble::tibble(
-      gene = as.character(genes_features$symbol[S4Vectors::queryHits(olaps)]),
-      pos = S4Vectors::subjectHits(olaps),
-    ) %>%
+    tibble::tibble(gene = as.character(genes_features$symbol[S4Vectors::queryHits(olaps)]),
+                   pos = S4Vectors::subjectHits(olaps)) %>%
     dplyr::distinct(gene, .keep_all = TRUE)
 
   # checking for genes that might have been blacklisted from the varbin pipeline
@@ -132,13 +134,13 @@ plotGeneCopy <- function(scCNA,
   # obtaining seg ratios and sbsetting for the genes
   seg_data <- segment_ratios(scCNA)
 
-  seg_data_genes <- seg_data[df$pos,] %>%
+  seg_data_genes <- seg_data[df$pos, ] %>%
     dplyr::mutate(gene = df$gene)
 
   #long format for plotting
   seg_long <- tidyr::gather(seg_data_genes,
                             key = "sample",
-                            value = "segratio",-gene)
+                            value = "segratio", -gene)
   #plotting
 
   p <-
@@ -150,7 +152,7 @@ plotGeneCopy <- function(scCNA,
     ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
     my_theme
 
-    #geom violin
+  #geom violin
 
   if (geom == "violin" & is.null(label)) {
     p <- p +
@@ -184,11 +186,11 @@ plotGeneCopy <- function(scCNA,
                        var = label)
 
 
-   if (label == "superclones") {
+    if (label == "superclones") {
       # coloring for discrete variable label
       p <- p +
         ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
-                                                     each = length(df$gene))),
+                                                    each = length(df$gene))),
                                      shape = 21)
 
       color_lab <-
@@ -201,9 +203,11 @@ plotGeneCopy <- function(scCNA,
     } else if (label == "subclones") {
       # coloring for discrete variable label
       p <- p +
-        ggbeeswarm::geom_quasirandom(aes(fill = as.character(rep(lab,
-                                                     each = length(df$gene)))),
-                                     shape = 21)
+        ggbeeswarm::geom_quasirandom(aes(fill = as.character(rep(
+          lab,
+          each = length(df$gene)
+        ))),
+        shape = 21)
 
       color_lab <-
         list(ggplot2::scale_fill_manual(values = subclones_pal()))
@@ -213,23 +217,22 @@ plotGeneCopy <- function(scCNA,
       print(p)
 
     } else if (is.numeric(lab))  {
+      p <- p +
+        ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
+                                                    each = length(df$gene))),
+                                     shape = 21)
 
-        p <- p +
-          ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
-                                                       each = length(df$gene))),
-                                       shape = 21)
+      color_lab <- list(ggplot2::scale_color_viridis_c())
 
-        color_lab <- list(ggplot2::scale_color_viridis_c())
+      p <- p + color_lab
 
-        p <- p + color_lab
-
-        print(p)
+      print(p)
 
     } else {
       # coloring for discrete variable label
       p <- p +
         ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
-                                                     each = length(df$gene))),
+                                                    each = length(df$gene))),
                                      shape = 21)
 
       color_lab <- list(ggplot2::scale_color_viridis_d())

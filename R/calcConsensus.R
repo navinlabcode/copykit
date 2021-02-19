@@ -1,8 +1,11 @@
 #' Calculate a consensus matrix of segment ratios based on metadata
 #'
 #' @param scCNA The scCNA object.
-#' @param consensus_by The column from metadata that will be used to isolate the cells by factor and calculate the consensus.
-#' @param n_threads Number of threads used to calculate the distance matrix. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.
+#' @param consensus_by The column from metadata that will be used
+#'  to isolate the cells by factor and calculate the consensus.
+#' @param n_threads Number of threads used to calculate the distance matrix.
+#' Passed to `parallel::mclapply`.
+#' As default it uses 1/4 of the detected cores available.
 #'
 #' @return
 #' @export
@@ -11,8 +14,8 @@
 calcConsensus <- function(scCNA,
                           consensus_by = "subclones",
                           n_threads = parallel::detectCores() / 4) {
-
-  if (consensus_by == 'subclones' & is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
+  if (consensus_by == 'subclones' &
+      is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
     stop("Calculating consensus requires cluster information. use findClusters(scCNA)")
   }
 
@@ -28,7 +31,8 @@ calcConsensus <- function(scCNA,
     stop("Please provide information to consensus_by argument.")
   }
 
-  consensus_info <- as.data.frame(SummarizedExperiment::colData(scCNA)) %>%
+  consensus_info <-
+    as.data.frame(SummarizedExperiment::colData(scCNA)) %>%
     dplyr::select(!!consensus_by)
 
   seg_data <- as.data.frame(t(segment_ratios(scCNA)))

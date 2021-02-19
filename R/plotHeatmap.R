@@ -1,16 +1,23 @@
 #' Plot heatmap
 #'
-#' Plots a heatmap of the copy number data. Each row is a cell and colums represent genomic positions.
+#' Plots a heatmap of the copy number data.
+#' Each row is a cell and colums represent genomic positions.
 #'
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param order_cells Methods to order the cells within the heatmap. Accepted values are "phylogeny", "hclust", "graph_search". Defaults to "hclust".
-#' @param label Character. Annotate heatmap by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
-#' @param label_colors List. Named list with colors for the label annotation. Must match label length
-#' @param row_split Character. Element of the metadata to split the heatmap. Must have length = 1.
+#' @param order_cells Methods to order the cells within the heatmap.
+#' Accepted values are "consensus_tree", "phylogeny", "hclust", "graph_search".
+#' Defaults to "consensus_tree".
+#' @param label Character. Annotate heatmap by an element of metadata.
+#' Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
+#' @param label_colors List. Named list with colors for the label annotation.
+#'  Must match label length
+#' @param row_split Character. Element of the metadata to split the heatmap.
+#' Must have length = 1.
 #' @param consensus Boolean. Indicates if the consensus heatmap should be plotted.
-#' @param use_default_colors Boolean. Use the default colors when annotating superclones, subclones or filtering.
+#' @param use_default_colors Boolean. Use the default colors when annotating
+#' superclones, subclones or filtering.
 #'
 #' @return A heatmap visualization.
 #'
@@ -93,7 +100,7 @@ plotHeatmap <- function(scCNA,
     ComplexHeatmap::HeatmapAnnotation(
       chr_text = ComplexHeatmap::anno_text(v[1:ncol(seg_data)],
                                            gp = grid::gpar(fontsize = 14)),
-      df = as.character(chr[1:nrow(chr), ]),
+      df = as.character(chr[1:nrow(chr),]),
       show_legend = FALSE,
       show_annotation_name = FALSE,
       which = "column",
@@ -102,7 +109,6 @@ plotHeatmap <- function(scCNA,
 
   # consensus and not consensus logic
   if (consensus == FALSE) {
-
     # ordering cells
     if (order_cells == "phylogeny") {
       tryCatch(
@@ -120,10 +126,11 @@ plotHeatmap <- function(scCNA,
       # getting order
       is_tip <- tree$edge[, 2] <= length(tree$tip.label)
       ordered_tips_index <- tree$edge[is_tip, 2]
-      tree_tips_order <- tree$tip.label[ordered_tips_index] %>% rev()
+      tree_tips_order <-
+        tree$tip.label[ordered_tips_index] %>% rev()
 
       # ordering data
-      seg_data_ordered <- seg_data[tree_tips_order,]
+      seg_data_ordered <- seg_data[tree_tips_order, ]
 
     }
 
@@ -145,12 +152,11 @@ plotHeatmap <- function(scCNA,
       hc <- fastcluster::hclust(distMat(scCNA),
                                 method = "ward.D2")
 
-      seg_data_ordered <- seg_data[hc$order,]
+      seg_data_ordered <- seg_data[hc$order, ]
 
     }
 
     if (order_cells == "consensus_tree") {
-
       if (nrow(consensus(scCNA)) == 0) {
         scCNA <- calcConsensus(scCNA)
         scCNA <- runConsensusPhylo(scCNA)
@@ -160,18 +166,19 @@ plotHeatmap <- function(scCNA,
       consensus_by <- attr(consensus(scCNA), "consensus_by")
 
       meta <- as.data.frame(colData(scCNA)) %>%
-        dplyr::select(sample, !!consensus_by)
-      meta_info <- as.character(dplyr::pull(meta, !!consensus_by))
+        dplyr::select(sample,!!consensus_by)
+      meta_info <- as.character(dplyr::pull(meta,!!consensus_by))
 
       tree <- consensusPhylo(scCNA)
 
       # getting order
       is_tip <- tree$edge[, 2] <= length(tree$tip.label)
       ordered_tips_index <- tree$edge[is_tip, 2]
-      tree_tips_order <- tree$tip.label[ordered_tips_index] %>% rev()
+      tree_tips_order <-
+        tree$tip.label[ordered_tips_index] %>% rev()
 
-      meta_o <- meta[order(match(meta_info, tree_tips_order)), ]
-      seg_data_ordered <- seg_data[meta_o$sample,]
+      meta_o <- meta[order(match(meta_info, tree_tips_order)),]
+      seg_data_ordered <- seg_data[meta_o$sample, ]
 
     }
 
@@ -206,7 +213,7 @@ plotHeatmap <- function(scCNA,
 
       g_ord <- as.numeric(g_bs$order)
 
-      seg_data_ordered <- seg_data[g_ord,]
+      seg_data_ordered <- seg_data[g_ord, ]
 
     }
 
@@ -246,14 +253,13 @@ plotHeatmap <- function(scCNA,
       as.data.frame()
 
     if (consensus == FALSE) {
-      metadata <- metadata[rownames(seg_data_ordered), ]
+      metadata <- metadata[rownames(seg_data_ordered),]
     }
 
     metadata_anno_df <- metadata %>%
       dplyr::select(dplyr::all_of(label))
 
     if (consensus == TRUE) {
-
       # Uses the hidden consensus_by attribute from the calcConsensus function
       # to guarantee the same order
       cons_attr <- attr(consensus(scCNA), "consensus_by")
@@ -264,18 +270,21 @@ plotHeatmap <- function(scCNA,
       rownames(metadata_anno_df) <- metadata_anno_df %>%
         dplyr::pull(!!cons_attr)
 
-      metadata_anno_df <- metadata_anno_df[names(consensus(scCNA)),,drop = FALSE]
+      metadata_anno_df <-
+        metadata_anno_df[names(consensus(scCNA)), , drop = FALSE]
 
     }
 
     if (use_default_colors == TRUE) {
       label_colors <- c(
-        list(superclones = superclones_pal(),
-             subclones = subclones_pal(),
-             filtered = c("kept" = "green2",
-                          "removed" = "firebrick3"),
-             is_normal = c("FALSE" = "#F8766D",
-                           "TRUE" = "#00BFC4")),
+        list(
+          superclones = superclones_pal(),
+          subclones = subclones_pal(),
+          filtered = c("kept" = "green2",
+                       "removed" = "firebrick3"),
+          is_normal = c("FALSE" = "#F8766D",
+                        "TRUE" = "#00BFC4")
+        ),
         label_colors
       )
     }

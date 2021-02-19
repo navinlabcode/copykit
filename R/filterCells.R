@@ -2,8 +2,8 @@
 #'
 #' filterCells uses a k-nearest-neighbor approach to remove cells
 #' with random CNA profiles, largely due to noise data.
-#' It calculates a correlation matrix and sets a resolution below which non neighbors
-#'  will be classified as noise cells.
+#' It calculates a correlation matrix and sets a resolution
+#' below which non neighbors will be classified as noise cells.
 #'
 #' @author Hua-Jun Wu
 #' @author Darlan Conterno Minussi
@@ -12,7 +12,11 @@
 #' @param k K-nearest-neighbor, defaults to 5.
 #' @param resolution Set's how strict the correlation cut off will be. Defaults to 0.8.
 #'
-#' @return Adds a filtered cells label to the scCNA metadata. Cells that pass the filtering criteria receive the label "kept", whereas cells that do not pass the filtering criteria receive the label "removed".
+#' @return Adds a filtered cells label to the scCNA metadata.
+#' Cells that pass the filtering criteria receive the label "kept",
+#' whereas cells that do not pass the filtering criteria
+#' receive the label "removed".
+#'
 #' @return Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #' @export
 #'
@@ -23,7 +27,6 @@
 filterCells <- function(scCNA,
                         k = 5,
                         resolution = 0.8) {
-
   if (!is.numeric(resolution)) {
     stop("Resolution needs to be a number between 0 and 1")
   }
@@ -37,10 +40,10 @@ filterCells <- function(scCNA,
   message("Calculating correlation matrix.")
 
   # correction to avoid correlations calculations with standard deviation zero
-  zero_sd_idx <- which(apply(seg,2,sd) == 0)
+  zero_sd_idx <- which(apply(seg, 2, sd) == 0)
 
-  if (length(zero_sd_idx) >=1) {
-    seg[1,zero_sd_idx] <- seg[1,zero_sd_idx]+1e-3
+  if (length(zero_sd_idx) >= 1) {
+    seg[1, zero_sd_idx] <- seg[1, zero_sd_idx] + 1e-3
   }
 
   # calculating correlations
@@ -60,8 +63,10 @@ filterCells <- function(scCNA,
   )
   if (identical(SummarizedExperiment::colData(scCNA)$sample,
                 dst_knn_df$sample)) {
-    SummarizedExperiment::colData(scCNA)$filter_corr_value <- round(dst_knn_df$cor, 3)
-    SummarizedExperiment::colData(scCNA)$filtered <- dst_knn_df$filtered
+    SummarizedExperiment::colData(scCNA)$filter_corr_value <-
+      round(dst_knn_df$cor, 3)
+    SummarizedExperiment::colData(scCNA)$filtered <-
+      dst_knn_df$filtered
 
   } else
     stop("Sample names do not match metadata sample info. Check colData(scCNA).")

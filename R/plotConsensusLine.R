@@ -2,7 +2,8 @@
 #'
 #' @param scCNA The scCNA object
 #'
-#' @return An interactive plot where different groups can be selected for easier visualization
+#' @return An interactive plot where different groups
+#' can be selected for easier visualization
 #' @export
 #'
 #' @import shiny
@@ -78,20 +79,34 @@ plotConsensusLine <- function(scCNA) {
   sec_breaks <- c(0, 0.5e9, 1e9, 1.5e9, 2e9, 2.5e9, 3e9)
   sec_labels <- c(0, 0.5, 1, 1.5, 2, 2.5, 3)
 
+
   # theme
   ggaes <- list(
-    scale_x_continuous(breaks = xbreaks,
-                       labels = gsub("chr", "", chrom_rects$chr),
-                       position = "top",
-                       expand = c(0,0),
-                       sec.axis = sec_axis(~., breaks = sec_breaks, labels = sec_labels, name = "genome position (Gb)")),
+    scale_x_continuous(
+      breaks = xbreaks,
+      labels = gsub("chr", "", chrom_rects$chr),
+      position = "top",
+      expand = c(0, 0),
+      sec.axis = sec_axis(
+        ~ .,
+        breaks = sec_breaks,
+        labels = sec_labels,
+        name = "genome position (Gb)"
+      )
+    ),
     theme_classic(),
     theme(
-      axis.text.x = element_text(angle = 0,
-                                 vjust = .5,
-                                 size = 15),
+      axis.text.x = element_text(
+        angle = 0,
+        vjust = .5,
+        size = 15
+      ),
       axis.text.y = element_text(size = 15),
-      panel.border = element_rect(colour = "black", fill=NA, size = 1.3),
+      panel.border = element_rect(
+        colour = "black",
+        fill = NA,
+        size = 1.3
+      ),
       legend.position = "none",
       axis.ticks.x = element_blank(),
       axis.title = element_text(size = 15),
@@ -133,32 +148,30 @@ plotConsensusLine <- function(scCNA) {
                                  "))
     ))
 
-  ui <- miniPage(
-    gadgetTitleBar("Consensus line plot"),
-    miniContentPanel(tweaks,
-      fillCol(       tags$div(align = 'left',
-                              class = 'multicol',
-        checkboxGroupInput("checkbox",
-                           label = c(""),
-                           choices = choice,
-                           selected = choice[1])),
+  ui <- miniPage(gadgetTitleBar("Consensus line plot"),
+                 miniContentPanel(tweaks,
+                                  fillCol(
+                                    tags$div(
+                                      align = 'left',
+                                      class = 'multicol',
+                                      checkboxGroupInput(
+                                        "checkbox",
+                                        label = c(""),
+                                        choices = choice,
+                                        selected = choice[1]
+                                      )
+                                    ),
 
-        plotOutput("plot", height = "100%"),
+                                    plotOutput("plot", height = "100%"),
 
-        # col width
-        flex = c(1, 2)
+                                    # col width
+                                    flex = c(1, 2)
 
-      )
-
-    )
-  )
+                                  )))
 
   server <- function(input, output, session) {
-
-
     # Render the plot
     output$plot <- renderPlot({
-
       df_plot <- con_l %>%
         dplyr::filter(group %in% input$checkbox)
 
@@ -172,7 +185,7 @@ plotConsensusLine <- function(scCNA) {
 
       # coloring by superclones or subclones
       if (attr(con, "consensus_by") == "subclones") {
-       p <- p + scale_color_manual(values = subclones_pal())
+        p <- p + scale_color_manual(values = subclones_pal())
       }
 
       if (attr(con, "consensus_by") == "superclones") {

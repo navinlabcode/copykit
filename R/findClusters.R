@@ -1,19 +1,32 @@
 #' Find Clusters
 #'
-#' Search for clusters in the scCNA data by using a graph based approach. \code{findClusters()} builds an SNN graph of the k-nearest neighbors and attempts to find two different configuration of clusters. Major and minor subpopulations.
-#' Major clusters are found by looking at the graph connected components, whereas the minor clusters use the Leiden algorithm to detect connected communities within the major clusters.
-#' \code{findClusters()} generates the graph by using the UMAP embedding that can be obtained after running \code{runUmap()}.
+#' Search for clusters in the scCNA data by
+#' using a graph based approach. \code{findClusters()}
+#' builds an SNN graph of the k-nearest neighbors and
+#' attempts to find two different configuration of clusters.
+#' Major and minor subpopulations.
+#' Major clusters are found by looking at the graph connected components,
+#'  whereas the minor clusters use the hdbscan or leiden
+#'   algorithm to detect connected communities within the major clusters.
+#' \code{findClusters()} generates the graph by using the
+#' UMAP embedding that can be obtained after running \code{runUmap()}.
 #'
 #'
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param method Which method should be used for clustering, options are "hdbscan" or "leiden". Defaults to "hdbscan".
-#' @param k_superclones k-nearest-neighbor value that will be used to find the major clusters.(Defaults to 35).
-#' @param k_subclones k-nearest-neighbor value that will be used to find the minor clusters (Defaults to 21).
+#' @param method Which method should be used for clustering,
+#' options are "hdbscan" or "leiden". Defaults to "hdbscan".
+#' @param k_superclones k-nearest-neighbor value.
+#' Used to find the major clusters.(Defaults to 35).
+#' @param k_subclones k-nearest-neighbor value.
+#' Used to find the minor clusters (Defaults to 21).
 #' @param seed Seed passed on to leiden algorithm (Defaults to 17).
 #'
-#' @return Metadata cluster information that can be found in \code{SummarizedExperiment::colData(scCNA)$superclones} for the major clusters and \code{SummarizedExperiment::colData(scCNA)$subclones} for the minor clusters. Major clusters are named with capital letters whereas minor clusters are named with a numbers but as a character vector.
+#' @return Metadata cluster information that can be found in
+#' \code{SummarizedExperiment::colData(scCNA)$superclones}
+#' for the major clusters and \code{SummarizedExperiment::colData(scCNA)$subclones}
+#' for the minor clusters.
 #'
 #' @export
 #' @import leidenbase
@@ -32,7 +45,6 @@ findClusters <- function(scCNA,
                          k_superclones = NULL,
                          k_subclones = NULL,
                          seed = 17) {
-
   # obtaining data from reducedDim slot
   if (!is.null(SingleCellExperiment::reducedDim(scCNA))) {
     umap_df <-
@@ -44,11 +56,11 @@ findClusters <- function(scCNA,
 
   # settting k defaults
   if (is.null(k_superclones)) {
-    k_superclones <- 0.05*nrow(umap_df)
+    k_superclones <- 0.05 * nrow(umap_df)
   }
 
   if (is.null(k_subclones)) {
-    k_subclones <- 0.02*nrow(umap_df)
+    k_subclones <- 0.02 * nrow(umap_df)
   }
 
   # checks
@@ -68,7 +80,8 @@ findClusters <- function(scCNA,
   # finding clusters
   #  major
   message(paste("Finding clusters, using method:", method))
-  superclones <- as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
+  superclones <-
+    as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
 
   # using leiden
   if (method == "leiden") {
@@ -77,7 +90,8 @@ findClusters <- function(scCNA,
       g_minor,
       partition_type = 'RBConfigurationVertexPartition',
       resolution_parameter = 1,
-      seed=seed))
+      seed = seed
+    ))
     if (inherits(leid_obj, "try-error")) {
       stop('Running leiden failed.')
     } else {
@@ -87,7 +101,6 @@ findClusters <- function(scCNA,
 
   # using hdbscan
   if (method == "hdbscan") {
-
     set.seed(seed)
     hdb <- dbscan::hdbscan(umap_df,
                            minPts = k_subclones)
@@ -101,8 +114,7 @@ findClusters <- function(scCNA,
       as.data.frame() %>%
       tibble::rownames_to_column("cell2") %>%
       tidyr::gather(key = "cell1",
-                    value = "dist",
-                    -cell2) %>%
+                    value = "dist",-cell2) %>%
       dplyr::filter(cell1 != cell2)
 
     hdb_df <- data.frame(cell = rownames(umap_df),
@@ -116,15 +128,16 @@ findClusters <- function(scCNA,
       ungroup()
 
     for (i in 1:nrow(umap_df)) {
-
-      if(hdb_df$hdb[i] == "0") {
+      if (hdb_df$hdb[i] == "0") {
         cellname <- rownames(umap_df)[i]
-        closest_cell <- dplyr::filter(dist_min, cell1 == rownames(umap_df)[i])$cell2
-        closest_cell_cluster <- dplyr::filter(hdb_df, cell == closest_cell)$hdb
+        closest_cell <-
+          dplyr::filter(dist_min, cell1 == rownames(umap_df)[i])$cell2
+        closest_cell_cluster <-
+          dplyr::filter(hdb_df, cell == closest_cell)$hdb
         hdb_df$hdb[i] <- closest_cell_cluster
       }
 
-      subclones <- as.factor(paste0('c',hdb_df$hdb))
+      subclones <- as.factor(paste0('c', hdb_df$hdb))
 
     }
 
@@ -132,12 +145,11 @@ findClusters <- function(scCNA,
 
   # storing info
   SummarizedExperiment::colData(scCNA)$superclones <- superclones
-  SummarizedExperiment::colData(scCNA)$subclones <- droplevels(subclones)
+  SummarizedExperiment::colData(scCNA)$subclones <-
+    droplevels(subclones)
 
   message("Done.")
 
   return(scCNA)
 
 }
-
-

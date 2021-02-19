@@ -2,9 +2,11 @@
 #'
 #' @param scCNA The scCNA object
 #' @param assay The assay that will be used
-#' @param fun Character. Function used to calculate the ratios, defaults to "median"
+#' @param fun Character. Function used to calculate the ratios.
+#' Defaults to "median"
 #'
-#' @return A ratio matrix within the slot \code{assay(scCNA, 'ratios')} can be accessed with \code{copykit::ratios(scCNA)}.
+#' @return A ratio matrix within the slot \code{assay(scCNA, 'ratios')}
+#' can be accessed with \code{copykit::ratios(scCNA)}.
 #' @export
 #'
 #' @importFrom SummarizedExperiment assay
@@ -13,9 +15,8 @@
 calcRatios <- function(scCNA,
                        assay = "ft",
                        fun = "median") {
-
   if (assay %!in% c("ft", "bincounts")) {
-    stop("Assay must be either 'ft' or 'bincounts'" )
+    stop("Assay must be either 'ft' or 'bincounts'")
   }
 
   counts <- SummarizedExperiment::assay(scCNA, assay)

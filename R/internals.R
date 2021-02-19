@@ -139,11 +139,12 @@ setMethod("show", "scCNA", function(object) {
     #otherwise test for difference in mean based on observed values
     else {
       if ((length(vec1) > 10 &
-           length(vec2) > 10) | sum(length(vec1), length(vec2)) > 100) {
-        pv = wilcox.test(vec1, vec2)$p.value
+           length(vec2) > 10) |
+          sum(length(vec1), length(vec2)) > 100) {
+        pv <- wilcox.test(vec1, vec2)$p.value
       }
       else{
-        pv = wilcox.test(vec1, vec2, exact = T)$p.value
+        pv <- wilcox.test(vec1, vec2, exact = T)$p.value
       }	#/10^max(mn1,mn2)
       if (length(vec1) <= 3 | length(vec2) <= 3) {
         pv <- 0
@@ -153,15 +154,16 @@ setMethod("show", "scCNA", function(object) {
     #if p-value exceeds pv.thres
     if (pv > pv.thres) 	{
       #combine observed values
-      vec = c(vec1, vec2)
+      vec <- c(vec1, vec2)
       # Index values to be updated
-      index.merged = which((vecPredNow == mn1) | (vecPredNow == mn2))
+      index.merged <-
+        which((vecPredNow == mn1) | (vecPredNow == mn2))
       #update predicted values by median of the observed values
-      vecPredNow[index.merged] = median(vec, na.rm = TRUE)
+      vecPredNow[index.merged] <- median(vec, na.rm = TRUE)
       #update segment medians  median of the observed values and remove one of the duplicates
       mnNow[which((mnNow == mn1) |
-                    (mnNow == mn2))] = median(vec, na.rm = TRUE)
-      mnNow = unique(mnNow)
+                    (mnNow == mn2))] <- median(vec, na.rm = TRUE)
+      mnNow <- unique(mnNow)
     }
     list(mnNow = mnNow,
          vecPredNow = vecPredNow,
@@ -247,7 +249,8 @@ setMethod("show", "scCNA", function(object) {
         }
       }
       # When done merging for a given threshold, test for significance
-      ansari[j] = ansari.test(sort(vecObs - vecPredNow), sort(vecObs - vecPred))$p.value
+      ansari[j] <-
+        ansari.test(sort(vecObs - vecPredNow), sort(vecObs - vecPred))$p.value
       if (is.na(ansari[j])) {
         ansari[j] <- 0
       }
