@@ -1,11 +1,15 @@
 #' Finds the Optimal K value to be used for subclone clustering
 #'
 #' @param scCNA  scCNA object.
-#' @param k_range Range of values to be tested. Defaults to 7 to the sqrt of the number of cells
-#' @param method Method which where the values will be tested. Only "hdbscan" available.
+#' @param k_range Range of values to be tested.
+#'  Defaults to 7 to the sqrt of the number of cells
+#' @param method Method which where the values will be tested.
+#' Only "hdbscan" available.
 #' @param seed Seed (Defaults to 17).
-#' @param B Number of bootstrapping. Defaults to 100. Higher values yield better results at a cost of performance
-#' @param n_threads  Number of threads. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.
+#' @param B Number of bootstrapping. Defaults to 100.
+#' Higher values yield better results at a cost of performance
+#' @param n_threads  Number of threads. Passed to `parallel::mclapply`.
+#' As default it uses 1/4 of the detected cores available.
 #'
 #' @return
 #' @export
@@ -46,7 +50,8 @@ findOptimalK <- function(scCNA,
       tmp_data_df$cell <- rownames(tmp_data_df)
 
       # for hdb
-      # adding the ones classified as outliers to the closest cluster possible according to euclidean distance
+      # adding the ones classified as outliers to the closest cluster possible
+      # according to euclidean distance
       dist_umap <-
         dist(tmp_data_df[, c(1:2)]) %>% as.matrix() %>% as.data.frame() %>%
         rownames_to_column("cell2") %>%
