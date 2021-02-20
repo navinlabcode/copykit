@@ -1,11 +1,13 @@
 #' Plot metrics
 #'
-#' Provides a plot of the metrics to quickly assess the quality and overall look of the copy number data.
+#' Provides a plot of the metrics to quickly assess
+#' the quality and overall look of the copy number data.
 #'
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param label Color by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
+#' @param label Color by an element of metadata.
+#' Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #'
 #' @return A plot with the metrics available in the metadata
 #' @export
