@@ -11,10 +11,12 @@ calcRatios(scCNA, assay = "ft", fun = "median")
 
 \item{assay}{The assay that will be used}
 
-\item{fun}{Character. Function used to calculate the ratios, defaults to "median"}
+\item{fun}{Character. Function used to calculate the ratios.
+Defaults to "median"}
 }
 \value{
-A ratio matrix within the slot \code{assay(scCNA, 'ratios')} can be accessed with \code{copykit::ratios(scCNA)}.
+A ratio matrix within the slot \code{assay(scCNA, 'ratios')}
+can be accessed with \code{copykit::ratios(scCNA)}.
 }
 \description{
 Calculates the ratios from a matrix of counts

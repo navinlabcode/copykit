@@ -58,7 +58,8 @@ Imports:
     leidenbase,
     dbscan,
     mixtools,
-    shiny
+    shiny,
+    Rsubread
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Depends: 
