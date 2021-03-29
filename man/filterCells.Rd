@@ -14,15 +14,18 @@ filterCells(scCNA, k = 5, resolution = 0.8)
 \item{resolution}{Set's how strict the correlation cut off will be. Defaults to 0.8.}
 }
 \value{
-Adds a filtered cells label to the scCNA metadata. Cells that pass the filtering criteria receive the label "kept", whereas cells that do not pass the filtering criteria receive the label "removed".
+Adds a filtered cells label to the scCNA metadata.
+Cells that pass the filtering criteria receive the label "kept",
+whereas cells that do not pass the filtering criteria
+receive the label "removed".
 
 Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 }
 \description{
 filterCells uses a k-nearest-neighbor approach to remove cells
 with random CNA profiles, largely due to noise data.
-It calculates a correlation matrix and sets a resolution below which non neighbors
- will be classified as noise cells.
+It calculates a correlation matrix and sets a resolution
+below which non neighbors will be classified as noise cells.
 }
 \examples{
 

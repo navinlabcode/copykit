@@ -13,9 +13,12 @@ calcConsensus(
 \arguments{
 \item{scCNA}{The scCNA object.}
 
-\item{consensus_by}{The column from metadata that will be used to isolate the cells by factor and calculate the consensus.}
+\item{consensus_by}{The column from metadata that will be used
+to isolate the cells by factor and calculate the consensus.}
 
-\item{n_threads}{Number of threads used to calculate the distance matrix. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.}
+\item{n_threads}{Number of threads used to calculate the distance matrix.
+Passed to `parallel::mclapply`.
+As default it uses 1/4 of the detected cores available.}
 }
 \value{
 

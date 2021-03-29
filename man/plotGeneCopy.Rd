@@ -13,15 +13,19 @@ plotGeneCopy(scCNA, genes, genome = "hg19", geom = "swarm", label = NULL)
 
 \item{genome}{Genome assembly, either hg19 or hg38}
 
-\item{geom}{Which geom should be used for plotting, options are "violin" or "swarm". Defaults to "swarm"}
+\item{geom}{Which geom should be used for plotting.
+Options are "violin" or "swarm". Defaults to "swarm"}
 
-\item{label}{Color by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
+\item{label}{Color by an element of metadata.
+Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
 }
 \value{
 A violin plot with the segment ratios for the genes of interest.
 }
 \description{
-geneCopyPlot is a way to visualize the number of copies for different genes across all the cells. It outputs a violin plot with the desired genes.
+geneCopyPlot is a way to visualize the number of copies
+ for different genes across all the cells.
+  It outputs a violin plot with the desired genes.
 }
 \examples{
 

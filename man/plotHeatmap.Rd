@@ -17,23 +17,30 @@ plotHeatmap(
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{order_cells}{Methods to order the cells within the heatmap. Accepted values are "phylogeny", "hclust", "graph_search". Defaults to "hclust".}
+\item{order_cells}{Methods to order the cells within the heatmap.
+Accepted values are "consensus_tree", "phylogeny", "hclust", "graph_search".
+Defaults to "consensus_tree".}
 
-\item{label}{Character. Annotate heatmap by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
+\item{label}{Character. Annotate heatmap by an element of metadata.
+Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
 
-\item{label_colors}{List. Named list with colors for the label annotation. Must match label length}
+\item{label_colors}{List. Named list with colors for the label annotation.
+Must match label length}
 
-\item{use_default_colors}{Boolean. Use the default colors when annotating superclones, subclones or filtering.}
+\item{use_default_colors}{Boolean. Use the default colors when annotating
+superclones, subclones or filtering.}
 
 \item{consensus}{Boolean. Indicates if the consensus heatmap should be plotted.}
 
-\item{row_split}{Character. Element of the metadata to split the heatmap. Must have length = 1.}
+\item{row_split}{Character. Element of the metadata to split the heatmap.
+Must have length = 1.}
 }
 \value{
 A heatmap visualization.
 }
 \description{
-Plots a heatmap of the copy number data. Each row is a cell and colums represent genomic positions.
+Plots a heatmap of the copy number data.
+Each row is a cell and colums represent genomic positions.
 }
 \examples{
 

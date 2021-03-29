@@ -8,6 +8,7 @@ runSegmentation(
   scCNA,
   method = "CBS",
   genome = "hg38",
+  seed = 17,
   n_threads = parallel::detectCores()/4
 )
 }
@@ -17,6 +18,8 @@ runSegmentation(
 \item{method}{Character. Segmentation method of choice.}
 
 \item{genome}{Character. Genome assembly to be used, current accepted "hg19" or "hg38".}
+
+\item{seed}{Numeric. Set seed for CBS segmentation permutaton reproducibility.}
 
 \item{n_threads}{Number of threads used to calculate the distance matrix. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.}
 }

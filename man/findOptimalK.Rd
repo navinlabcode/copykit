@@ -16,15 +16,19 @@ findOptimalK(
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{k_range}{Range of values to be tested. Defaults to 7 to the sqrt of the number of cells}
+\item{k_range}{Range of values to be tested.
+Defaults to 7 to the sqrt of the number of cells}
 
-\item{method}{Method which where the values will be tested. Only "hdbscan" available.}
+\item{method}{Method which where the values will be tested.
+Only "hdbscan" available.}
 
 \item{seed}{Seed (Defaults to 17).}
 
-\item{B}{Number of bootstrapping. Defaults to 100. Higher values yield better results at a cost of performance}
+\item{B}{Number of bootstrapping. Defaults to 100.
+Higher values yield better results at a cost of performance}
 
-\item{n_threads}{Number of threads. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.}
+\item{n_threads}{Number of threads. Passed to `parallel::mclapply`.
+As default it uses 1/4 of the detected cores available.}
 }
 \value{
 

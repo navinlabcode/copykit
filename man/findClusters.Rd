@@ -15,21 +15,34 @@ findClusters(
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{method}{Which method should be used for clustering, options are "hdbscan" or "leiden". Defaults to "hdbscan".}
+\item{method}{Which method should be used for clustering,
+options are "hdbscan" or "leiden". Defaults to "hdbscan".}
 
-\item{k_superclones}{k-nearest-neighbor value that will be used to find the major clusters.(Defaults to 35).}
+\item{k_superclones}{k-nearest-neighbor value.
+Used to find the major clusters.(Defaults to 35).}
 
-\item{k_subclones}{k-nearest-neighbor value that will be used to find the minor clusters (Defaults to 21).}
+\item{k_subclones}{k-nearest-neighbor value.
+Used to find the minor clusters (Defaults to 21).}
 
 \item{seed}{Seed passed on to leiden algorithm (Defaults to 17).}
 }
 \value{
-Metadata cluster information that can be found in \code{SummarizedExperiment::colData(scCNA)$superclones} for the major clusters and \code{SummarizedExperiment::colData(scCNA)$subclones} for the minor clusters. Major clusters are named with capital letters whereas minor clusters are named with a numbers but as a character vector.
+Metadata cluster information that can be found in
+\code{SummarizedExperiment::colData(scCNA)$superclones}
+for the major clusters and \code{SummarizedExperiment::colData(scCNA)$subclones}
+for the minor clusters.
 }
 \description{
-Search for clusters in the scCNA data by using a graph based approach. \code{findClusters()} builds an SNN graph of the k-nearest neighbors and attempts to find two different configuration of clusters. Major and minor subpopulations.
-Major clusters are found by looking at the graph connected components, whereas the minor clusters use the Leiden algorithm to detect connected communities within the major clusters.
-\code{findClusters()} generates the graph by using the UMAP embedding that can be obtained after running \code{runUmap()}.
+Search for clusters in the scCNA data by
+using a graph based approach. \code{findClusters()}
+builds an SNN graph of the k-nearest neighbors and
+attempts to find two different configuration of clusters.
+Major and minor subpopulations.
+Major clusters are found by looking at the graph connected components,
+ whereas the minor clusters use the hdbscan or leiden
+  algorithm to detect connected communities within the major clusters.
+\code{findClusters()} generates the graph by using the
+UMAP embedding that can be obtained after running \code{runUmap()}.
 }
 \author{
 Darlan Conterno Minussi

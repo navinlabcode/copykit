@@ -10,7 +10,8 @@ plotConsensusLine(scCNA)
 \item{scCNA}{The scCNA object}
 }
 \value{
-An interactive plot where different groups can be selected for easier visualization
+An interactive plot where different groups
+can be selected for easier visualization
 }
 \description{
 plotConsensusLine

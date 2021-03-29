@@ -2,7 +2,8 @@
 % Please edit documentation in R/findNormalCells.R
 \name{findNormalCells}
 \alias{findNormalCells}
-\title{identifies possible normal cells in the dataset based on coefficient of variation}
+\title{identifies possible normal cells in the dataset
+ based on coefficient of variation.}
 \usage{
 findNormalCells(scCNA, resolution = "auto", remove_XY = TRUE, simul = TRUE)
 }
@@ -13,11 +14,14 @@ findNormalCells(scCNA, resolution = "auto", remove_XY = TRUE, simul = TRUE)
 
 \item{remove_XY}{Boolean. Removes chrX and chrY from the analysis. Recommended.}
 
-\item{simul}{Add a simulated normal dataset to boost identifying normal cells when a dataset has a small proportion of those.}
+\item{simul}{Add a simulated normal dataset to boost
+identifying normal cells when a dataset has a small proportion of those.}
 }
 \value{
-Adds is_normal column to the scCNA metadata. Can be accessed with colData(scCNA)
+Adds is_normal column to the scCNA metadata.
+Can be accessed with colData(scCNA)
 }
 \description{
-identifies possible normal cells in the dataset based on coefficient of variation
+identifies possible normal cells in the dataset
+ based on coefficient of variation.
 }
