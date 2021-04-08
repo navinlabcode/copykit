@@ -20,6 +20,11 @@ runSegmentation <- function(scCNA,
                             seed = 17,
                             n_threads = parallel::detectCores() / 4) {
 
+  # Checks for empty ratios slots
+  if (any(is.na(colSums(ratios(scCNA))))) {
+    stop("ratios slot is empty. Make sure you run calcRatios(scCNA)")
+  }
+
   message(paste0("Running segmentation algorithm: ", method, " for genome ", genome))
   message(paste0("Using ", n_threads, " cores."))
   message("Imagine a progress bar here ...")
