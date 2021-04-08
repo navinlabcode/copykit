@@ -183,9 +183,10 @@ runVarbin <- function(dir,
     dplyr::mutate(reads_total = reads_tot,
                   percentage_duplicates = round(reads_duplicates/reads_total,2))
 
-  if (sum(bam_metrics$reads_duplicates)) {
-    warning("runVarbin did not detect any duplicate reads,
-            make sure your input bam files have duplicates marked.")
+  if (sum(bam_metrics$reads_duplicates) == 0) {
+    warning("runVarbin did not detect any duplicate reads, make sure your input bam files have duplicates marked.",
+            call. = FALSE,
+            noBreaks. = TRUE)
   }
 
   # adding to metadata
