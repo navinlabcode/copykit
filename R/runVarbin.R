@@ -19,7 +19,7 @@
 #' @importFrom stringr str_replace str_remove str_detect
 #' @importFrom dplyr rename mutate relocate
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
-#' @importFrom S4Vectors DataFrame
+#' @importFrom S4Vectors DataFrame metadata
 #'
 #' @export
 #'
@@ -133,6 +133,9 @@ runVarbin <- function(dir,
     bin_counts = as.data.frame(varbin_counts_df),
     rowRanges = rg_gr
   )
+
+  # Adding genome information to metadata
+  metadata(cna_obj)$genome <- genome
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sun Feb 14 20:55:01 2021
   # ADDING READS METRICS TO METADATA

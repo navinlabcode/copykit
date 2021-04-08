@@ -10,6 +10,9 @@
 #'
 #' @return The segment profile for all cells inside the scCNA object. Can be retrieved with \code{copykit::segment_ratios()}
 #' @importFrom DNAcopy CNA smooth.CNA segment
+#' @importFrom dplyr mutate bind_cols
+#' @importFrom stringr str_detect str_remove str_replace
+#' @importFrom S4Vectors metadata
 #' @importMethodsFrom SummarizedExperiment assay
 #' @export
 #'
@@ -20,9 +23,23 @@ runSegmentation <- function(scCNA,
                             seed = 17,
                             n_threads = parallel::detectCores() / 4) {
 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:45 2021
+  # Checks
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:50 2021
+
   # Checks for empty ratios slots
   if (any(is.na(colSums(ratios(scCNA))))) {
     stop("ratios slot is empty. Make sure you run calcRatios(scCNA)")
+  }
+
+  # check for genome assembly
+  if (genome %!in% c("hg19", "hg38")) {
+    stop("Genome assembly must be 'hg19' or 'hg38'")
+  }
+
+  if (genome != metadata(scCNA)$genome) {
+    stop(paste("Incompatible genome assembly, scCNA object was created with",
+               metadata(scCNA)$genome, "and runSegmentation is set to:", genome))
   }
 
   message(paste0("Running segmentation algorithm: ", method, " for genome ", genome))
@@ -46,10 +63,6 @@ runSegmentation <- function(scCNA,
     n_threads <- 1
   }
 
-  if (genome %!in% c("hg19", "hg38")) {
-    stop("Genome assembly must be 'hg19' or 'hg38'")
-  }
-
   # genome assembly
   # Reading hg38 VarBin ranges
   if (genome == "hg38") {
@@ -60,8 +73,8 @@ runSegmentation <- function(scCNA,
     hg38_rg_mod <- hg38_rg_mod[which(hg38_rg_mod$chr %in% chr_sccna),]
 
     hg38_rg_mod <- hg38_rg_mod %>%
-      mutate(chr = str_replace(chr, "X", "23"),
-             chr = str_replace(chr, "Y", "24"))
+      dplyr::mutate(chr = stringr::str_replace(chr, "X", "23"),
+             chr = stringr::str_replace(chr, "Y", "24"))
 
     chr_info <-  as.numeric(stringr::str_remove(hg38_rg_mod$chr, "chr"))
 
@@ -78,8 +91,8 @@ runSegmentation <- function(scCNA,
     hg19_rg_mod <- hg19_rg_mod[which(hg19_rg_mod$chr %in% chr_sccna),]
 
     hg19_rg_mod <- hg19_rg_mod %>%
-      mutate(chr = str_replace(chr, "X", "23"),
-             chr = str_replace(chr, "Y", "24"))
+      dplyr::mutate(chr = stringr::str_replace(chr, "X", "23"),
+             chr = stringr::str_replace(chr, "Y", "24"))
 
     chr_info <-  as.numeric(stringr::str_remove(hg19_rg_mod$chr, "chr"))
 
@@ -119,7 +132,7 @@ runSegmentation <- function(scCNA,
 
     }, mc.cores = n_threads)
 
-    cbs_seg_df <- bind_cols(CBS_seg) %>%
+    cbs_seg_df <- dplyr::bind_cols(CBS_seg) %>%
       as.data.frame()
 
     SummarizedExperiment::assay(scCNA, 'segment_ratios') <- cbs_seg_df
