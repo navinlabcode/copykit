@@ -183,6 +183,11 @@ runVarbin <- function(dir,
     dplyr::mutate(reads_total = reads_tot,
                   percentage_duplicates = round(reads_duplicates/reads_total,2))
 
+  if (sum(bam_metrics$reads_duplicates)) {
+    warning("runVarbin did not detect any duplicate reads,
+            make sure your input bam files have duplicates marked.")
+  }
+
   # adding to metadata
   SummarizedExperiment::colData(cna_obj) <- S4Vectors::DataFrame(bam_metrics)
   colnames(cna_obj) <- names(varbin_counts_df)
