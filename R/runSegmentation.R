@@ -119,9 +119,7 @@ runSegmentation <- function(scCNA,
           smoothed_CNA_object,
           alpha = 0.01,
           min.width = 5,
-          undo.splits = "sdundo",
-          undo.SD = 1,
-          # undo.prune = 0.05
+          undo.splits = "sdundo"
         )
       short_cbs <- segment_smoothed_CNA_object[[2]]
       log_seg_mean_LOWESS <-

@@ -35,6 +35,12 @@ runVarbin <- function(dir,
 
 
   #checks
+  files <- list.files(dir, pattern = "*.bam", full.names = T)
+
+  if (rlang::is_empty(files)) {
+    stop("No .bam files detected.")
+  }
+
   if (genome %!in% c("hg19", "hg38")) {
     stop("Genome assembly must be 'hg19' or 'hg38'")
   }
@@ -71,8 +77,6 @@ runVarbin <- function(dir,
     }
 
   }
-
-  files <- list.files(dir, pattern = "*.bam", full.names = T)
 
   # managing .bai files
   if (any(sapply(files, function(x) !stringr::str_detect(x, ".bai")))) {
@@ -135,7 +139,7 @@ runVarbin <- function(dir,
   )
 
   # Adding genome information to metadata
-  metadata(cna_obj)$genome <- genome
+  S4Vectors::metadata(cna_obj)$genome <- genome
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sun Feb 14 20:55:01 2021
   # ADDING READS METRICS TO METADATA
