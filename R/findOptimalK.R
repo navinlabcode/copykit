@@ -11,12 +11,13 @@
 #' @param n_threads  Number of threads. Passed to `parallel::mclapply`.
 #' As default it uses 1/4 of the detected cores available.
 #'
-#' @return
+#' @return Adds a table with the mean jaccard coefficient of clusters for each tested k and the suggested k value to be used for clustering to the scCNA metadata.
 #' @export
 #'
 #' @importFrom fpc clusterboot
 #' @importFrom tibble enframe
 #' @importFrom dbscan hdbscan
+#' @importFrom S4Vectors metadata
 #' @importFrom SingleCellExperiment reducedDim
 #'
 #' @examples
@@ -31,6 +32,8 @@ findOptimalK <- function(scCNA,
   if (is.null(SingleCellExperiment::reducedDim(scCNA))) {
     stop("Reduced dimensions slot is NULL. Use runUmap().")
   }
+
+  #
 
 
   hdbscanCBI <-
@@ -132,21 +135,24 @@ findOptimalK <- function(scCNA,
                                 value = "mean_jaccard") %>%
     mutate(k = as.numeric(k))
 
-  mean_jc_df <- mean_jc_df %>%
+  mean_jc_df_opt <- mean_jc_df %>%
     filter(mean_jaccard == max(mean_jc_df$mean_jaccard))
 
   if (nrow(mean_jc_df) > 1) {
-    mean_jc_df <- mean_jc_df %>%
+    mean_jc_df_opt <- mean_jc_df %>%
       filter(k == max(k))
   }
 
   message(paste(
-    "Optimal k =",
-    mean_jc_df$k,
+    "Suggested k =",
+    mean_jc_df_opt$k,
     "with mean jaccard similarity of:",
-    round(mean_jc_df$mean_jaccard, 3)
+    round(mean_jc_df_opt$mean_jaccard, 3)
   ))
 
-  return(mean_jc_df)
+  S4Vectors::metadata(scCNA)$optimalK_df <- mean_jc_df
+  S4Vectors::metadata(scCNA)$optimalK <- mean_jc_df_opt$k
+
+  return(scCNA)
 
 }
