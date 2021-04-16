@@ -16,15 +16,13 @@
 #' @param row_split Character. Element of the metadata to split the heatmap.
 #' Must have length = 1.
 #' @param consensus Boolean. Indicates if the consensus heatmap should be plotted.
-#' @param use_default_colors Boolean. Use the default colors when annotating
-#' superclones, subclones or filtering.
 #'
 #' @return A heatmap visualization.
 #'
 #' @export
 #'
 #' @import ComplexHeatmap
-#' @importFrom dplyr select pull
+#' @importFrom dplyr select pull all_of
 #' @examples
 #'
 
@@ -32,7 +30,6 @@ plotHeatmap <- function(scCNA,
                         order_cells = "consensus_tree",
                         label = NULL,
                         label_colors = NULL,
-                        use_default_colors = TRUE,
                         consensus = FALSE,
                         row_split = NULL) {
   # check annotation colors
@@ -275,30 +272,70 @@ plotHeatmap <- function(scCNA,
 
     }
 
-    if (use_default_colors == TRUE) {
-      label_colors <- c(
-        list(
-          superclones = superclones_pal(),
-          subclones = subclones_pal(),
-          filtered = c("kept" = "green2",
-                       "removed" = "firebrick3"),
-          is_normal = c("FALSE" = "#F8766D",
-                        "TRUE" = "#00BFC4")
-        ),
-        label_colors
-      )
-    }
 
     if (is.null(label_colors)) {
-      cluster_anno <-
-        ComplexHeatmap::rowAnnotation(df = metadata_anno_df,
-                                      show_annotation_name = FALSE)
-    } else {
-      cluster_anno <-
-        ComplexHeatmap::rowAnnotation(df = metadata_anno_df,
-                                      col = label_colors,
-                                      show_annotation_name = FALSE)
+
+      # colors
+      j <- 15
+      l <- 35
+      label_colors <- list()
+
+      for (i in 1:length(label)) {
+        if (any(str_detect(
+          label[i],
+          c("superclones", "subclones", "filtered", "is_normal")
+        ))) {
+
+          next
+
+        } else {
+          elements <- metadata_anno_df %>%
+            dplyr::pull(label[i]) %>%
+            unique() %>%
+            as.character() %>%
+            sort()
+
+          n <- length(elements)
+          hues <- seq(j, 375, length = n + 1)
+          hex <- hcl(h = hues, l = l, c = 100)[1:n]
+
+          col <- structure(hex,
+                           names = elements)
+
+          label_colors[i] <- list(col)
+          names(label_colors)[i] <- label[i]
+
+          j <- j + 15
+          l <- l + 5
+
+        }
+
+
+        #default colors superclones and subclones
+        label_colors <- c(
+          list(
+            superclones = superclones_pal(),
+            subclones = subclones_pal(),
+            filtered = c("removed" = "#DA614D",
+                         "kept" = "#5F917A"),
+            is_normal = c("TRUE" = "#396DB3",
+                          "FALSE" = "#11181D")
+          ),
+          label_colors
+        )
+
+      }
+
     }
+
+    # removing null elements from the label_colors vector
+    # in case they contained elements with default colors
+    label_colors[sapply(label_colors, is.null)] <- NULL
+
+    cluster_anno <-
+      ComplexHeatmap::rowAnnotation(df = metadata_anno_df,
+                                    col = label_colors,
+                                    show_annotation_name = FALSE)
 
     #plotting
     complex_args <- list(
