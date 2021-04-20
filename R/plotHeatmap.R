@@ -272,13 +272,25 @@ plotHeatmap <- function(scCNA,
 
     }
 
-
     if (is.null(label_colors)) {
 
       # colors
       j <- 15
       l <- 35
       label_colors <- list()
+
+      #default colors superclones and subclones
+      label_colors <- c(
+        list(
+          superclones = superclones_pal(),
+          subclones = subclones_pal(),
+          filtered = c("removed" = "#DA614D",
+                       "kept" = "#5F917A"),
+          is_normal = c("TRUE" = "#396DB3",
+                        "FALSE" = "#11181D")
+        ),
+        label_colors
+      )
 
       for (i in 1:length(label)) {
         if (any(str_detect(
@@ -309,20 +321,6 @@ plotHeatmap <- function(scCNA,
           l <- l + 5
 
         }
-
-
-        #default colors superclones and subclones
-        label_colors <- c(
-          list(
-            superclones = superclones_pal(),
-            subclones = subclones_pal(),
-            filtered = c("removed" = "#DA614D",
-                         "kept" = "#5F917A"),
-            is_normal = c("TRUE" = "#396DB3",
-                          "FALSE" = "#11181D")
-          ),
-          label_colors
-        )
 
       }
 
