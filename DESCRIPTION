@@ -59,7 +59,9 @@ Imports:
     dbscan,
     mixtools,
     shiny,
-    Rsubread
+    Rsubread,
+    gtools,
+    forcats
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Depends: 

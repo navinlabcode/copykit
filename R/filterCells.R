@@ -47,7 +47,9 @@ filterCells <- function(scCNA,
   }
 
   # calculating correlations
+
   dst <- cor(seg)
+
   dst_knn_df <- apply(as.matrix(dst), 1, function(x) {
     mean(sort(x, decreasing = T)[2:(k + 1)])
   }) %>%

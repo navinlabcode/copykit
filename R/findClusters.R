@@ -37,6 +37,8 @@
 #' @importFrom scran buildSNNGraph
 #' @importFrom dbscan hdbscan
 #' @importFrom tibble rownames_to_column
+#' @importFrom forcats fct_reorder
+#' @importFrom gtools mixedsort
 #'
 #' @examples
 
@@ -146,7 +148,8 @@ findClusters <- function(scCNA,
   # storing info
   SummarizedExperiment::colData(scCNA)$superclones <- superclones
   SummarizedExperiment::colData(scCNA)$subclones <-
-    droplevels(subclones)
+    forcats::fct_relevel(droplevels(subclones),
+                         gtools::mixedsort(unique(as.character(subclones))))
 
   message("Done.")
 
