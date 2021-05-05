@@ -140,7 +140,7 @@ findOptimalK <- function(scCNA,
 
   if (nrow(mean_jc_df) > 1) {
     mean_jc_df_opt <- mean_jc_df %>%
-      filter(k == max(k))
+      filter(mean_jaccard == max(mean_jaccard))
   }
 
   message(paste(
