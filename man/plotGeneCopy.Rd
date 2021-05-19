@@ -4,20 +4,20 @@
 \alias{plotGeneCopy}
 \title{Plot gene segment ratios}
 \usage{
-plotGeneCopy(scCNA, genes, genome = "hg19", geom = "swarm", label = NULL)
+plotGeneCopy(scCNA, genes, geom = "swarm", label = NULL)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
 
 \item{genes}{Vector containing the HUGO Symbol for the genes of interest.}
 
-\item{genome}{Genome assembly, either hg19 or hg38}
-
 \item{geom}{Which geom should be used for plotting.
 Options are "violin" or "swarm". Defaults to "swarm"}
 
 \item{label}{Color by an element of metadata.
 Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
+
+\item{genome}{Genome assembly, either hg19 or hg38}
 }
 \value{
 A violin plot with the segment ratios for the genes of interest.

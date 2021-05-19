@@ -94,6 +94,7 @@ setReplaceMethod("graph", "scCNA", function(x, value) {
 })
 
 #' @export
+#' @importFrom ape Ntip Nnode
 #' @importMethodsFrom SingleCellExperiment show
 setMethod("show", "scCNA", function(object) {
   callNextMethod()
@@ -102,10 +103,14 @@ setMethod("show", "scCNA", function(object) {
     length(SummarizedExperiment::rowRanges(object)),
     " ranges\n",
     sep = "",
-    "Phylo:",
-    phylo(object),
+    "Phylo: ",
+    "Phylogenetic tree with ",
+    ape::Ntip(phylo(object)),
+    " tips and ",
+    ape::Nnode(phylo(object)),
+    " nodes",
     "\n",
-    "consensus: ",
+    "consensus dim: ",
     nrow(consensus(object)),
     " ",
     ncol(consensus(object))

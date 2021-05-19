@@ -9,7 +9,6 @@ plotHeatmap(
   order_cells = "consensus_tree",
   label = NULL,
   label_colors = NULL,
-  use_default_colors = TRUE,
   consensus = FALSE,
   row_split = NULL
 )
@@ -26,9 +25,6 @@ Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
 
 \item{label_colors}{List. Named list with colors for the label annotation.
 Must match label length}
-
-\item{use_default_colors}{Boolean. Use the default colors when annotating
-superclones, subclones or filtering.}
 
 \item{consensus}{Boolean. Indicates if the consensus heatmap should be plotted.}
 

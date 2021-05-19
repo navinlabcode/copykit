@@ -31,7 +31,7 @@ Higher values yield better results at a cost of performance}
 As default it uses 1/4 of the detected cores available.}
 }
 \value{
-
+Adds a table with the mean jaccard coefficient of clusters for each tested k and the suggested k value to be used for clustering to the scCNA metadata.
 }
 \description{
 Finds the Optimal K value to be used for subclone clustering
