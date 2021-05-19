@@ -17,7 +17,7 @@
 #' @return A violin plot with the segment ratios for the genes of interest.
 #' @importFrom BiocGenerics subset
 #' @importFrom BiocGenerics `%in%`
-#' @importFrom S4Vectors subjectHits
+#' @importFrom S4Vectors subjectHits metadata
 #' @importFrom forcats fct_reorder
 #' @import ggplot2
 #'
@@ -28,7 +28,6 @@
 
 plotGeneCopy <- function(scCNA,
                          genes,
-                         genome = "hg19",
                          geom = "swarm",
                          label = NULL) {
   # checks
@@ -44,11 +43,11 @@ plotGeneCopy <- function(scCNA,
   }
 
   # genome assembly
-  if (genome == "hg19") {
+  if (S4Vectors::metadata(scCNA)$genome == "hg19") {
     genes_assembly <- hg19_genes
   }
 
-  if (genome == "hg38") {
+  if (S4Vectors::metadata(scCNA)$genome == "hg38") {
     genes_assembly <- hg38_genes
   }
 
