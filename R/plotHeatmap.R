@@ -97,7 +97,7 @@ plotHeatmap <- function(scCNA,
     ComplexHeatmap::HeatmapAnnotation(
       chr_text = ComplexHeatmap::anno_text(v[1:ncol(seg_data)],
                                            gp = grid::gpar(fontsize = 14)),
-      df = as.character(chr[1:nrow(chr),]),
+      df = as.character(chr[1:nrow(chr), ]),
       show_legend = FALSE,
       show_annotation_name = FALSE,
       which = "column",
@@ -127,7 +127,7 @@ plotHeatmap <- function(scCNA,
         tree$tip.label[ordered_tips_index] %>% rev()
 
       # ordering data
-      seg_data_ordered <- seg_data[tree_tips_order, ]
+      seg_data_ordered <- seg_data[tree_tips_order,]
 
     }
 
@@ -149,22 +149,22 @@ plotHeatmap <- function(scCNA,
       hc <- fastcluster::hclust(distMat(scCNA),
                                 method = "ward.D2")
 
-      seg_data_ordered <- seg_data[hc$order, ]
+      seg_data_ordered <- seg_data[hc$order,]
 
     }
 
     if (order_cells == "consensus_tree") {
       if (nrow(consensus(scCNA)) == 0) {
         scCNA <- calcConsensus(scCNA)
-        scCNA <- runConsensusPhylo(scCNA)
       }
 
+      scCNA <- runConsensusPhylo(scCNA)
       # metadata info
       consensus_by <- attr(consensus(scCNA), "consensus_by")
 
       meta <- as.data.frame(colData(scCNA)) %>%
-        dplyr::select(sample,!!consensus_by)
-      meta_info <- as.character(dplyr::pull(meta,!!consensus_by))
+        dplyr::select(sample, !!consensus_by)
+      meta_info <- as.character(dplyr::pull(meta, !!consensus_by))
 
       tree <- consensusPhylo(scCNA)
 
@@ -174,8 +174,8 @@ plotHeatmap <- function(scCNA,
       tree_tips_order <-
         tree$tip.label[ordered_tips_index] %>% rev()
 
-      meta_o <- meta[order(match(meta_info, tree_tips_order)),]
-      seg_data_ordered <- seg_data[meta_o$sample, ]
+      meta_o <- meta[order(match(meta_info, tree_tips_order)), ]
+      seg_data_ordered <- seg_data[meta_o$sample,]
 
     }
 
@@ -210,7 +210,7 @@ plotHeatmap <- function(scCNA,
 
       g_ord <- as.numeric(g_bs$order)
 
-      seg_data_ordered <- seg_data[g_ord, ]
+      seg_data_ordered <- seg_data[g_ord,]
 
     }
 
@@ -250,7 +250,7 @@ plotHeatmap <- function(scCNA,
       as.data.frame()
 
     if (consensus == FALSE) {
-      metadata <- metadata[rownames(seg_data_ordered),]
+      metadata <- metadata[rownames(seg_data_ordered), ]
     }
 
     metadata_anno_df <- metadata %>%
@@ -273,10 +273,14 @@ plotHeatmap <- function(scCNA,
     }
 
     if (is.null(label_colors)) {
-
-      # colors
+      # j and l controls the value being picked from the color wheel and the brightness
       j <- 15
       l <- 35
+
+      # cont controls the value for the continuous scale from viridis package
+      cont_options <- c("D", "A", "E", "C", "B")
+      cont_i <- 1
+
       label_colors <- list()
 
       #default colors superclones and subclones
@@ -297,10 +301,27 @@ plotHeatmap <- function(scCNA,
           label[i],
           c("superclones", "subclones", "filtered", "is_normal")
         ))) {
-
+          # if label is one of the four above, uses the default specifed colors above
           next
 
+        } else if (is.numeric(dplyr::pull(metadata_anno_df, label[i])))  {
+          # if current i metadata element is a numeric vector
+          n = 300
+          min_v = min(dplyr::pull(metadata_anno_df, label[i]))
+          max_v = max(dplyr::pull(metadata_anno_df, label[i]))
+
+          label_colors[i] <-
+            list(circlize::colorRamp2(
+              seq(min_v, max_v, length = n),
+              viridis::viridis(n, option = cont_options[cont_i])
+            ))
+          names(label_colors)[i] <- label[i]
+
+          cont_i <- cont_i + 1
+
         } else {
+          # if current i metadata element is not numeric
+
           elements <- metadata_anno_df %>%
             dplyr::pull(label[i]) %>%
             unique() %>%
@@ -317,6 +338,8 @@ plotHeatmap <- function(scCNA,
           label_colors[i] <- list(col)
           names(label_colors)[i] <- label[i]
 
+          # adding an increment to color on the color wheel and hue 'brightness'
+          # so colors of the next element of the metadata are not the same as the previous
           j <- j + 15
           l <- l + 5
 
