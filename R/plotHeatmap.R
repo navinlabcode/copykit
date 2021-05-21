@@ -7,7 +7,7 @@
 #'
 #' @param scCNA scCNA object.
 #' @param order_cells Methods to order the cells within the heatmap.
-#' Accepted values are "consensus_tree", "phylogeny", "hclust", "graph_search".
+#' Accepted values are "consensus_tree", "phylogeny", "hclust".
 #' Defaults to "consensus_tree".
 #' @param label Character. Annotate heatmap by an element of metadata.
 #' Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
@@ -22,6 +22,7 @@
 #' @export
 #'
 #' @import ComplexHeatmap
+#' @importFrom circlize colorRamp2
 #' @importFrom dplyr select pull all_of
 #' @examples
 #'
@@ -176,41 +177,6 @@ plotHeatmap <- function(scCNA,
 
       meta_o <- meta[order(match(meta_info, tree_tips_order)), ]
       seg_data_ordered <- seg_data[meta_o$sample,]
-
-    }
-
-    if (order_cells == "graph_search") {
-      if (is.null(SingleCellExperiment::reducedDim(scCNA,
-                                                   'umap',
-                                                   withDimnames = F))) {
-        message("No umap detected, running copykit::runUmap()")
-        scCNA <- copykit::runUmap(scCNA)
-      }
-
-      tryCatch(
-        copykit::graph(scCNA),
-        error = function(e) {
-          stop("No graph detected. Please run copykit::findClusters()")
-        }
-      )
-
-      if (igraph::gorder(graph(scCNA)) != ncol(copykit::segment_ratios(scCNA))) {
-        stop(
-          "Number of vertices in graph different than number of samples.
-           Please run copykit::findClusters() and try again."
-        )
-      }
-
-      umap_df <-
-        SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = F)
-
-      g_minor  <- copykit::graph(scCNA)
-
-      g_bs <- igraph::bfs(g_minor, 1)
-
-      g_ord <- as.numeric(g_bs$order)
-
-      seg_data_ordered <- seg_data[g_ord,]
 
     }
 

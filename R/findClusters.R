@@ -18,10 +18,10 @@
 #' @param method Which method should be used for clustering,
 #' options are "hdbscan" or "leiden". Defaults to "hdbscan".
 #' @param k_superclones k-nearest-neighbor value.
-#' Used to find the major clusters.(Defaults to 35).
+#' Used to find the major clusters.
 #' @param k_subclones k-nearest-neighbor value.
-#' Used to find the minor clusters (Defaults to 21).
-#' @param seed Seed passed on to leiden algorithm (Defaults to 17).
+#' Used to find the minor clusters
+#' @param seed Seed passed on to pseudorandom dependent functions (Defaults to 17).
 #'
 #' @return Metadata cluster information that can be found in
 #' \code{SummarizedExperiment::colData(scCNA)$superclones}
@@ -47,8 +47,10 @@ findClusters <- function(scCNA,
                          k_superclones = NULL,
                          k_subclones = NULL,
                          seed = 17) {
+
   # obtaining data from reducedDim slot
   if (!is.null(SingleCellExperiment::reducedDim(scCNA))) {
+
     umap_df <-
       SingleCellExperiment::reducedDim(scCNA, 'umap') %>%
       as.data.frame()
@@ -56,37 +58,52 @@ findClusters <- function(scCNA,
   } else
     stop("Reduced dimensions slot is NULL. Use runUmap() to create it.")
 
-  # settting k defaults
-  if (is.null(k_superclones)) {
-    k_superclones <- 0.05 * nrow(umap_df)
-  }
-
-  if (is.null(k_subclones)) {
-    k_subclones <- 0.02 * nrow(umap_df)
-  }
-
   # checks
-  if (!is.numeric(k_subclones) || !is.numeric(k_superclones)) {
-    stop("k_subclones and k_superclones must be numeric values.")
+  if (is.null(k_subclones) && is.null(S4Vectors::metadata(scCNA)$suggestedK)) {
+    stop("k_subclones must have a numeric value.")
   }
 
-  g_major <-
-    scran::buildSNNGraph(umap_df, k = k_superclones, transposed = T)
-  g_minor  <-
-    scran::buildSNNGraph(umap_df, k = k_subclones, transposed = T)
-  g_adj <- igraph::as_adjacency_matrix(g_minor)
+  # if suggestedK is not null, use it as default
+  if (is.null(k_subclones) && !is.null(S4Vectors::metadata(scCNA)$suggestedK)) {
+    message(paste("Using suggested k_subclones =",
+                  S4Vectors::metadata(scCNA)$suggestedK))
 
-  # saving g_minor graph
-  copykit::graph(scCNA) <- g_minor
+    k_subclones <- S4Vectors::metadata(scCNA)$suggestedK
+  }
 
-  # finding clusters
-  #  major
+  if (!is.numeric(k_subclones)) {
+    stop("k_subclones must be a numeric values.")
+  }
+
+  # superclones clustering
+  if (!is.null(k_superclones)) {
+
+    # type check
+    if (!is.numeric(k_superclones)) {
+      stop("k_superclones must have a numeric value.")
+    }
+
+    g_major <-
+      scran::buildSNNGraph(umap_df, k = k_superclones, transposed = T)
+    superclones <-
+      as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
+    #storing info
+    SummarizedExperiment::colData(scCNA)$superclones <- superclones
+
+  }
+
   message(paste("Finding clusters, using method:", method))
-  superclones <-
-    as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
 
-  # using leiden
+  # subclones using leiden
   if (method == "leiden") {
+
+    g_minor  <-
+      scran::buildSNNGraph(umap_df, k = k_subclones, transposed = T)
+    g_adj <- igraph::as_adjacency_matrix(g_minor)
+
+    # saving g_minor graph
+    copykit::graph(scCNA) <- g_minor
+
     #minor
     leid_obj <- try(leidenbase::leiden_find_partition(
       g_minor,
@@ -101,15 +118,17 @@ findClusters <- function(scCNA,
     }
   }
 
-  # using hdbscan
+  # subclones using hdbscan
   if (method == "hdbscan") {
     set.seed(seed)
     hdb <- dbscan::hdbscan(umap_df,
                            minPts = k_subclones)
     hdb_clusters <- as.character(hdb$cluster)
 
-    # hdbscan is an outlier aware clustering algorithm. Copykit assumes that filterCells already took care of removing bad cells
-    # this is why any outlier is added to the ones classified as outliers to the closest cluster possible according to euclidean distance
+    # hdbscan is an outlier aware clustering algorithm.
+    # Copykit assumes that filterCells already took care of removing bad cells
+    # this is why any outlier is added to the ones classified as
+    # outliers to the closest cluster possible according to euclidean distance
 
     dist_umap <- dist(umap_df) %>%
       as.matrix() %>%
@@ -145,8 +164,7 @@ findClusters <- function(scCNA,
 
   }
 
-  # storing info
-  SummarizedExperiment::colData(scCNA)$superclones <- superclones
+  # storing subclones info
   SummarizedExperiment::colData(scCNA)$subclones <-
     forcats::fct_relevel(droplevels(subclones),
                          gtools::mixedsort(unique(as.character(subclones))))

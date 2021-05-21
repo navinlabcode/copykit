@@ -19,12 +19,12 @@ findClusters(
 options are "hdbscan" or "leiden". Defaults to "hdbscan".}
 
 \item{k_superclones}{k-nearest-neighbor value.
-Used to find the major clusters.(Defaults to 35).}
+Used to find the major clusters.}
 
 \item{k_subclones}{k-nearest-neighbor value.
-Used to find the minor clusters (Defaults to 21).}
+Used to find the minor clusters}
 
-\item{seed}{Seed passed on to leiden algorithm (Defaults to 17).}
+\item{seed}{Seed passed on to pseudorandom dependent functions (Defaults to 17).}
 }
 \value{
 Metadata cluster information that can be found in

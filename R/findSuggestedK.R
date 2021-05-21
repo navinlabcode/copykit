@@ -1,4 +1,4 @@
-#' Finds the Optimal K value to be used for subclone clustering
+#' Finds the suggested K value to be used for subclone clustering
 #'
 #' @param scCNA  scCNA object.
 #' @param k_range Range of values to be tested.
@@ -21,7 +21,7 @@
 #' @importFrom SingleCellExperiment reducedDim
 #'
 #' @examples
-findOptimalK <- function(scCNA,
+findSuggestedK <- function(scCNA,
                          k_range = 7:sqrt(ncol(segment_ratios(scCNA))),
                          method = "hdbscan",
                          seed = 17,
@@ -150,8 +150,8 @@ findOptimalK <- function(scCNA,
     round(mean_jc_df_opt$mean_jaccard, 3)
   ))
 
-  S4Vectors::metadata(scCNA)$optimalK_df <- mean_jc_df
-  S4Vectors::metadata(scCNA)$optimalK <- mean_jc_df_opt$k
+  S4Vectors::metadata(scCNA)$suggestedK_df <- mean_jc_df
+  S4Vectors::metadata(scCNA)$suggestedK <- mean_jc_df_opt$k
 
   return(scCNA)
 

@@ -17,7 +17,7 @@ plotHeatmap(
 \item{scCNA}{scCNA object.}
 
 \item{order_cells}{Methods to order the cells within the heatmap.
-Accepted values are "consensus_tree", "phylogeny", "hclust", "graph_search".
+Accepted values are "consensus_tree", "phylogeny", "hclust".
 Defaults to "consensus_tree".}
 
 \item{label}{Character. Annotate heatmap by an element of metadata.

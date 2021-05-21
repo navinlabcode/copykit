@@ -67,8 +67,26 @@ plotUmap <- function(scCNA,
       theme_classic() +
       my_theme
 
-  } else if (is.null(label) && !is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
-    # if label is not provided but findClusters was run
+  } else if (is.null(label) && is.null(SummarizedExperiment::colData(scCNA)$superclones)) {
+    # if label is not provided but findClusters was run for subclones
+
+    message("Using colData(scCNA) subclones information.")
+
+    ggplot(umap_df) +
+      geom_point(aes(
+        x = V1,
+        y = V2,
+        fill = as.factor(SummarizedExperiment::colData(scCNA)$subclones)
+      ),
+      size = 1.8,
+      shape = 21) +
+    scale_fill_manual(values = c(subclones_pal()),
+                       name = "subclones") +
+    theme_classic() +
+      my_theme
+
+  }  else if (is.null(label) && !is.null(SummarizedExperiment::colData(scCNA)$superclones)) {
+    # if label is not provided but findClusters was run for superclones and subclones
 
     message("Using colData(scCNA) cluster information.")
 
@@ -92,9 +110,9 @@ plotUmap <- function(scCNA,
       ),
       size = 1.8,
       shape = 21) +
-    scale_fill_manual(values = c(subclones_pal()),
-                       name = "subclones") + # palettes are in sysdata.rda
-    theme_classic() +
+      scale_fill_manual(values = c(subclones_pal()),
+                        name = "subclones") + # palettes are in sysdata.rda
+      theme_classic() +
       my_theme
 
   } else if (!is.null(label)) {
