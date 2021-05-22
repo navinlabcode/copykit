@@ -6,6 +6,7 @@
 #' @param method Character. Segmentation method of choice.
 #' @param genome Character. Genome assembly to be used, current accepted "hg19" or "hg38".
 #' @param seed Numeric. Set seed for CBS segmentation permutaton reproducibility.
+#' @param target_slot Character. Target slot for the resulting segment ratios.
 #' @param n_threads Number of threads used to calculate the distance matrix. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.
 #'
 #' @return The segment profile for all cells inside the scCNA object. Can be retrieved with \code{copykit::segment_ratios()}
@@ -21,16 +22,12 @@ runSegmentation <- function(scCNA,
                             method = "CBS",
                             genome = "hg38",
                             seed = 17,
+                            target_slot = 'segment_ratios',
                             n_threads = parallel::detectCores() / 4) {
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:45 2021
   # Checks
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:50 2021
-
-  # Checks for empty ratios slots
-  if (any(is.na(colSums(ratios(scCNA))))) {
-    stop("ratios slot is empty. Make sure you run calcRatios(scCNA)")
-  }
 
   # check for genome assembly
   if (genome %!in% c("hg19", "hg38")) {
@@ -100,47 +97,88 @@ runSegmentation <- function(scCNA,
 
   }
 
-  ratios_df <- copykit::ratios(scCNA)
-
   if (method == "CBS") {
-    CBS_seg <- parallel::mclapply(ratios_df, function(x) {
-      CNA_object <-
-        DNAcopy::CNA(
-          log2(x+1e-3),
-          chr_info,
-          ref$start,
-          data.type = "logratio",
-          sampleid = names(x)
-        )
-      set.seed(seed)
-      smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
-      segment_smoothed_CNA_object <-
-        DNAcopy::segment(
-          smoothed_CNA_object,
-          alpha = 0.01,
-          min.width = 5,
-          undo.splits = "sdundo"
-        )
-      short_cbs <- segment_smoothed_CNA_object[[2]]
-      log_seg_mean_LOWESS <-
-        rep(short_cbs$seg.mean, short_cbs$num.mark)
-      merge_obj <-
-        .MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
-      merge_ratio <- 2^merge_obj
+    if (S4Vectors::metadata(scCNA)$vst == 'ft') {
 
-    }, mc.cores = n_threads)
+      counts_df <- assay(scCNA, 'ft')
+
+      CBS_seg <- parallel::mclapply(counts_df, function(x) {
+        CNA_object <-
+          DNAcopy::CNA(
+            x,
+            chr_info,
+            ref$start,
+            data.type = "logratio",
+            sampleid = names(x)
+          )
+        set.seed(seed)
+        smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
+        segment_smoothed_CNA_object <-
+          DNAcopy::segment(
+            smoothed_CNA_object,
+            alpha = 0.01,
+            min.width = 5,
+            undo.splits = "prune"
+          )
+        short_cbs <- segment_smoothed_CNA_object[[2]]
+        log_seg_mean_LOWESS <-
+          rep(short_cbs$seg.mean, short_cbs$num.mark)
+        merge_obj <-
+          .MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
+        merge_ratio <- .invft(merge_obj)
+
+      }, mc.cores = n_threads)
+
+    }
+
+    if (S4Vectors::metadata(scCNA)$vst == 'logratio') {
+
+      counts_df <- assay(scCNA, 'ft')
+
+      CBS_seg <- parallel::mclapply(counts_df, function(x) {
+        CNA_object <-
+          DNAcopy::CNA(
+            x,
+            chr_info,
+            ref$start,
+            data.type = "logratio",
+            sampleid = names(x)
+          )
+        set.seed(seed)
+        smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
+        segment_smoothed_CNA_object <-
+          DNAcopy::segment(
+            smoothed_CNA_object,
+            alpha = 0.01,
+            min.width = 5,
+            undo.splits = "prune"
+          )
+        short_cbs <- segment_smoothed_CNA_object[[2]]
+        log_seg_mean_LOWESS <-
+          rep(short_cbs$seg.mean, short_cbs$num.mark)
+        merge_obj <-
+          .MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
+        merge_ratio <- 2^merge_obj
+
+      }, mc.cores = n_threads)
+
+    }
 
     cbs_seg_df <- dplyr::bind_cols(CBS_seg) %>%
       as.data.frame()
 
-    SummarizedExperiment::assay(scCNA, 'segment_ratios') <- cbs_seg_df
+    # calculating ratios
+    scCNA <- calcRatios(scCNA, assay = 'bin_counts')
+
+    SummarizedExperiment::assay(scCNA, target_slot) <-
+      apply(cbs_seg_df, 2, function(x) x/median(x)) %>%
+      as.data.frame()
 
     message("Done.")
 
     return(scCNA)
 
   }
-
 
 }
 

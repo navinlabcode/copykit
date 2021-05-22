@@ -175,6 +175,12 @@ setMethod("show", "scCNA", function(object) {
          pv = pv)
   }
 
+# inverse freeman-tukey transformation
+# https://www.biorxiv.org/content/10.1101/2020.06.08.140673v2.full.pdf
+#' @export
+#' @keywords internal
+.invft <- function(y) (y^2-1)^2/(4*y^2)
+
 #' @export
 #' @keywords internal
 # Merge Levels function

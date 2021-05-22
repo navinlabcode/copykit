@@ -13,10 +13,10 @@
 #'
 #' @examples
 calcRatios <- function(scCNA,
-                       assay = "ft",
+                       assay = "ascombe",
                        fun = "median") {
-  if (assay %!in% c("ft", "bin_counts")) {
-    stop("Assay must be either 'ft' or 'bin_counts'")
+  if (assay %!in% c("ascombe", "bin_counts")) {
+    stop("Assay must be either 'ascombe' or 'bin_counts'")
   }
 
   counts <- SummarizedExperiment::assay(scCNA, assay)
