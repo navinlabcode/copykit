@@ -10,7 +10,7 @@
 #' @param genes Vector containing the HUGO Symbol for the genes of interest.
 #' @param genome Genome assembly, either hg19 or hg38
 #' @param geom Which geom should be used for plotting.
-#' Options are "violin" or "swarm". Defaults to "swarm"
+#' Options are "violin" or "swarm" and 'barplot'.
 #' @param label Color by an element of metadata.
 #' Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #'
@@ -19,6 +19,7 @@
 #' @importFrom BiocGenerics `%in%`
 #' @importFrom S4Vectors subjectHits metadata
 #' @importFrom forcats fct_reorder
+#' @importFrom SummarizedExperiment assay
 #' @import ggplot2
 #'
 #' @export
@@ -29,7 +30,8 @@
 plotGeneCopy <- function(scCNA,
                          genes,
                          geom = "swarm",
-                         label = NULL) {
+                         label = NULL,
+                         assay = "segment_ratios") {
   # checks
   # check if label exists
   if (!is.null(label)) {
@@ -40,6 +42,10 @@ plotGeneCopy <- function(scCNA,
 
   if (!is.null(label) && !(label %in% colnames(metadata))) {
     stop(paste0("Label ", label, " is not a column of the scCNA object."))
+  }
+
+  if (geom == 'barplot' && assay != 'integer') {
+    stop("Argument geom 'barplot' can only be used with assay == 'integer'")
   }
 
   # genome assembly
@@ -131,7 +137,14 @@ plotGeneCopy <- function(scCNA,
 
 
   # obtaining seg ratios and sbsetting for the genes
-  seg_data <- segment_ratios(scCNA)
+
+  if (assay == 'segment_ratios') {
+    seg_data <- segment_ratios(scCNA)
+  }
+
+  if (assay == 'integer') {
+    seg_data <- SummarizedExperiment::assay(scCNA, 'integer')
+  }
 
   seg_data_genes <- seg_data[df$pos, ] %>%
     dplyr::mutate(gene = df$gene)
@@ -145,14 +158,32 @@ plotGeneCopy <- function(scCNA,
   p <-
     ggplot2::ggplot(seg_long, aes(
       x = forcats::fct_reorder(gene, segratio),
-      y = segratio + 1e-3
+      y = segratio
     )) +
     ggplot2::theme_classic() +
     ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
     my_theme
 
-  #geom violin
+  # geom barplot plots a frequency barplot of each copy number state
+  if (geom == 'barplot') {
 
+     p <- ggplot2::ggplot(seg_long, aes(
+        x = forcats::fct_reorder(gene, segratio),
+        y = segratio
+      )) +
+      ggplot2::theme_classic() +
+     geom_bar(aes(fill = as.factor(segratio)),
+              position = 'fill', stat = 'identity') +
+      scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                         breaks = scales::pretty_breaks(n = 10)) +
+      scale_fill_viridis_d(option = 'inferno') +
+      my_theme +
+      ylab("percentage")
+
+    print(p)
+  }
+
+  #geom violin
   if (geom == "violin" & is.null(label)) {
     p <- p +
       ggplot2::geom_violin()
@@ -170,8 +201,6 @@ plotGeneCopy <- function(scCNA,
   }
 
   # geom swarm
-
-
   if (geom == "swarm" & is.null(label)) {
     p <- p +
       ggbeeswarm::geom_quasirandom()
