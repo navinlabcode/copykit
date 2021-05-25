@@ -3,7 +3,7 @@
 #' Performs variance stabilization by using the Freeman-Tukey transformation
 #'
 #' @param scCNA The scCNA object
-#' @param transformation Character. Transformation to be performed, available options are 'logratio' or 'ft'
+#' @param transformation Character. Transformation to be performed, available options are 'log' or 'ft'
 #'
 #' @return A slot into the scCNA object containing the variance stabilized matrix.
 #' @importFrom SummarizedExperiment assay
@@ -21,7 +21,7 @@ runVst <- function(scCNA,
     counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) sqrt(x) + sqrt(x+1))
   }
 
-  if (transformation == 'logratio') {
+  if (transformation == 'log') {
     counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) log2(x+1e-3))
   }
 

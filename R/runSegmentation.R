@@ -131,9 +131,9 @@ runSegmentation <- function(scCNA,
 
     }
 
-    if (S4Vectors::metadata(scCNA)$vst == 'logratio') {
+    if (S4Vectors::metadata(scCNA)$vst == 'log') {
 
-      counts_df <- assay(scCNA, 'logratio')
+      counts_df <- assay(scCNA, 'log')
 
       CBS_seg <- parallel::mclapply(counts_df, function(x) {
         CNA_object <-
