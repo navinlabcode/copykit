@@ -4,7 +4,13 @@
 \alias{plotGeneCopy}
 \title{Plot gene segment ratios}
 \usage{
-plotGeneCopy(scCNA, genes, geom = "swarm", label = NULL)
+plotGeneCopy(
+  scCNA,
+  genes,
+  geom = "swarm",
+  label = NULL,
+  assay = "segment_ratios"
+)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
@@ -12,7 +18,7 @@ plotGeneCopy(scCNA, genes, geom = "swarm", label = NULL)
 \item{genes}{Vector containing the HUGO Symbol for the genes of interest.}
 
 \item{geom}{Which geom should be used for plotting.
-Options are "violin" or "swarm". Defaults to "swarm"}
+Options are "violin" or "swarm" and 'barplot'.}
 
 \item{label}{Color by an element of metadata.
 Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}

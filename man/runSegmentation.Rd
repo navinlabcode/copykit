@@ -9,6 +9,8 @@ runSegmentation(
   method = "CBS",
   genome = "hg38",
   seed = 17,
+  target_slot = "segment_ratios",
+  max_breakpoints = 60,
   n_threads = parallel::detectCores()/4
 )
 }
@@ -19,9 +21,15 @@ runSegmentation(
 
 \item{genome}{Character. Genome assembly to be used, current accepted "hg19" or "hg38".}
 
-\item{seed}{Numeric. Set seed for CBS segmentation permutaton reproducibility.}
+\item{seed}{Numeric. Set seed for CBS segmentation permutation reproducibility.}
 
-\item{n_threads}{Number of threads used to calculate the distance matrix. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.}
+\item{target_slot}{Character. Target slot for the resulting segment ratios.}
+
+\item{max_breakpoints}{Numeric. If segmentation method is CBS performs a pre-
+segmentation filtering to avoid long processing time due to undo.splits = 'prune'}
+
+\item{n_threads}{Number of threads used to calculate the distance matrix.
+Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.}
 }
 \value{
 The segment profile for all cells inside the scCNA object. Can be retrieved with \code{copykit::segment_ratios()}

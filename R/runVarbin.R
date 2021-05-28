@@ -31,6 +31,7 @@ runVarbin <- function(dir,
                       genome = "hg38",
                       bin_size = "200kb",
                       remove_Y = FALSE,
+                      min_reads = 1e5,
                       n_threads =  parallel::detectCores() / 4) {
 
 
@@ -119,7 +120,7 @@ runVarbin <- function(dir,
 
   varbin_counts_df <- dplyr::bind_cols(varbin_counts_list_gccor)
 
-  # filtering low read counts where the sum of bins does not reach 1
+  # filtering low read counts where the sum of bins does not reach min_reads
   varbin_counts_df <- varbin_counts_df[which(colSums(varbin_counts_df) != 0)]
 
   rg <- rg %>%

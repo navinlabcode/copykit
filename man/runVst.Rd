@@ -9,10 +9,10 @@ runVst(scCNA, transformation = "ft")
 \arguments{
 \item{scCNA}{The scCNA object}
 
-\item{transformation}{Character. Transformation to be performed, available options are 'logratio' or 'freemantukey'}
+\item{transformation}{Character. Transformation to be performed, available options are 'log' or 'ft'}
 }
 \value{
-A slot into the scCNA object containing the variance stabilized matrix. Can be accessed with \code{assay(scCNA, 'vst')}
+A slot into the scCNA object containing the variance stabilized matrix.
 }
 \description{
 Performs variance stabilization by using the Freeman-Tukey transformation
