@@ -9,6 +9,7 @@ runVarbin(
   genome = "hg38",
   bin_size = "200kb",
   remove_Y = FALSE,
+  min_reads = 1e+05,
   n_threads = parallel::detectCores()/4
 )
 }
