@@ -14,7 +14,7 @@
 #' @examples
 calcRatios <- function(scCNA,
                        assay = "ft",
-                       fun = "median") {
+                       fun = "mean") {
   if (assay %!in% c("ft", "bin_counts")) {
     stop("Assay must be either 'ft' or 'bin_counts'")
   }

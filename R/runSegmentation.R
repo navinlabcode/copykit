@@ -182,7 +182,7 @@ runSegmentation <- function(scCNA,
       scCNA_pf <- scCNA
 
       SummarizedExperiment::assay(scCNA_pf, 'segment_ratios') <-
-        apply(cbs_seg_df_pf, 2, function(x) x/median(x)) %>%
+        apply(cbs_seg_df_pf, 2, function(x) x/mean(x)) %>%
         as.data.frame()
 
       scCNA_pf <- .countBreakpoints(scCNA_pf)
@@ -238,7 +238,7 @@ runSegmentation <- function(scCNA,
     scCNA <- calcRatios(scCNA, assay = 'bin_counts')
 
     SummarizedExperiment::assay(scCNA, target_slot) <-
-      apply(cbs_seg_df, 2, function(x) x/median(x)) %>%
+      apply(cbs_seg_df, 2, function(x) x/mean(x)) %>%
       as.data.frame()
 
     message("Done.")
@@ -264,7 +264,7 @@ runSegmentation <- function(scCNA,
     scCNA <- calcRatios(scCNA, assay = 'bin_counts')
 
     SummarizedExperiment::assay(scCNA, target_slot) <-
-      apply(wbs_seg_df, 2, function(x) x/median(x)) %>%
+      apply(wbs_seg_df, 2, function(x) x/mean(x)) %>%
       as.data.frame()
 
     return(scCNA)
