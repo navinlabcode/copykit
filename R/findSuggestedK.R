@@ -139,8 +139,13 @@ findSuggestedK <- function(scCNA,
     filter(mean_jaccard == max(mean_jc_df$mean_jaccard))
 
   if (nrow(mean_jc_df) > 1) {
+    # If the best jaccard similarity score is found in more than one k value
+    # it prioritizes the maximum value. If the score remains tied (possible
+    # when score == 1) prioritizes the smaller k
+
     mean_jc_df_opt <- mean_jc_df %>%
-      filter(mean_jaccard == max(mean_jaccard))
+      filter(mean_jaccard == max(mean_jaccard)) %>%
+      filter(k == min(k))
   }
 
   message(paste(
