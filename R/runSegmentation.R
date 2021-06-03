@@ -137,8 +137,6 @@ runSegmentation <- function(scCNA,
 
       # segmentation with undo.splits = "prune"
 
-      browser()
-
       counts_df <- assay(scCNA, 'log')
 
       CBS_seg <- parallel::mclapply(as.data.frame(counts_df), function(x) {
