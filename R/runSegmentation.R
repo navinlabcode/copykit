@@ -7,8 +7,6 @@
 #' @param genome Character. Genome assembly to be used, current accepted "hg19" or "hg38".
 #' @param seed Numeric. Set seed for CBS segmentation permutation reproducibility.
 #' @param target_slot Character. Target slot for the resulting segment ratios.
-#' @param max_breakpoints Numeric. If segmentation method is CBS performs a pre-
-#' segmentation filtering to avoid long processing time due to undo.splits = 'prune'
 #' @param n_threads Number of threads used to calculate the distance matrix.
 #' Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.
 #'
@@ -26,7 +24,6 @@ runSegmentation <- function(scCNA,
                             genome = "hg38",
                             seed = 17,
                             target_slot = 'segment_ratios',
-                            max_breakpoints = 60,
                             n_threads = parallel::detectCores() / 4) {
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:45 2021
@@ -138,67 +135,9 @@ runSegmentation <- function(scCNA,
 
     if (S4Vectors::metadata(scCNA)$vst == 'log') {
 
-      # Pre-filtering step for CBS.
-      # undo.splits = prune performs better undo of breakpoints without removing
-      # true breakpoints. However, in cell with large number of breakpoints it can
-      # take more than one hour to finish. The pre-filtering step uses undo.splits = 'sdundo'
-      # and removes cells with breakpoints more than the maximum number of breakpoints tolerated
-      # this happens in cells that have very noise bin counts profiles.
-
-      message('Performing segmentation pre-filtering.')
-      counts_df_pf <- assay(scCNA, 'log')
-
-      CBS_seg_pf <- parallel::mclapply(as.data.frame(counts_df_pf), function(x) {
-        CNA_object <-
-          DNAcopy::CNA(
-            x,
-            chr_info,
-            ref$start,
-            data.type = "logratio",
-            sampleid = names(x)
-          )
-        set.seed(seed)
-        smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
-        segment_smoothed_CNA_object <-
-          DNAcopy::segment(
-            smoothed_CNA_object,
-            alpha = 0.01,
-            min.width = 5,
-            undo.splits = "sdundo"
-          )
-        short_cbs <- segment_smoothed_CNA_object[[2]]
-        log_seg_mean_LOWESS <-
-          rep(short_cbs$seg.mean, short_cbs$num.mark)
-        merge_obj <-
-          .MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
-        merge_ratio <- 2^merge_obj
-
-      }, mc.cores = n_threads)
-
-      cbs_seg_df_pf <- dplyr::bind_cols(CBS_seg_pf) %>%
-        as.data.frame()
-
-      # copy of scCNA object that later will be removed
-      scCNA_pf <- scCNA
-
-      SummarizedExperiment::assay(scCNA_pf, 'segment_ratios') <-
-        apply(cbs_seg_df_pf, 2, function(x) x/mean(x)) %>%
-        as.data.frame()
-
-      scCNA_pf <- .countBreakpoints(scCNA_pf)
-
-      n_bkpt_cell_remove <- SummarizedExperiment::colData(scCNA_pf) %>%
-        as.data.frame() %>%
-        dplyr::select(sample, breakpoint_count) %>%
-        dplyr::filter(breakpoint_count > max_breakpoints) %>%
-        dplyr::pull(sample)
-
-      scCNA <- scCNA[,SummarizedExperiment::colData(scCNA)$sample %!in% n_bkpt_cell_remove]
-
-      rm(scCNA_pf)
-      message("Finished pre-filtering.")
-
       # segmentation with undo.splits = "prune"
+
+      browser()
 
       counts_df <- assay(scCNA, 'log')
 
@@ -214,18 +153,29 @@ runSegmentation <- function(scCNA,
         set.seed(seed)
         smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
         segment_smoothed_CNA_object <-
-          DNAcopy::segment(
-            smoothed_CNA_object,
-            alpha = 0.01,
-            min.width = 5,
-            undo.splits = "prune"
+          tryCatch(
+            expr = {
+              R.utils::withTimeout(
+                DNAcopy::segment(
+                  smoothed_CNA_object,
+                  alpha = 0.01,
+                  min.width = 5,
+                  undo.splits = "prune"
+                ),
+                timeout = 50,
+                onTimeout = 'silent'
+            )},
+            TimeoutException = function(i) NULL
           )
-        short_cbs <- segment_smoothed_CNA_object[[2]]
-        log_seg_mean_LOWESS <-
-          rep(short_cbs$seg.mean, short_cbs$num.mark)
-        merge_obj <-
-          .MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
-        merge_ratio <- 2^merge_obj
+
+        if (!is.null(segment_smoothed_CNA_object)) {
+          short_cbs <- segment_smoothed_CNA_object[[2]]
+          log_seg_mean_LOWESS <-
+            rep(short_cbs$seg.mean, short_cbs$num.mark)
+          merge_obj <-
+            .MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
+          merge_ratio <- 2^merge_obj
+        }
 
       }, mc.cores = n_threads)
 
