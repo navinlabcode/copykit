@@ -11,7 +11,8 @@
 #' @param n_threads  Number of threads. Passed to `parallel::mclapply`.
 #' As default it uses 1/4 of the detected cores available.
 #'
-#' @return Adds a table with the mean jaccard coefficient of clusters for each tested k and the suggested k value to be used for clustering to the scCNA metadata.
+#' @return Adds a table with the mean jaccard coefficient of clusters for each
+#' tested k and the suggested k value to be used for clustering to the scCNA metadata.
 #' @export
 #'
 #' @importFrom fpc clusterboot
