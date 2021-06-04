@@ -33,9 +33,6 @@ findSuggestedK <- function(scCNA,
     stop("Reduced dimensions slot is NULL. Use runUmap().")
   }
 
-  #
-
-
   hdbscanCBI <-
     function(data, minPts, diss = inherits(data, "dist"), ...) {
       if (diss)
@@ -116,12 +113,14 @@ findSuggestedK <- function(scCNA,
 
   mean_jaccard <- BiocParallel::bplapply(k_range, function(i) {
     df_clusterboot <-
-      fpc::clusterboot(
-        SingleCellExperiment::reducedDim(scCNA, "umap"),
-        B = B,
-        clustermethod = hdbscanCBI,
-        seed = seed,
-        minPts = i
+      .quiet(
+        fpc::clusterboot(
+          SingleCellExperiment::reducedDim(scCNA, "umap"),
+          B = B,
+          clustermethod = hdbscanCBI,
+          seed = seed,
+          minPts = i
+        )
       )
 
     mean_jc_cl <- mean(df_clusterboot$bootmean)
