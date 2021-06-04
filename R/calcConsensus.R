@@ -3,9 +3,8 @@
 #' @param scCNA The scCNA object.
 #' @param consensus_by The column from metadata that will be used
 #'  to isolate the cells by factor and calculate the consensus.
-#' @param n_threads Number of threads used to calculate the distance matrix.
-#' Passed to `parallel::mclapply`.
-#' As default it uses 1/4 of the detected cores available.
+#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
+#' should be parallelized.
 #'
 #' @return
 #' @export
@@ -13,7 +12,7 @@
 #' @examples
 calcConsensus <- function(scCNA,
                           consensus_by = "subclones",
-                          n_threads = parallel::detectCores() / 4) {
+                          BPPARAM = bpparam()) {
   if (consensus_by == 'subclones' &
       is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
     stop("Calculating consensus requires cluster information. use findClusters(scCNA)")
@@ -46,9 +45,9 @@ calcConsensus <- function(scCNA,
   long_list <- split(seg_data, consensus_info)
 
   consensus_list <-
-    parallel::mclapply(long_list, function(x) {
+    BiocParallel::bplapply(long_list, function(x) {
       apply(x, 2, median)
-    }, mc.cores = n_threads)
+    }, BPPARAM = BPPARAM)
 
   cs_df <- as.data.frame(t(do.call(rbind, consensus_list)))
 

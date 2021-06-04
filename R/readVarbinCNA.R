@@ -12,10 +12,10 @@
 #' @param genome_version Name of the genome assembly. Default: 'hg19'.
 #' @param bin_size The resolution of the VarBin method. Default: '200k'. Available options: '100k', '200k'.
 #' @param clean_names Clean sample names using \code{\link{janitor::clean_names}}.
-#' @return Segment ratios can be acessed with \code{copykit::segment_ratios}.
-#' @return Ratios can be acessed with \code{copykit::ratios}.
-#' @return Bin counts can be acessed with \code{copykit::bin_counts}.
-#' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
+#' @return Segment ratios can be accessed with \code{copykit::segment_ratios}.
+#' @return Ratios can be accessed with \code{copykit::ratios}.
+#' @return Bin counts can be accessed with \code{copykit::bin_counts}.
+#' @return Genomic ranges can be accessed with \code{SummarizedExperiment::rowRanges()}
 #'
 #' @import dplyr
 #' @importFrom GenomicRanges seqnames

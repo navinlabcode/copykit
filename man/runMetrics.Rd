@@ -4,12 +4,12 @@
 \alias{runMetrics}
 \title{Run metrics}
 \usage{
-runMetrics(scCNA, n_threads = parallel::detectCores()/4)
+runMetrics(scCNA, BPPARAM = bpparam())
 }
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{n_threads}{Number of threads used to calculate the distance matrix. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.}
+\item{BPPARAM}{Number of threads used to calculate the distance matrix. Passed to `BiocParallel::bplapply`. As default it uses 1/4 of the detected cores available.}
 }
 \value{
 Adds a the metrics to the scCNA metadata. Those metrics can be used for subsetting the data if desired

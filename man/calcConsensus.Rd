@@ -4,11 +4,7 @@
 \alias{calcConsensus}
 \title{Calculate a consensus matrix of segment ratios based on metadata}
 \usage{
-calcConsensus(
-  scCNA,
-  consensus_by = "subclones",
-  n_threads = parallel::detectCores()/4
-)
+calcConsensus(scCNA, consensus_by = "subclones", BPPARAM = bpparam())
 }
 \arguments{
 \item{scCNA}{The scCNA object.}
@@ -16,9 +12,8 @@ calcConsensus(
 \item{consensus_by}{The column from metadata that will be used
 to isolate the cells by factor and calculate the consensus.}
 
-\item{n_threads}{Number of threads used to calculate the distance matrix.
-Passed to `parallel::mclapply`.
-As default it uses 1/4 of the detected cores available.}
+\item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
+should be parallelized.}
 }
 \value{
 

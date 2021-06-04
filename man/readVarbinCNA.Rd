@@ -24,13 +24,13 @@ readVarbinCNA(
 \item{clean_names}{Clean sample names using \code{\link{janitor::clean_names}}.}
 }
 \value{
-Segment ratios can be acessed with \code{copykit::segment_ratios}.
+Segment ratios can be accessed with \code{copykit::segment_ratios}.
 
-Ratios can be acessed with \code{copykit::ratios}.
+Ratios can be accessed with \code{copykit::ratios}.
 
-Bin counts can be acessed with \code{copykit::bin_counts}.
+Bin counts can be accessed with \code{copykit::bin_counts}.
 
-Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
+Genomic ranges can be accessed with \code{SummarizedExperiment::rowRanges()}
 }
 \description{
 Creates an S4 class scCNA from the output directory of the copy number pipeline.

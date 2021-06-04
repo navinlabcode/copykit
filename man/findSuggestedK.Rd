@@ -10,7 +10,7 @@ findSuggestedK(
   method = "hdbscan",
   seed = 17,
   B = 100,
-  n_threads = parallel::detectCores()/4
+  BPPARAM = bpparam()
 )
 }
 \arguments{
@@ -27,8 +27,8 @@ Only "hdbscan" available.}
 \item{B}{Number of bootstrapping. Defaults to 100.
 Higher values yield better results at a cost of performance}
 
-\item{n_threads}{Number of threads. Passed to `parallel::mclapply`.
-As default it uses 1/4 of the detected cores available.}
+\item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
+should be parallelized.}
 }
 \value{
 Adds a table with the mean jaccard coefficient of clusters for each
