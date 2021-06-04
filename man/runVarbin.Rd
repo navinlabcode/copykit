@@ -10,7 +10,7 @@ runVarbin(
   bin_size = "200kb",
   remove_Y = FALSE,
   min_reads = 1e+05,
-  n_threads = parallel::detectCores()/4
+  BPPARAM = bpparam()
 )
 }
 \arguments{
@@ -22,16 +22,17 @@ runVarbin(
 
 \item{remove_Y}{(default == FALSE) If set to TRUE, removes information from the chrY from the dataset.}
 
-\item{n_threads}{Number of cores used to process files}
+\item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
+should be parallelized.}
 }
 \value{
-Segment ratios can be acessed with \code{copykit::segment_ratios}.
+Segment ratios can be accessed with \code{copykit::segment_ratios}.
 
-Ratios can be acessed with \code{copykit::ratios}.
+Ratios can be accessed with \code{copykit::ratios}.
 
-Bin counts can be acessed with \code{copykit::bin_counts}.
+Bin counts can be accessed with \code{copykit::bin_counts}.
 
-Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
+Genomic ranges can be accessed with \code{SummarizedExperiment::rowRanges()}
 }
 \description{
 runVarbin performs the variable binning (VarBin) algorithm to a series of BAM files resulting from short-read sequencing.

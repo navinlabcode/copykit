@@ -8,9 +8,8 @@
 #' @param seed Seed (Defaults to 17).
 #' @param B Number of bootstrapping. Defaults to 100.
 #' Higher values yield better results at a cost of performance
-#' @param n_threads  Number of threads. Passed to `parallel::mclapply`.
-#' As default it uses 1/4 of the detected cores available.
-#'
+#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
+#' should be parallelized.
 #' @return Adds a table with the mean jaccard coefficient of clusters for each
 #' tested k and the suggested k value to be used for clustering to the scCNA metadata.
 #' @export
@@ -27,15 +26,12 @@ findSuggestedK <- function(scCNA,
                          method = "hdbscan",
                          seed = 17,
                          B = 100,
-                         n_threads = parallel::detectCores() / 4) {
+                         BPPARAM = bpparam()) {
 
   # obtaining data from reducedDim slot
   if (is.null(SingleCellExperiment::reducedDim(scCNA))) {
     stop("Reduced dimensions slot is NULL. Use runUmap().")
   }
-
-  #
-
 
   hdbscanCBI <-
     function(data, minPts, diss = inherits(data, "dist"), ...) {
@@ -115,19 +111,21 @@ findSuggestedK <- function(scCNA,
 
   message(cat("Calculating jaccard similarity for k range:", k_range))
 
-  mean_jaccard <- parallel::mclapply(k_range, function(i) {
+  mean_jaccard <- BiocParallel::bplapply(k_range, function(i) {
     df_clusterboot <-
-      fpc::clusterboot(
-        SingleCellExperiment::reducedDim(scCNA, "umap"),
-        B = B,
-        clustermethod = hdbscanCBI,
-        seed = seed,
-        minPts = i
+      .quiet(
+        fpc::clusterboot(
+          SingleCellExperiment::reducedDim(scCNA, "umap"),
+          B = B,
+          clustermethod = hdbscanCBI,
+          seed = seed,
+          minPts = i
+        )
       )
 
     mean_jc_cl <- mean(df_clusterboot$bootmean)
 
-  }, mc.cores = n_threads)
+  }, BPPARAM = BPPARAM)
 
   names(mean_jaccard) <- k_range
 

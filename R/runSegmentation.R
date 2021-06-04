@@ -7,14 +7,15 @@
 #' @param genome Character. Genome assembly to be used, current accepted "hg19" or "hg38".
 #' @param seed Numeric. Set seed for CBS segmentation permutation reproducibility.
 #' @param target_slot Character. Target slot for the resulting segment ratios.
-#' @param n_threads Number of threads used to calculate the distance matrix.
-#' Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.
+#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
+#' should be parallelized.
 #'
 #' @return The segment profile for all cells inside the scCNA object. Can be retrieved with \code{copykit::segment_ratios()}
 #' @importFrom DNAcopy CNA smooth.CNA segment
 #' @importFrom dplyr mutate bind_cols
 #' @importFrom stringr str_detect str_remove str_replace
 #' @importFrom S4Vectors metadata
+#' @importFrom BiocParallel bplapply bpparam
 #' @importMethodsFrom SummarizedExperiment assay
 #' @export
 #'
@@ -24,7 +25,7 @@ runSegmentation <- function(scCNA,
                             genome = "hg38",
                             seed = 17,
                             target_slot = 'segment_ratios',
-                            n_threads = parallel::detectCores() / 4) {
+                            BPPARAM = bpparam()) {
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:45 2021
   # Checks
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:50 2021
@@ -51,25 +52,6 @@ runSegmentation <- function(scCNA,
     " for genome ",
     genome
   ))
-  message(paste0("Using ", n_threads, " cores."))
-  message("Imagine a progress bar here ...")
-
-  # checks
-
-  if (!is.numeric(n_threads)) {
-    stop("n_threads argument must be numeric.")
-  }
-
-  if (n_threads > parallel::detectCores()) {
-    stop(paste(
-      "n_threads argument must be smaller than",
-      parallel::detectCores()
-    ))
-  }
-
-  if (n_threads < 1) {
-    n_threads <- 1
-  }
 
   # genome assembly
   # Reading hg38 VarBin ranges
@@ -121,7 +103,7 @@ runSegmentation <- function(scCNA,
     if (S4Vectors::metadata(scCNA)$vst == 'ft') {
       counts_df <- assay(scCNA, 'ft')
 
-      CBS_seg <- parallel::mclapply(counts_df, function(x) {
+      CBS_seg <- BiocParallel::bplapply(counts_df, FUN = function(x) {
         CNA_object <-
           DNAcopy::CNA(x,
                        chr_info,
@@ -131,11 +113,13 @@ runSegmentation <- function(scCNA,
         set.seed(seed)
         smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
         segment_smoothed_CNA_object <-
-          DNAcopy::segment(
-            smoothed_CNA_object,
-            alpha = 0.01,
-            min.width = 5,
-            undo.splits = "prune"
+          .quiet(
+            DNAcopy::segment(
+              smoothed_CNA_object,
+              alpha = 0.01,
+              min.width = 5,
+              undo.splits = "prune"
+            )
           )
         short_cbs <- segment_smoothed_CNA_object[[2]]
         log_seg_mean_LOWESS <-
@@ -144,17 +128,21 @@ runSegmentation <- function(scCNA,
           .MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
         merge_ratio <- .invft(merge_obj)
 
-      }, mc.cores = n_threads)
+      }, BPPARAM = BPPARAM)
 
     }
 
     if (S4Vectors::metadata(scCNA)$vst == 'log') {
+
+      warning("undo.splits = 'prune' and 'log' assay can run for long time
+              for cells with large number of breakpoints",
+              noBreaks. = TRUE)
       # segmentation with undo.splits = "prune"
 
       counts_df <- assay(scCNA, 'log')
 
       CBS_seg <-
-        parallel::mclapply(as.data.frame(counts_df), function(x) {
+        BiocParallel::bplapply(as.data.frame(counts_df), function(x) {
           CNA_object <-
             DNAcopy::CNA(x,
                          chr_info,
@@ -164,11 +152,13 @@ runSegmentation <- function(scCNA,
           set.seed(seed)
           smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
           segment_smoothed_CNA_object <-
-            DNAcopy::segment(
-              smoothed_CNA_object,
-              alpha = 0.01,
-              min.width = 5,
-              undo.splits = "prune"
+            .quietly(
+              DNAcopy::segment(
+                smoothed_CNA_object,
+                alpha = 0.01,
+                min.width = 5,
+                undo.splits = "prune"
+              )
             )
           short_cbs <- segment_smoothed_CNA_object[[2]]
           log_seg_mean_LOWESS <-
@@ -178,7 +168,7 @@ runSegmentation <- function(scCNA,
           merge_ratio <- 2 ^ merge_obj
 
 
-        }, mc.cores = n_threads)
+        }, BPPARAM = BPPARAM)
 
     }
 
@@ -203,12 +193,12 @@ runSegmentation <- function(scCNA,
     counts_df <- assay(scCNA, 'log')
 
     WBS_seg <-
-      parallel::mclapply(as.data.frame(counts_df), function(i) {
+      BiocParallel::bplapply(as.data.frame(counts_df), function(i) {
         seg <- wbs::wbs(i)
         seg_means <- wbs::means.between.cpt(seg$x,
                                             changepoints(seg, penalty = "ssic.penalty")$cpt.ic[["ssic.penalty"]])
         seg_means <- 2 ^ (seg_means)
-      }, mc.cores = n_threads)
+      }, BPPARAM = BPPARAM)
 
     wbs_seg_df <- dplyr::bind_cols(WBS_seg) %>%
       as.data.frame()

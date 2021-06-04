@@ -8,12 +8,13 @@
 #' @param genome Name of the genome assembly. Default: 'hg38'.
 #' @param bin_size The resolution of the VarBin method. Default: '200kb'.
 #' @param remove_Y (default == FALSE) If set to TRUE, removes information from the chrY from the dataset.
-#' @param n_threads Number of cores used to process files
+#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
+#' should be parallelized.
 #'
-#' @return Segment ratios can be acessed with \code{copykit::segment_ratios}.
-#' @return Ratios can be acessed with \code{copykit::ratios}.
-#' @return Bin counts can be acessed with \code{copykit::bin_counts}.
-#' @return Genomic ranges can be acessed with \code{SummarizedExperiment::rowRanges()}
+#' @return Segment ratios can be accessed with \code{copykit::segment_ratios}.
+#' @return Ratios can be accessed with \code{copykit::ratios}.
+#' @return Bin counts can be accessed with \code{copykit::bin_counts}.
+#' @return Genomic ranges can be accessed with \code{SummarizedExperiment::rowRanges()}
 #'
 #' @importFrom Rsubread featureCounts
 #' @importFrom stringr str_replace str_remove str_detect
@@ -32,7 +33,7 @@ runVarbin <- function(dir,
                       bin_size = "200kb",
                       remove_Y = FALSE,
                       min_reads = 1e5,
-                      n_threads =  parallel::detectCores() / 4) {
+                      BPPARAM = bpparam()) {
 
 
   #checks
@@ -96,12 +97,16 @@ runVarbin <- function(dir,
     files_names <- files_names[!stringr::str_detect(files_names, ".bai")]
   }
 
-  varbin_counts_list_all_fields <- parallel::mclapply(files, Rsubread::featureCounts,
-                                                      ignoreDup = TRUE,
-                                                      countMultiMappingReads = FALSE,
-                                                      annot.ext = rg,
-                                                      useMetaFeatures = FALSE,
-                                                      mc.cores = n_threads)
+  varbin_counts_list_all_fields <-
+    suppressMessages(
+      BiocParallel::bplapply(files, Rsubread::featureCounts,
+                             ignoreDup = TRUE,
+                             countMultiMappingReads = FALSE,
+                             annot.ext = rg,
+                             useMetaFeatures = FALSE,
+                             verbose = FALSE,
+                             BPPARAM = BPPARAM)
+    )
 
   varbin_counts_list <- lapply(varbin_counts_list_all_fields,
                                '[[',
@@ -111,12 +116,12 @@ runVarbin <- function(dir,
 
   #LOWESS GC normalization
 
-  varbin_counts_list_gccor <- parallel::mclapply(varbin_counts_list, function(x) {
+  varbin_counts_list_gccor <- BiocParallel::bplapply(varbin_counts_list, function(x) {
     gc_cor <- lowess(rg$gc_content, log(x + 1e-3), f = 0.05)
     gc_cor_z <- approx(gc_cor$x, gc_cor$y, rg$gc_content)
     exp(log(x) - gc_cor_z$y)*median(x)
   },
-  mc.cores = n_threads)
+  BPPARAM = BPPARAM)
 
   varbin_counts_df <- dplyr::bind_cols(varbin_counts_list_gccor)
 

@@ -175,6 +175,15 @@ setMethod("show", "scCNA", function(object) {
          pv = pv)
   }
 
+# suppress cat output from function
+# thanks to https://stackoverflow.com/a/54136863
+#' @export
+.quiet <- function(x) {
+  sink(tempfile())
+  on.exit(sink())
+  invisible(force(x))
+}
+
 # inverse freeman-tukey transformation
 # https://www.biorxiv.org/content/10.1101/2020.06.08.140673v2.full.pdf
 #' @export

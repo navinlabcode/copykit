@@ -10,7 +10,7 @@ runSegmentation(
   genome = "hg38",
   seed = 17,
   target_slot = "segment_ratios",
-  n_threads = parallel::detectCores()/4
+  BPPARAM = bpparam()
 )
 }
 \arguments{
@@ -24,8 +24,8 @@ runSegmentation(
 
 \item{target_slot}{Character. Target slot for the resulting segment ratios.}
 
-\item{n_threads}{Number of threads used to calculate the distance matrix.
-Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.}
+\item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
+should be parallelized.}
 }
 \value{
 The segment profile for all cells inside the scCNA object. Can be retrieved with \code{copykit::segment_ratios()}

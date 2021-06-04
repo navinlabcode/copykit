@@ -7,7 +7,7 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param n_threads Number of threads used to calculate the distance matrix. Passed to `parallel::mclapply`. As default it uses 1/4 of the detected cores available.
+#' @param BPPARAM Number of threads used to calculate the distance matrix. Passed to `BiocParallel::bplapply`. As default it uses 1/4 of the detected cores available.
 #'
 #' @return Adds a the metrics to the scCNA metadata. Those metrics can be used for subsetting the data if desired
 #' @return Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
@@ -18,7 +18,7 @@
 #'
 #'
 runMetrics <- function(scCNA,
-                       n_threads = parallel::detectCores() / 4) {
+                       BPPARAM = bpparam()) {
   # checks
 
   if (!is.numeric(n_threads)) {
@@ -49,12 +49,12 @@ runMetrics <- function(scCNA,
   message("Calculating RMSE")
   message(paste("Using", n_threads, "cores."))
 
-  rmses <- parallel::mclapply(1:ncol(dat_seg), function(i) {
+  rmses <- BiocParallel::bplapply(1:ncol(dat_seg), function(i) {
     actual <- dat_seg[, i]
     predicted <- dat_rat[, i]
     Metrics::rmse(actual, predicted)
   },
-  mc.cores = n_threads)
+  BPPARAM = BPPARAM)
 
   rmses <- unlist(rmses)
 
