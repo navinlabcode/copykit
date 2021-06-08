@@ -193,6 +193,8 @@ plotRatio <- function(scCNA,
         ))),
         names = 0:(2 * round(cell_ploidy)))
 
+        color_ratio[which(names(color_ratio) == round(cell_ploidy))] <- "gray"
+
         max_int_value <- max(df_plot$integer)
         mean_bin_cell <- mean(df_plot$ratio)
 
@@ -275,6 +277,8 @@ plotRatio <- function(scCNA,
         2 * round(cell_ploidy)
       ))),
       names = 0:(2 * round(cell_ploidy)))
+
+      color_ratio[which(names(color_ratio) == round(cell_ploidy))] <- "gray"
 
       max_int_value <- max(df_plot$integer)
       mean_bin_cell <- mean(df_plot$ratio)
