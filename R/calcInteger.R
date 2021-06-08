@@ -17,29 +17,35 @@
 #' @export
 #'
 #' @importFrom S4Vectors metadata
-#' @importFrom SummarizedExperiment assay
+#' @importFrom SummarizedExperiment assay colData
 #'
 #' @examples
 calcInteger <- function(scCNA,
                         method = 'fixed',
                         ploidy_value = NULL,
                         slot = 'integer') {
+
+
   seg_ratios_df <- copykit::segment_ratios(scCNA)
 
-  if (method == 'fixed') {
+  if (!is.null(colData(scCNA)$ploidy) && !is.null(ploidy_value)) {
 
-    if (is.null(ploidy_value) && !is.numeric(ploidy_value)) {
-      stop("Method fixed requires a numeric value for ploidy_value argument.")
+    if (method == 'fixed') {
+
+      if (is.null(ploidy_value) && !is.numeric(ploidy_value)) {
+        stop("Method fixed requires a numeric value for ploidy_value argument.")
+      }
+
+      message(paste("Scaling ratio values by ploidy value",
+                    ploidy_value))
+
+      # ploidy values are added to colData information
+      colData(scCNA)$ploidy <- ploidy_value
+
+      # saving ploidy scaling method
+      S4Vectors::metadata(scCNA)$ploidy_method <- 'fixed'
+
     }
-
-    message(paste("Scaling ratio values by ploidy value",
-                  ploidy_value))
-
-    # ploidy values are added to colData information
-    colData(scCNA)$ploidy_value <- ploidy_value
-
-    # saving ploidy scaling method
-    S4Vectors::metadata(scCNA)$ploidy_method <- 'fixed'
 
   }
 
@@ -50,7 +56,7 @@ calcInteger <- function(scCNA,
 
     # obtain the matrix of integer values by multiplying the seg ratios
     # by the diagonal of the ploidy colData vector
-    int_values <- round(as.matrix(seg_ratios_df) %*% diag(colData(scCNA)$ploidy_value)) %>%
+    int_values <- round(as.matrix(seg_ratios_df) %*% diag(colData(scCNA)$ploidy)) %>%
       as.data.frame()
 
     # recovering names
@@ -59,8 +65,6 @@ calcInteger <- function(scCNA,
     assay(scCNA, slot) <- int_values
 
     return(scCNA)
-
-
 
 }
 
