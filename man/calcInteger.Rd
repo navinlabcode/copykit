@@ -21,7 +21,9 @@ a data frame with cells as columns and integerized segments as rows.
 Calculates the integer copy number profile for each single-cell
 }
 \details{
+\itemize{
 \item{fixed:} When method argument is set to 'fixed' copykit extracts the segment means
 from the scCNA object and multiplies those means by the value provided in the
 argument ploidy_value.
+}
 }
