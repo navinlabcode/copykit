@@ -96,7 +96,7 @@ plotRatio <- function(scCNA,
     ),
     theme_classic(),
     xlab(""),
-      ylab("log2 (ratios)"),
+    ylab("ratio"),
     theme(
       axis.text.x = element_text(
         angle = 0,
@@ -143,6 +143,15 @@ plotRatio <- function(scCNA,
   } else
     stop("Nrow in copykit::segment_ratios() assay different than nrow in copykit::ratios().")
 
+  if (!is.null(colData(scCNA)$ploidy)) {
+    # multiplying by the integer. match() creates a vector that repeates the
+    # value from the ploidy column the same amount of times as the long df
+    # on the sample with the same sample name
+    df <- df %>%
+      dplyr::mutate(integer = round(df$segment_ratio * (colData(scCNA)$ploidy[match(df$sample, colData(scCNA)$sample)])))
+
+  }
+
   choice <- unique(df$sample)
 
   ###############
@@ -168,22 +177,72 @@ plotRatio <- function(scCNA,
   server <- function(input, output, session) {
     # Render the plot
     output$plot <- renderPlot({
-      p <- ggplot(df %>% filter(sample == input$sample_name)) +
+
+      df_plot <-
+        df %>% dplyr::filter(sample == input$sample_name)
+
+      if (!is.null(colData(scCNA)$ploidy)) {
+        cell_ploidy <- as.data.frame(colData(scCNA)) %>%
+          dplyr::select(sample, ploidy) %>%
+          dplyr::filter(sample == input$sample_name) %>%
+          pull(ploidy)
+
+        # ratio colors
+        color_ratio <- structure(pals::ocean.balance(length(0:(
+          2 * round(cell_ploidy)
+        ))),
+        names = 0:(2 * round(cell_ploidy)))
+
+        max_int_value <- max(df_plot$integer)
+        mean_bin_cell <- mean(df_plot$ratio)
+
+        sec_axis_int <- list(scale_y_continuous(
+          sec.axis = sec_axis(
+            ~ . * cell_ploidy / mean_bin_cell,
+            breaks = seq(0, max_int_value, 1),
+            name  = "integer copy number"
+          )
+        ))
+      }
+
+      ggline <-
+        list(geom_line(
+          aes(abspos, segment_ratio),
+          col = "black",
+          size = 1.2
+        ))
+
+      df_plot$integer[df_plot$integer > 2 * (round(mean(df_plot$integer)))] <-
+        2 * (round(mean(df_plot$integer)))
+
+      p <- ggplot(df_plot) +
         ggchr_back +
         ggaes +
-        geom_point(
-          aes(abspos, log2(ratio + 1e-3)),
-          shape = 20,
-          col = "gray",
-          size = 1,
-          alpha = .7
-        ) +
-        geom_line(aes(abspos, log2(segment_ratio + 1e-3)), col = "black",
-                  size = 1.2) +
         ggtitle(paste(toupper(sample_name)))
 
-      print(p)
+      if (!is.null(colData(scCNA)$ploidy)) {
+        p <- p + sec_axis_int +
+          geom_point(
+            aes(abspos, ratio, color = as.character(integer)),
+            shape = 20,
+            size = 1,
+            alpha = .7
+          ) +
+          scale_color_manual(values = color_ratio) +
+          ggline
+      } else {
+        p <- p +
+          geom_point(
+            aes(abspos, ratio),
+            shape = 20,
+            color = 'gray',
+            size = 1,
+            alpha = .7
+          ) +
+          ggline
+      }
 
+      print(p)
 
     })
     #
@@ -202,23 +261,73 @@ plotRatio <- function(scCNA,
       stop("sample_name argument is not on dataset. Make sure to have the correct sample name")
     }
 
-    p <- ggplot(df %>% filter(sample == sample_name)) +
+    df_plot <-
+      df %>% dplyr::filter(sample == sample_name)
+
+    if (!is.null(colData(scCNA)$ploidy)) {
+      cell_ploidy <- as.data.frame(colData(scCNA)) %>%
+        dplyr::select(sample, ploidy) %>%
+        dplyr::filter(sample == sample_name) %>%
+        pull(ploidy)
+
+      # ratio colors
+      color_ratio <- structure(pals::ocean.balance(length(0:(
+        2 * round(cell_ploidy)
+      ))),
+      names = 0:(2 * round(cell_ploidy)))
+
+      max_int_value <- max(df_plot$integer)
+      mean_bin_cell <- mean(df_plot$ratio)
+
+      sec_axis_int <- list(scale_y_continuous(
+        sec.axis = sec_axis(
+          ~ . * cell_ploidy / mean_bin_cell,
+          breaks = seq(0, max_int_value, 1),
+          name  = "integer copy number"
+        )
+      ))
+    }
+
+    ggline <-
+      list(geom_line(
+        aes(abspos, segment_ratio),
+        col = "black",
+        size = 1.2
+      ))
+
+    df_plot$integer[df_plot$integer > 2 * (round(mean(df_plot$integer)))] <-
+      2 * (round(mean(df_plot$integer)))
+
+    p <- ggplot(df_plot) +
       ggchr_back +
       ggaes +
-      geom_point(
-        aes(abspos, log2(ratio + 1e-3)),
-        shape = 20,
-        col = "gray",
-        size = 1,
-        alpha = .7
-      ) +
-      geom_line(aes(abspos, log2(segment_ratio + 1e-3)), col = "black",
-                size = 1.2) +
       ggtitle(paste(toupper(sample_name)))
 
-    print(p)
-  }
+    if (!is.null(colData(scCNA)$ploidy)) {
+      p <- p + sec_axis_int +
+        geom_point(
+          aes(abspos, ratio, color = as.character(integer)),
+          shape = 20,
+          size = 1,
+          alpha = .7
+        ) +
+        scale_color_manual(values = color_ratio) +
+        ggline
+    } else {
+      p <- p +
+        geom_point(
+          aes(abspos, ratio),
+          shape = 20,
+          color = 'gray',
+          size = 1,
+          alpha = .7
+        ) +
+        ggline
+    }
 
+    print(p)
+
+  }
 
 }
 
