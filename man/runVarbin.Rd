@@ -9,33 +9,42 @@ runVarbin(
   genome = "hg38",
   bin_size = "200kb",
   remove_Y = FALSE,
-  min_reads = 1e+05,
+  vst = "ft",
+  seed = 17,
+  slot = "segment_ratios",
   BPPARAM = bpparam()
 )
 }
 \arguments{
 \item{dir}{A path for the directory containing .BAM files from short-read sequencing.}
 
-\item{genome}{Name of the genome assembly. Default: 'hg38'.}
+\item{genome}{Choice of genome assembly. Default: 'hg38'.}
 
 \item{bin_size}{The resolution of the VarBin method. Default: '200kb'.}
 
 \item{remove_Y}{(default == FALSE) If set to TRUE, removes information from the chrY from the dataset.}
 
+\item{vst}{Character. Transformation to be performed. More details in \link{copykit::runVst}}
+
+\item{seed}{Numeric. Set seed for CBS segmentation permutation reproducibility.}
+
+\item{slot}{Character. Target slot for the resulting segment ratios.}
+
 \item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
 should be parallelized.}
+
+\item{method}{Character. Segmentation method of choice.}
 }
 \value{
-Segment ratios can be accessed with \code{copykit::segment_ratios}.
-
-Ratios can be accessed with \code{copykit::ratios}.
-
-Bin counts can be accessed with \code{copykit::bin_counts}.
-
-Genomic ranges can be accessed with \code{SummarizedExperiment::rowRanges()}
+An scCNA object containing the bin counts, the ratios and the segment
+ratios.
 }
 \description{
 runVarbin performs the variable binning (VarBin) algorithm to a series of BAM files resulting from short-read sequencing.
+}
+\details{
+runVarbin is a convinient wrapper for CopyKit's pre-processing module.
+It runs \link{runCountReads}, \link{runVst} and, \link{runSegmentation}.
 }
 \examples{
 

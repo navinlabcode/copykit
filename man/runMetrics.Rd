@@ -9,7 +9,8 @@ runMetrics(scCNA, BPPARAM = bpparam())
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{BPPARAM}{Number of threads used to calculate the distance matrix. Passed to `BiocParallel::bplapply`. As default it uses 1/4 of the detected cores available.}
+\item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
+should be parallelized.}
 }
 \value{
 Adds a the metrics to the scCNA metadata. Those metrics can be used for subsetting the data if desired
