@@ -1,12 +1,14 @@
 #' Run phylogenetic analysis
 #'
-#' Performs phylogenetic analysis using the segment ratios data
+#' Performs phylogenetic analysis
 #'
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param method Phylogenetic method to be run, currently only accepts "nj" (neighbor-joining).
+#' @param method Phylogenetic method to be run, currently accepts "nj" (neighbor-joining) and "me" (minimum evolution). Defaults to "nj".
 #' @param metric distance metric passed to construct the phylogeny (Defaults to "euclidean").
+#' @param integer Whether the analysis is performed on the integer data. Used with integer_slot. Defaults to FALSE (using segment ratios data).
+#' @param integer_slot Assay name where integer data is saved.
 #' @param n_threads Number of threads used to calculate the distance matrix. Passed to `amap::Dist`
 #'
 #' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDim(scCNA, 'umap')}
@@ -18,25 +20,83 @@
 runPhylo <- function(scCNA,
                      method = "nj",
                      metric = "euclidean",
-                     n_threads = 1) {
+                     integer =  FALSE,
+                     integer_slot,
+                     n_threads = parallel::detectCores() / 4) {
 
-  # checking distance matrix
-  if (length(copykit::distMat(scCNA)) == 0) {
-    message("No distance matrix detected in the scCNA object.")
-    scCNA <-  runDistMat(scCNA, metric = metric)
+  # cores check
+  if (n_threads < 1) {
+    n_threads <- 1
   }
 
-  if (nrow(as.matrix(copykit::distMat(scCNA))) != ncol(scCNA)) {
-    stop("Number of samples in the distance matrix different from number of samples in the scCNA object. Perhaps you filtered your dataset? use copykit::runDistMat() to update it.")
-  }
 
   # getting data
-  seg_data <- t(segment_ratios(scCNA)) %>%
-    as.data.frame()
+
+  ## with ratios
+  if (! integer) {
+
+    message("Using ratio data...")
+    seg_data <- segment_ratios(scCNA)
+    seg_data[, ncol(seg_data)+1] <- 1
+    seg_data[, ncol(seg_data)+1] <- 1
+    seg_data <- t(seg_data) %>% as.data.frame()
+
+  }  
+
+  ## with integers
+  if (integer) {
+
+    if (is.null(integer_slot)){
+
+      stop("Please specifiy integer slot.")
+
+    } else if ( (integer_slot %in% names(SummarizedExperiment::assays(scCNA))) & 
+                (integer_slot %!in% c("segment_ratios", "ratios", "bin_counts")) ) {
+
+      message(sprintf("Using %s data...", integer_slot))
+      seg_data <- SummarizedExperiment::assay(scCNA, integer_slot)
+      seg_data[, ncol(seg_data)+1] <- 2
+      seg_data[, ncol(seg_data)+1] <- 2
+      seg_data <- t(seg_data) %>% as.data.frame()
+
+    } else {
+
+      stop("No integer data found in the integer slot! Please check the assays.")
+
+    }
+
+  }
+
+  # calculating distance matrix
+  message("Calculating distance matrix")
+  distMat <- amap::Dist(seg_data,
+                        method = metric,
+                        nbproc = n_threads)
 
   # ordering cells
-  message("Creating neighbor-joining tree.")
-  tree <- ape::nj(distMat(scCNA))
+  if ( method %in% c("nj","me") ) {
+    if ( method == "nj" ) {
+       message("Creating neighbor-joining tree.")
+       tree <- ape::nj(distMat)
+    }
+
+    if ( method == "me" ) {
+       message("Creating minimum evolution tree.")
+       tree <- ape::fastme.bal(distMat)
+    }
+
+  } else {
+    stop("Currently only nj and me trees are supported.")
+  }
+  
+
+  # root the tree
+  tree <- ape::root.phylo(tree,
+             outgroup = which(tree$tip.label == paste0("V",Ntip(tree))),
+             resolve.root = T)
+  tree <- ape::drop.tip(tree, tip = as.character(c(
+              paste0("V",nrow(seg_data)), paste0("V",nrow(seg_data) - 1)
+            )))
 
   tree <- ape::ladderize(tree)
 
