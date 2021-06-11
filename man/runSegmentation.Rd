@@ -7,9 +7,8 @@
 runSegmentation(
   scCNA,
   method = "CBS",
-  genome = "hg38",
   seed = 17,
-  target_slot = "segment_ratios",
+  slot = "segment_ratios",
   BPPARAM = bpparam()
 )
 }
@@ -18,11 +17,9 @@ runSegmentation(
 
 \item{method}{Character. Segmentation method of choice.}
 
-\item{genome}{Character. Genome assembly to be used, current accepted "hg19" or "hg38".}
-
 \item{seed}{Numeric. Set seed for CBS segmentation permutation reproducibility.}
 
-\item{target_slot}{Character. Target slot for the resulting segment ratios.}
+\item{slot}{Character. Target slot for the resulting segment ratios.}
 
 \item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
 should be parallelized.}

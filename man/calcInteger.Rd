@@ -4,14 +4,16 @@
 \alias{calcInteger}
 \title{Calculates the integer copy number profile for each single-cell}
 \usage{
-calcInteger(scCNA, method, ploidy_value = NULL)
+calcInteger(scCNA, method = "fixed", ploidy_value = NULL, slot = "integer")
 }
 \arguments{
 \item{scCNA}{The scCNA object.}
 
-\item{method}{Method used to calculate integer profiles. Options: 'fixed'.}
+\item{method}{Method used to scale the ratio values to integer.}
 
-\item{ploidy_value}{If method of choice is 'fixed' a ploidy value should be provided}
+\item{ploidy_value}{If method of choice is 'fixed' a ploidy value should be provided.}
+
+\item{slot}{Name of the resulting slot where integer matrix will be saved.}
 }
 \value{
 The scCNA object with an assay slot named 'integer' that contains

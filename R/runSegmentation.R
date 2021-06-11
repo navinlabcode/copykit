@@ -4,9 +4,8 @@
 #'
 #' @param scCNA The scCNA object
 #' @param method Character. Segmentation method of choice.
-#' @param genome Character. Genome assembly to be used, current accepted "hg19" or "hg38".
 #' @param seed Numeric. Set seed for CBS segmentation permutation reproducibility.
-#' @param target_slot Character. Target slot for the resulting segment ratios.
+#' @param slot Character. Target slot for the resulting segment ratios.
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
 #'
@@ -22,28 +21,19 @@
 #' @examples
 runSegmentation <- function(scCNA,
                             method = "CBS",
-                            genome = "hg38",
                             seed = 17,
-                            target_slot = 'segment_ratios',
+                            slot = 'segment_ratios',
                             BPPARAM = bpparam()) {
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:45 2021
   # Checks
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:50 2021
-
-  # check for genome assembly
-  if (genome %!in% c("hg19", "hg38")) {
-    stop("Genome assembly must be 'hg19' or 'hg38'")
+  # genome assembly
+  if (S4Vectors::metadata(scCNA)$genome == "hg19") {
+    genome <- "hg19"
   }
 
-  if (genome != metadata(scCNA)$genome) {
-    stop(
-      paste(
-        "Incompatible genome assembly, scCNA object was created with",
-        metadata(scCNA)$genome,
-        "and runSegmentation is set to:",
-        genome
-      )
-    )
+  if (S4Vectors::metadata(scCNA)$genome == "hg38") {
+    genome <- "hg38"
   }
 
   message(paste0(
@@ -178,7 +168,7 @@ runSegmentation <- function(scCNA,
     # calculating ratios
     scCNA <- calcRatios(scCNA, assay = 'bin_counts')
 
-    SummarizedExperiment::assay(scCNA, target_slot) <-
+    SummarizedExperiment::assay(scCNA, slot) <-
       apply(cbs_seg_df, 2, function(x)
         x / mean(x)) %>%
       as.data.frame()
@@ -190,7 +180,7 @@ runSegmentation <- function(scCNA,
   }
 
   if (method == 'WBS') {
-    counts_df <- assay(scCNA, 'log')
+    counts_df <- SummarizedExperiment::assay(scCNA, 'log')
 
     WBS_seg <-
       BiocParallel::bplapply(as.data.frame(counts_df), function(i) {
@@ -205,7 +195,7 @@ runSegmentation <- function(scCNA,
 
     scCNA <- calcRatios(scCNA, assay = 'bin_counts')
 
-    SummarizedExperiment::assay(scCNA, target_slot) <-
+    SummarizedExperiment::assay(scCNA, slot) <-
       apply(wbs_seg_df, 2, function(x)
         x / mean(x)) %>%
       as.data.frame()
