@@ -20,7 +20,6 @@ runPhylo <- function(scCNA,
                      method = "nj",
                      metric = "euclidean",
                      integer =  FALSE,
-                     integer_slot,
                      n_threads = parallel::detectCores() / 4) {
 
   # cores check
