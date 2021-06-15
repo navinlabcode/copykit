@@ -7,14 +7,13 @@
 #' @param scCNA scCNA object.
 #' @param method Phylogenetic method to be run, currently accepts "nj" (neighbor-joining) and "me" (minimum evolution). Defaults to "nj".
 #' @param metric distance metric passed to construct the phylogeny (Defaults to "euclidean").
-#' @param integer Whether the analysis is performed on the integer data. Used with integer_slot. Defaults to FALSE (using segment ratios data).
-#' @param integer_slot Assay name where integer data is saved.
+#' @param integer Whether the analysis is performed on the integer data. Defaults to FALSE (using segment ratios data).
 #' @param n_threads Number of threads used to calculate the distance matrix. Passed to `amap::Dist`
 #'
-#' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDim(scCNA, 'umap')}
+#' @return A rooted phylogenetic tree object in the slot \code{phylo} from scCNA object. Access phylo slot with: \code{copykit::phylo(scCNA)}
 #' @export
 #'
-#' @importFrom ape nj ladderize
+#' @importFrom ape nj fastme.bal ladderize
 #' @examples
 
 runPhylo <- function(scCNA,
@@ -46,22 +45,17 @@ runPhylo <- function(scCNA,
   ## with integers
   if (integer) {
 
-    if (is.null(integer_slot)){
+    if ("integer" %in% names(SummarizedExperiment::assays(scCNA))) {
 
-      stop("Please specifiy integer slot.")
-
-    } else if ( (integer_slot %in% names(SummarizedExperiment::assays(scCNA))) & 
-                (integer_slot %!in% c("segment_ratios", "ratios", "bin_counts")) ) {
-
-      message(sprintf("Using %s data...", integer_slot))
-      seg_data <- SummarizedExperiment::assay(scCNA, integer_slot)
+      message("Using integer data...")
+      seg_data <- SummarizedExperiment::assay(scCNA, "integer")
       seg_data[, ncol(seg_data)+1] <- 2
       seg_data[, ncol(seg_data)+1] <- 2
       seg_data <- t(seg_data) %>% as.data.frame()
 
     } else {
 
-      stop("No integer data found in the integer slot! Please check the assays.")
+      stop("Integer data not found! Please make sure the integer data is in SummarizedExperiment::assay(scCNA, \"integer\").")
 
     }
 
