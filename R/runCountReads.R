@@ -94,6 +94,8 @@ runCountReads <- function(dir,
       files_names[!stringr::str_detect(files_names, ".bai")]
   }
 
+  message("Counting reads.")
+
   varbin_counts_list_all_fields <-
     suppressMessages(
       BiocParallel::bplapply(
@@ -115,6 +117,8 @@ runCountReads <- function(dir,
   names(varbin_counts_list) <- files_names
 
   #LOWESS GC normalization
+
+  message("Performing GC correction.")
 
   varbin_counts_list_gccor <-
     BiocParallel::bplapply(varbin_counts_list, function(x) {
@@ -218,6 +222,7 @@ runCountReads <- function(dir,
     )
   }
 
+  message("Done.")
   # adding to metadata
   SummarizedExperiment::colData(cna_obj) <-
     S4Vectors::DataFrame(bam_metrics)

@@ -205,6 +205,12 @@ plotRatio <- function(scCNA,
             name  = "integer copy number"
           )
         ))
+
+        # truncating maximum value due to color scale
+        df_plot$integer[df_plot$integer > 2 * (round(mean(df_plot$integer)))] <-
+          2 * (round(mean(df_plot$integer)))
+
+
       }
 
       ggline <-
@@ -213,9 +219,6 @@ plotRatio <- function(scCNA,
           col = "black",
           size = 1.2
         ))
-
-      df_plot$integer[df_plot$integer > 2 * (round(mean(df_plot$integer)))] <-
-        2 * (round(mean(df_plot$integer)))
 
       p <- ggplot(df_plot) +
         ggchr_back +
@@ -290,6 +293,11 @@ plotRatio <- function(scCNA,
           name  = "integer copy number"
         )
       ))
+
+      # truncating maximum value due to color scale
+      df_plot$integer[df_plot$integer > 2 * (round(mean(df_plot$integer)))] <-
+        2 * (round(mean(df_plot$integer)))
+
     }
 
     ggline <-
@@ -298,9 +306,6 @@ plotRatio <- function(scCNA,
         col = "black",
         size = 1.2
       ))
-
-    df_plot$integer[df_plot$integer > 2 * (round(mean(df_plot$integer)))] <-
-      2 * (round(mean(df_plot$integer)))
 
     p <- ggplot(df_plot) +
       ggchr_back +
