@@ -28,7 +28,7 @@ calcInteger <- function(scCNA,
 
   seg_ratios_df <- copykit::segment_ratios(scCNA)
 
-  if (!is.null(colData(scCNA)$ploidy) && !is.null(ploidy_value)) {
+  if (!is.null(ploidy_value)) {
 
     if (method == 'fixed') {
 
