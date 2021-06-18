@@ -11,6 +11,7 @@
 #'
 #' @examples
 calcConsensus <- function(scCNA,
+                          assay = "segment_ratios",
                           consensus_by = "subclones",
                           BPPARAM = bpparam()) {
   if (consensus_by == 'subclones' &
@@ -34,7 +35,7 @@ calcConsensus <- function(scCNA,
     as.data.frame(SummarizedExperiment::colData(scCNA)) %>%
     dplyr::select(!!consensus_by)
 
-  seg_data <- as.data.frame(t(segment_ratios(scCNA)))
+  seg_data <- as.data.frame(t(SummarizedExperiment::assay(scCNA, assay)))
 
   #sanity check
   if (!identical(rownames(consensus_info), rownames(seg_data))) {
@@ -56,6 +57,10 @@ calcConsensus <- function(scCNA,
   # This hidden attribute will allow plotHeatmap to figure it out which
   # argument was used in 'consensus_by'
   attr(cs_df, "consensus_by") <- consensus_by
+
+  # This hidden attribute will allow plotHeatmap to figure it out which
+  # argument was used in 'assay'
+  attr(cs_df, "consensus_assay") <- assay
 
   consensus(scCNA) <- cs_df
 

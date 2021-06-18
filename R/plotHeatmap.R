@@ -23,11 +23,15 @@
 #'
 #' @import ComplexHeatmap
 #' @importFrom circlize colorRamp2
+#' @importFrom pals ocean.balance
+#' @importFrom S4Vectors metadata
+#' @importFrom SummarizedExperiment assay
 #' @importFrom dplyr select pull all_of
 #' @examples
 #'
 
 plotHeatmap <- function(scCNA,
+                        assay = "segment_ratios",
                         order_cells = "consensus_tree",
                         label = NULL,
                         label_colors = NULL,
@@ -58,8 +62,48 @@ plotHeatmap <- function(scCNA,
   }
 
 
+  # Uses the hidden consensus_by attribute from the calcConsensus function
+  # to plot integer color scheme in case consensus = TRUE
+  if (consensus == TRUE) {
+    if (attr(consensus(scCNA), "consensus_assay") == 'integer') {
+      assay <- 'integer'
+    }
+  }
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 11:57:50 2021
+# setup and colors for assay = integer
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 11:58:01 2021
+
+  if (assay == 'integer') {
+
+    # truncate ploidy colors to 2* the mean ploidy
+    mean_ploidy <- mean(SummarizedExperiment::colData(scCNA)$ploidy)
+    ploidy_trunc <- 2*round(mean_ploidy)
+
+    # colors
+    color_heat <- structure(pals::ocean.balance(length(0:ploidy_trunc)),
+                            names = 0:ploidy_trunc)
+
+    # special ploidy colors if ground state rounds to 2
+    if (round(mean_ploidy) == 2) {
+      color_heat <- structure(
+        c(
+          "#3787BA",
+          "#95B8C5",
+          "#F0ECEB",
+          "#D7A290",
+          "#BF583B",
+          "#8D1128",
+          "#3C0912"
+        ),
+        names = c("0", "1", "2", "3", "4", "5", "6")
+      )
+    }
+  }
+
   #obtaining data
-  seg_data <- t(segment_ratios(scCNA))
+  seg_data <- t(SummarizedExperiment::assay(scCNA, assay))
 
   #chromosome bar aesthetic
   chr_ranges <-
@@ -184,32 +228,73 @@ plotHeatmap <- function(scCNA,
     seg_data_ordered <- as.data.frame(t(consensus(scCNA)))
   }
 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:11:34 2021
+  # In case assay == integer truncating to a maximum value for ht color
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:11:54 2021
+
+  if (assay == 'integer') {
+    seg_data_int <- seg_data_ordered
+    seg_data_int[seg_data_int > ploidy_trunc] <- ploidy_trunc
+  }
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:20 2021
+  # Complex heatmap plotting
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:32 2021
+
+  message("Plotting Heatmap.")
+
+  #plotting
+  complex_args <- list(
+    use_raster = TRUE,
+    column_title = "genomic coordinates",
+    column_title_gp = grid::gpar(fontsize = 18),
+    column_title_side = "bottom",
+    row_title = paste0(nrow(seg_data_ordered), " samples"),
+    row_title_gp = grid::gpar(fontsize = 18),
+    top_annotation = chr_bar,
+    cluster_rows = FALSE,
+    border = TRUE,
+    cluster_columns = FALSE,
+    show_column_names = FALSE,
+    show_row_names = FALSE,
+    show_heatmap_legend = TRUE
+  )
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:55 2021
+    # Setup for label colData annotation and integer
+
+    # There are two main conditions: if argument label is provided or if
+    # the assay contains integer values.
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:13:10 2021
+
+
 
   # plotting
   if (is.null(label)) {
     # plotting without clusters
 
-    message("Plotting Heatmap.")
+    if (assay != 'integer') {
 
-    ComplexHeatmap::Heatmap(
-      log2(seg_data_ordered + 1e-3),
-      use_raster = TRUE,
-      column_title = "genomic coordinates",
-      column_title_gp = grid::gpar(fontsize = 18),
-      column_title_side = "bottom",
-      row_title = paste0(nrow(seg_data_ordered), " samples"),
-      row_title_gp = grid::gpar(fontsize = 18),
-      heatmap_legend_param = list(title = "log2 (segratio)"),
-      top_annotation = chr_bar,
-      cluster_rows = FALSE,
-      border = TRUE,
-      cluster_columns = FALSE,
-      show_column_names = FALSE,
-      show_row_names = FALSE,
-      show_heatmap_legend = TRUE
-    )
+      do.call(ComplexHeatmap::Heatmap, c(list(
+        matrix = log2(seg_data_ordered + 1e-3),
+        heatmap_legend_param = list(title = "log2 (segratio)")
+      ), complex_args))
+
+    } else {
+      # if assay is integer
+
+      do.call(ComplexHeatmap::Heatmap, c(list(
+        matrix = seg_data_int,
+        heatmap_legend_param = list(title = "copy number"),
+        col = color_heat
+      ), complex_args))
+
+    }
+
   } else {
-    #cluster annotation
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:05:00 2021
+    # If argument label is provided
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:05:09 2021
 
     # retrieving metadata
     metadata <- SummarizedExperiment::colData(scCNA) %>%
@@ -325,42 +410,64 @@ plotHeatmap <- function(scCNA,
                                     show_annotation_name = FALSE)
 
     #plotting
-    complex_args <- list(
-      use_raster = TRUE,
-      left_annotation = cluster_anno,
-      column_title = "genomic coordinates",
-      column_title_gp = grid::gpar(fontsize = 18),
-      column_title_side = "bottom",
-      row_title = paste0(nrow(seg_data_ordered), " samples"),
-      row_title_gp = grid::gpar(fontsize = 18),
-      heatmap_legend_param = list(title = "log2 (segratio)"),
-      top_annotation = chr_bar,
-      cluster_rows = FALSE,
-      border = TRUE,
-      cluster_columns = FALSE,
-      show_column_names = FALSE,
-      show_row_names = FALSE,
-      show_heatmap_legend = TRUE
-    )
-
 
     if (!is.null(row_split)) {
       if (length(row_split) > 1) {
         stop("row_split length must be 1")
       } else {
-        do.call(ComplexHeatmap::Heatmap,
-                c(
-                  list(
-                    matrix = log2(seg_data_ordered + 1e-3),
-                    row_split = dplyr::pull(metadata_anno_df, row_split)
-                  ),
-                  complex_args
-                ))
+
+        if (assay != 'integer') {
+
+          do.call(ComplexHeatmap::Heatmap,
+                  c(
+                    list(
+                      matrix = log2(seg_data_ordered + 1e-3),
+                      row_split = dplyr::pull(metadata_anno_df, row_split),
+                      left_annotation = cluster_anno,
+                      heatmap_legend_param = list(title = "log2 (segratio)")
+                    ),
+                    complex_args
+                  ))
+
+        } else {
+          # if assay is integer
+
+          do.call(ComplexHeatmap::Heatmap,
+                  c(
+                    list(
+                      matrix = seg_data_int,
+                      row_split = dplyr::pull(metadata_anno_df, row_split),
+                      left_annotation = cluster_anno,
+                      heatmap_legend_param = list(title = "copy number"),
+                      col = color_heat
+                    ),
+                    complex_args
+                  ))
+
+        }
+
       }
     } else {
-      do.call(ComplexHeatmap::Heatmap, c(list(matrix = log2(
-        seg_data_ordered + 1e-3
-      )), complex_args))
+
+      if (assay != 'integer') {
+        do.call(ComplexHeatmap::Heatmap, c(list(
+          matrix = log2(seg_data_ordered + 1e-3),
+          left_annotation = cluster_anno,
+          heatmap_legend_param = list(title = "log2 (segratio)")
+        ), complex_args))
+      } else {
+        # if assay == integer
+
+        do.call(ComplexHeatmap::Heatmap, c(list(
+          matrix = seg_data_int,
+          left_annotation = cluster_anno,
+          heatmap_legend_param = list(title = "copy number"),
+          col = color_heat
+        ), complex_args))
+
+      }
+
+
     }
 
   }
