@@ -6,6 +6,7 @@
 \usage{
 plotHeatmap(
   scCNA,
+  assay = "segment_ratios",
   order_cells = "consensus_tree",
   label = NULL,
   label_colors = NULL,
@@ -15,6 +16,8 @@ plotHeatmap(
 }
 \arguments{
 \item{scCNA}{scCNA object.}
+
+\item{assay}{assay from the scCNA object from which the heatmap will be plotted.}
 
 \item{order_cells}{Methods to order the cells within the heatmap.
 Accepted values are "consensus_tree", "phylogeny", "hclust".
