@@ -61,6 +61,16 @@ plotHeatmap <- function(scCNA,
     order_cells <- "hclust"
   }
 
+
+  # Uses the hidden consensus_by attribute from the calcConsensus function
+  # to plot integer color scheme in case consensus = TRUE
+  if (consensus == TRUE) {
+    if (attr(consensus(scCNA), "consensus_assay") == 'integer') {
+      assay <- 'integer'
+    }
+  }
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 11:57:50 2021
 # setup and colors for assay = integer
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 11:58:01 2021
