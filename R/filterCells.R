@@ -26,7 +26,7 @@
 
 filterCells <- function(scCNA,
                         k = 5,
-                        resolution = 0.8) {
+                        resolution = 0.9) {
   if (!is.numeric(resolution)) {
     stop("Resolution needs to be a number between 0 and 1")
   }
