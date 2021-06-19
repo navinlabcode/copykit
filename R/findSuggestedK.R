@@ -1,6 +1,7 @@
 #' Finds the suggested K value to be used for subclone clustering
 #'
 #' @param scCNA  scCNA object.
+#' @param reduced_dim String with the name of the reducedDim to pull data from.
 #' @param k_range Range of values to be tested.
 #'  Defaults to 7 to the sqrt of the number of cells
 #' @param method Method which where the values will be tested.
@@ -22,6 +23,7 @@
 #'
 #' @examples
 findSuggestedK <- function(scCNA,
+                           reduced_dim = 'umap',
                          k_range = 7:sqrt(ncol(segment_ratios(scCNA))),
                          method = "hdbscan",
                          seed = 17,
@@ -29,7 +31,7 @@ findSuggestedK <- function(scCNA,
                          BPPARAM = bpparam()) {
 
   # obtaining data from reducedDim slot
-  if (is.null(SingleCellExperiment::reducedDim(scCNA))) {
+  if (is.null(SingleCellExperiment::reducedDim(scCNA, reduced_dim))) {
     stop("Reduced dimensions slot is NULL. Use runUmap().")
   }
 

@@ -6,7 +6,7 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param assay assay from the scCNA object from which the heatmap will be plotted.
+#' @param assay String with the name of the assay to pull data from to plot heatmap.
 #' @param order_cells Methods to order the cells within the heatmap.
 #' Accepted values are "consensus_tree", "phylogeny", "hclust".
 #' Defaults to "consensus_tree".

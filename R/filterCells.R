@@ -9,6 +9,7 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
+#' @param assay String with the name of the assay to pull data from to filter cells.
 #' @param k K-nearest-neighbor, defaults to 5.
 #' @param resolution Set's how strict the correlation cut off will be. Defaults to 0.8.
 #'
@@ -25,6 +26,7 @@
 #'
 
 filterCells <- function(scCNA,
+                        assay = 'segment_ratios',
                         k = 5,
                         resolution = 0.9) {
   if (!is.numeric(resolution)) {
@@ -35,7 +37,7 @@ filterCells <- function(scCNA,
     stop("Resolution needs to be a number between 0 and 1")
   }
 
-  seg <- copykit::segment_ratios(scCNA)
+  seg <- SummarizedExperiment::assay(scCNA, assay)
 
   message("Calculating correlation matrix.")
 

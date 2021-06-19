@@ -1,9 +1,11 @@
 #' Calculates the integer copy number profile for each single-cell
 #'
 #' @param scCNA The scCNA object.
+#' @param assay String with the name of the assay to pull data from to calculate integers.
 #' @param method Method used to scale the ratio values to integer.
 #' @param ploidy_value If method of choice is 'fixed' a ploidy value should be provided.
-#' @param slot Name of the resulting slot where integer matrix will be saved.
+#' @param name String specifying the name to be used to store the result in the
+#' reducedDims of the output.
 #'
 #' @details
 #' \itemize{
@@ -21,12 +23,12 @@
 #'
 #' @examples
 calcInteger <- function(scCNA,
+                        assay = 'segment_ratios',
                         method = 'fixed',
                         ploidy_value = NULL,
-                        slot = 'integer') {
+                        name = 'integer') {
 
-
-  seg_ratios_df <- copykit::segment_ratios(scCNA)
+  seg_ratios_df <- SummarizedExperiment::assay(scCNA, assay)
 
   if (!is.null(ploidy_value)) {
 
@@ -40,7 +42,7 @@ calcInteger <- function(scCNA,
                     ploidy_value))
 
       # ploidy values are added to colData information
-      colData(scCNA)$ploidy <- ploidy_value
+      SummarizedExperiment::colData(scCNA)$ploidy <- ploidy_value
 
       # saving ploidy scaling method
       S4Vectors::metadata(scCNA)$ploidy_method <- 'fixed'
@@ -62,7 +64,7 @@ calcInteger <- function(scCNA,
     # recovering names
     names(int_values) <- names(seg_ratios_df)
 
-    assay(scCNA, slot) <- int_values
+    SummarizedExperiment::assay(scCNA, assay) <- int_values
 
     return(scCNA)
 
