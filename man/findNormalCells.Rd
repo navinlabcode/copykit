@@ -5,10 +5,18 @@
 \title{identifies possible normal cells in the dataset
  based on coefficient of variation.}
 \usage{
-findNormalCells(scCNA, resolution = "auto", remove_XY = TRUE, simul = TRUE)
+findNormalCells(
+  scCNA,
+  assay = "segment_ratios",
+  resolution = "auto",
+  remove_XY = TRUE,
+  simul = TRUE
+)
 }
 \arguments{
 \item{scCNA}{scCNA object}
+
+\item{assay}{String with the name of the assay to pull data from to find normal cells.}
 
 \item{resolution}{Numeric. Threshold which will be used to detect normal cells.}
 

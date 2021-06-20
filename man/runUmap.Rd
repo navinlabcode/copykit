@@ -4,12 +4,17 @@
 \alias{runUmap}
 \title{Creates UMAP embedding}
 \usage{
-runUmap(scCNA, seed = 17, ...)
+runUmap(scCNA, assay = "segment_ratios", seed = 17, name = "umap", ...)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
 
+\item{assay}{String with the name of the assay to pull data from to make the embedding.}
+
 \item{seed}{Sets a seed for the pseudorandom number generator.}
+
+\item{name}{String specifying the name to be used to store the result in the
+reducedDims of the output.}
 
 \item{...}{Additional parameters passed to \code{uwot::umap}.}
 }

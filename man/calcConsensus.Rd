@@ -14,8 +14,8 @@ calcConsensus(
 \arguments{
 \item{scCNA}{The scCNA object.}
 
-\item{assay}{assay from the scCNA object wherein the consensus matrix is
-calculated}
+\item{assay}{String with the name of the assay to pull data from to calculate
+the consensus matrix.}
 
 \item{consensus_by}{The column from metadata that will be used
 to isolate the cells by factor and calculate the consensus.}

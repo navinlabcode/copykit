@@ -4,10 +4,12 @@
 \alias{filterCells}
 \title{Filter noise cells}
 \usage{
-filterCells(scCNA, k = 5, resolution = 0.8)
+filterCells(scCNA, assay = "segment_ratios", k = 5, resolution = 0.9)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
+
+\item{assay}{String with the name of the assay to pull data from to filter cells.}
 
 \item{k}{K-nearest-neighbor, defaults to 5.}
 

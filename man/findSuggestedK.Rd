@@ -6,6 +6,7 @@
 \usage{
 findSuggestedK(
   scCNA,
+  reduced_dim = "umap",
   k_range = 7:sqrt(ncol(segment_ratios(scCNA))),
   method = "hdbscan",
   seed = 17,
@@ -15,6 +16,8 @@ findSuggestedK(
 }
 \arguments{
 \item{scCNA}{scCNA object.}
+
+\item{reduced_dim}{String with the name of the reducedDim to pull data from.}
 
 \item{k_range}{Range of values to be tested.
 Defaults to 7 to the sqrt of the number of cells}

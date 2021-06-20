@@ -17,7 +17,7 @@ plotHeatmap(
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{assay}{assay from the scCNA object from which the heatmap will be plotted.}
+\item{assay}{String with the name of the assay to pull data from to plot heatmap.}
 
 \item{order_cells}{Methods to order the cells within the heatmap.
 Accepted values are "consensus_tree", "phylogeny", "hclust".
