@@ -1,8 +1,8 @@
 #' Calculate a consensus matrix of segment ratios based on metadata
 #'
 #' @param scCNA The scCNA object.
-#' @param assay assay from the scCNA object wherein the consensus matrix is
-#' calculated
+#' @param assay String with the name of the assay to pull data from to calculate
+#' the consensus matrix.
 #' @param consensus_by The column from metadata that will be used
 #'  to isolate the cells by factor and calculate the consensus.
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function

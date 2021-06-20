@@ -2,6 +2,7 @@
 #'  based on coefficient of variation.
 #'
 #' @param scCNA scCNA object
+#' @param assay String with the name of the assay to pull data from to find normal cells.
 #' @param resolution Numeric. Threshold which will be used to detect normal cells.
 #' @param remove_XY Boolean. Removes chrX and chrY from the analysis. Recommended.
 #' @param simul Add a simulated normal dataset to boost
@@ -18,6 +19,7 @@
 #'
 #' @examples
 findNormalCells <- function(scCNA,
+                            assay = 'segment_ratios',
                             resolution = "auto",
                             remove_XY = TRUE,
                             simul = TRUE) {
@@ -31,7 +33,7 @@ findNormalCells <- function(scCNA,
 
   # retrieving data
   rg <- as.data.frame(SummarizedExperiment::rowRanges(scCNA))
-  seg <- segment_ratios(scCNA)
+  seg <- SummarizedExperiment::assay(scCNA, assay)
 
   if (remove_XY == TRUE) {
     rg <- rg %>%
