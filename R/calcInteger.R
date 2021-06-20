@@ -64,7 +64,7 @@ calcInteger <- function(scCNA,
     # recovering names
     names(int_values) <- names(seg_ratios_df)
 
-    SummarizedExperiment::assay(scCNA, assay) <- int_values
+    SummarizedExperiment::assay(scCNA, name) <- int_values
 
     return(scCNA)
 
