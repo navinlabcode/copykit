@@ -15,6 +15,8 @@
 #'  Must match label length
 #' @param row_split Character. Element of the metadata to split the heatmap.
 #' Must have length = 1.
+#' @param rounding_error A boolean indicating if the rounding error matrix
+#' should be plotted.
 #' @param consensus Boolean. Indicates if the consensus heatmap should be plotted.
 #'
 #' @return A heatmap visualization.
@@ -36,6 +38,7 @@ plotHeatmap <- function(scCNA,
                         label = NULL,
                         label_colors = NULL,
                         consensus = FALSE,
+                        rounding_error = FALSE,
                         row_split = NULL) {
   # check annotation colors
   if (is.null(label) & !is.null(label_colors)) {
@@ -61,6 +64,10 @@ plotHeatmap <- function(scCNA,
     order_cells <- "hclust"
   }
 
+  # rounding error check
+  if (rounding_error == TRUE && assay != 'integer') {
+    stop("Rounding error argument must be used with assay 'integer'.")
+  }
 
   # Uses the hidden consensus_by attribute from the calcConsensus function
   # to plot integer color scheme in case consensus = TRUE
@@ -235,7 +242,30 @@ plotHeatmap <- function(scCNA,
   if (assay == 'integer') {
     seg_data_int <- seg_data_ordered
     seg_data_int[seg_data_int > ploidy_trunc] <- ploidy_trunc
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wed Jun 23 11:55:08 2021
+    # Calculating rounding error matrix
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wed Jun 23 11:55:18 2021
+
+    if (rounding_error == TRUE) {
+      # calculate the integer matrix without rounding
+      int_nr <- as.matrix(SummarizedExperiment::assay(scCNA, 'segment_ratios')) %*%
+        diag(SummarizedExperiment::colData(scCNA)$ploidy)
+
+      # restoring sample names
+      names(int_nr) <- names(SummarizedExperiment::assay(scCNA, 'segment_ratios'))
+
+      # calculating absolute error and plotting
+      err <- abs(int_nr - assay(scCNA, 'integer'))
+
+      # making sure order is the same
+      err <- err[rownames(seg_data_int)]
+
+    }
+
   }
+
+
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:20 2021
   # Complex heatmap plotting
@@ -283,11 +313,24 @@ plotHeatmap <- function(scCNA,
     } else {
       # if assay is integer
 
-      do.call(ComplexHeatmap::Heatmap, c(list(
-        matrix = seg_data_int,
-        heatmap_legend_param = list(title = "copy number"),
-        col = color_heat
-      ), complex_args))
+      if (rounding_error == FALSE) {
+
+        do.call(ComplexHeatmap::Heatmap, c(list(
+          matrix = seg_data_int,
+          heatmap_legend_param = list(title = "copy number"),
+          col = color_heat
+        ), complex_args))
+
+      } else {
+
+        # if rounding_error == TRUE
+        do.call(ComplexHeatmap::Heatmap, c(list(
+          matrix = t(err),
+          heatmap_legend_param = list(title = "rounding error"),
+          col = viridis::viridis(200)
+        ), complex_args))
+
+      }
 
     }
 
@@ -456,17 +499,30 @@ plotHeatmap <- function(scCNA,
           heatmap_legend_param = list(title = "log2 (segratio)")
         ), complex_args))
       } else {
-        # if assay == integer
+        # if assay == integer and rounding_error == FALSE it will plot the integer matrix
+        # otherwise it will plot the rounding error matrix
 
-        do.call(ComplexHeatmap::Heatmap, c(list(
-          matrix = seg_data_int,
-          left_annotation = cluster_anno,
-          heatmap_legend_param = list(title = "copy number"),
-          col = color_heat
-        ), complex_args))
+        if (rounding_error == FALSE) {
+
+          do.call(ComplexHeatmap::Heatmap, c(list(
+            matrix = seg_data_int,
+            left_annotation = cluster_anno,
+            heatmap_legend_param = list(title = "copy number"),
+            col = color_heat
+          ), complex_args))
+
+        } else {
+          # if rounding_error == TRUE
+          do.call(ComplexHeatmap::Heatmap, c(list(
+            matrix = t(err),
+            left_annotation = cluster_anno,
+            heatmap_legend_param = list(title = "rounding error"),
+            col = viridis::viridis(200)
+          ), complex_args))
+
+        }
 
       }
-
 
     }
 
