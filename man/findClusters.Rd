@@ -6,7 +6,7 @@
 \usage{
 findClusters(
   scCNA,
-  reduced_dim = "umap",
+  embedding = "umap",
   method = "hdbscan",
   k_superclones = NULL,
   k_subclones = NULL,
@@ -16,7 +16,7 @@ findClusters(
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{reduced_dim}{String with the name of the reducedDim to pull data from.}
+\item{embedding}{String with the name of the reducedDim to pull data from.}
 
 \item{method}{Which method should be used for clustering,
 options are "hdbscan" or "leiden". Defaults to "hdbscan".}

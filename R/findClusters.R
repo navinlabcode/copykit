@@ -15,7 +15,7 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param reduced_dim String with the name of the reducedDim to pull data from.
+#' @param embedding String with the name of the reducedDim to pull data from.
 #' @param method Which method should be used for clustering,
 #' options are "hdbscan" or "leiden". Defaults to "hdbscan".
 #' @param k_superclones k-nearest-neighbor value.
@@ -44,17 +44,17 @@
 #' @examples
 
 findClusters <- function(scCNA,
-                         reduced_dim = "umap",
+                         embedding = "umap",
                          method = "hdbscan",
                          k_superclones = NULL,
                          k_subclones = NULL,
                          seed = 17) {
 
   # obtaining data from reducedDim slot
-  if (!is.null(SingleCellExperiment::reducedDim(scCNA, reduced_dim))) {
+  if (!is.null(SingleCellExperiment::reducedDim(scCNA, embedding))) {
 
     umap_df <-
-      SingleCellExperiment::reducedDim(scCNA, reduced_dim) %>%
+      SingleCellExperiment::reducedDim(scCNA, embedding) %>%
       as.data.frame()
 
   } else
