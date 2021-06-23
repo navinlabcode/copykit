@@ -11,6 +11,7 @@ plotHeatmap(
   label = NULL,
   label_colors = NULL,
   consensus = FALSE,
+  rounding_error = FALSE,
   row_split = NULL
 )
 }
@@ -30,6 +31,9 @@ Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
 Must match label length}
 
 \item{consensus}{Boolean. Indicates if the consensus heatmap should be plotted.}
+
+\item{rounding_error}{A boolean indicating if the rounding error matrix
+should be plotted.}
 
 \item{row_split}{Character. Element of the metadata to split the heatmap.
 Must have length = 1.}
