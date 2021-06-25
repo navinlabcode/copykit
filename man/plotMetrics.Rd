@@ -4,16 +4,19 @@
 \alias{plotMetrics}
 \title{Plot metrics}
 \usage{
-plotMetrics(scCNA, label = NULL)
+plotMetrics(scCNA, metric, label = NULL)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{label}{Color by an element of metadata.
-Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
+\item{metric}{A character indicating which elements of \code{colData()}
+should be plotted.}
+
+\item{label}{A character indicating which element of the \code{colData()} to
+color the plots.}
 }
 \value{
-A plot with the metrics available in the metadata
+A ggplot object with the metrics available in the metadata.
 }
 \description{
 Provides a plot of the metrics to quickly assess
