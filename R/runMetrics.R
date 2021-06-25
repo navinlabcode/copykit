@@ -24,28 +24,29 @@ runMetrics <- function(scCNA,
   ###################
   # Retrieving data
 
-  dat_seg <- copykit::segment_ratios(scCNA)
-  dat_rat <- copykit::ratios(scCNA)
+  dat_seg <- segment_ratios(scCNA)
+  dat_rat <- ratios(scCNA)
+  dat_bin <- bin_counts(scCNA)
   rg <- SummarizedExperiment::rowRanges(scCNA)
 
-  ####################
-  # RMSE
-  message("Calculating RMSE")
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:01 2021
+  # overdispersion ----
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:10 2021
 
-  rmses <- BiocParallel::bplapply(1:ncol(dat_seg), function(i) {
-    actual <- dat_seg[, i]
-    predicted <- dat_rat[, i]
-    Metrics::rmse(actual, predicted)
-  },
-  BPPARAM = BPPARAM)
+  message("Calculating overdispersion.")
 
-  rmses <- unlist(rmses)
+  overdisp <- BiocParallel::bplapply(dat_bin,
+                                  overdispersion,
+                                  BPPARAM = BPPARAM)
 
-  SummarizedExperiment::colData(scCNA)$rmse <- rmses
+  overdisp <- unlist(overdisp)
 
-  ####################
-  # Number of breakpoints
+  SummarizedExperiment::colData(scCNA)$overdispersion <- overdisp
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:25 2021
+  # Breakpoint count
   # Performed for every chromosome
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:34 2021
 
   rg_chr <- rg %>%
     as.data.frame() %>%
