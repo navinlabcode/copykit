@@ -179,29 +179,4 @@ runSegmentation <- function(scCNA,
 
   }
 
-  if (method == 'WBS') {
-    counts_df <- SummarizedExperiment::assay(scCNA, 'log')
-
-    WBS_seg <-
-      BiocParallel::bplapply(as.data.frame(counts_df), function(i) {
-        seg <- wbs::wbs(i)
-        seg_means <- wbs::means.between.cpt(seg$x,
-                                            changepoints(seg, penalty = "ssic.penalty")$cpt.ic[["ssic.penalty"]])
-        seg_means <- 2 ^ (seg_means)
-      }, BPPARAM = BPPARAM)
-
-    wbs_seg_df <- dplyr::bind_cols(WBS_seg) %>%
-      as.data.frame()
-
-    scCNA <- calcRatios(scCNA, assay = 'bin_counts')
-
-    SummarizedExperiment::assay(scCNA, slot) <-
-      apply(wbs_seg_df, 2, function(x)
-        x / mean(x)) %>%
-      as.data.frame()
-
-    return(scCNA)
-
-  }
-
 }
