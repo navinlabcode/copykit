@@ -17,3 +17,11 @@ A slot into the scCNA object containing the variance stabilized matrix.
 \description{
 Performs variance stabilization by using the Freeman-Tukey transformation
 }
+\details{
+\code{runVst} performs variance stabilization to reduce the overdispersion
+from the negative binomial distribution nature of the bin counts and reduce
+technical bias. The argument \code{vst} controls the choice of the transformation
+allowing either the Freeman-Tukey transformation by using the option 'ft' (recommended)
+or a logarithmic transformation with the option 'log'. Using a 'log' transformation
+may result in long segmentation times for a few cells with large breakpoint counts.
+}

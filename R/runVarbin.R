@@ -1,25 +1,55 @@
 #' Read BAM file and perform varbin analysis
 #'
-#' runVarbin performs the variable binning (VarBin) algorithm to a series of BAM files resulting from short-read sequencing.
+#' runVarbin performs the variable binning (VarBin) algorithm to a series of BAM
+#' files resulting from short-read sequencing.
 #'
 #' @author Darlan Conterno Minussi
 #'
 #' @param dir A path for the directory containing .BAM files from short-read sequencing.
-#' @param genome Choice of genome assembly. Default: 'hg38'.
-#' @param bin_size The resolution of the VarBin method. Default: '200kb'.
-#' @param remove_Y (default == FALSE) If set to TRUE, removes information from the chrY from the dataset.
-#' @param vst Character. Transformation to be performed. More details in \link{copykit::runVst}
-#' @param method Character. Segmentation method of choice.
-#' @param seed Numeric. Set seed for CBS segmentation permutation reproducibility.
-#' @param slot Character. Target slot for the resulting segment ratios.
+#' @param genome A character indicating the choice of genome assembly.
+#' @param bin_size A character indicating the resolution desired for the scaffold
+#'  of the VarBin method, i. e. the bin resulting bin size.
+#' @param remove_Y A boolean when set to TRUE, removes information from the chrY
+#' from the dataset.
+#' @param vst A character indicating the variance stabilization transformation
+#'  to be performed. See \link{runVst} details.
+#' @param method A character indicating the segmentation method.
+#' @param seed A numeric scalar that sets the seed for CBS segmentation permutation
+#' reproducibility.
+#' @param name A character with the name for the slot returned by \code{runVarbin}
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
 #'
-#' @details runVarbin is a convinient wrapper for CopyKit's pre-processing module.
-#' It runs \link{runCountReads}, \link{runVst} and, \link{runSegmentation}.
 #'
 #' @return An scCNA object containing the bin counts, the ratios and the segment
 #' ratios.
+#'
+#' @details runVarbin is a convenient wrapper for CopyKit's pre-processing module.
+#' It runs \code{runCountReads}, \code{runVst} and, \code{runSegmentation}.
+#'
+#' \code{runCountReads} takes as input duplicate marked BAM files from whole
+#' genome sequencing and runs the variable binning pipeline algorithm. Briefly,
+#' the genome is split into pre-determined bins. The bin size is controlled by
+#' the argument \code{bin_size}. By using VarBin, for a diploid cell, each bin
+#' will receive equal amount of reads, controlling for mappability.
+#' A lowess function is applied to perform GC correction across the bins. The argument
+#' \code{genome} can be set to 'hg38' or 'hg19' to select the scaffolds genome
+#' assembly.
+#' Information regarding the alignment of the reads to the bins and from the bam
+#' files are stored in the #' \code{\link{[SummarizedExperiment]{colData}}}.
+#'
+#' \code{runVst} performs variance stabilization to reduce the overdispersion
+#' from the negative binomial distribution nature of the bin counts and reduce
+#' technical bias. The argument \code{vst} controls the choice of the transformation
+#' allowing either the Freeman-Tukey transformation by using the option 'ft' (recommended)
+#' or a logarithmic transformation with the option 'log'. Using a 'log' transformation
+#' may result in long segmentation times for a few cells with large breakpoint counts.
+#'
+#' \code{runSegmentation} Fits a piece-wise constant function to the transformed
+#'  bin counts using the Circular Binary Segmentation algorithm from \code{\link{[DNAcopy{segment}]}}.
+#'  By default it applies undo.prune with value of 0.05. The resulting segment
+#'  means are further refined with MergeLevels to join adjacent segments with
+#'  non-significant differences in segmented means.
 #'
 #' @export
 #'
@@ -28,12 +58,12 @@
 #'
 
 runVarbin <- function(dir,
-                      genome = "hg38",
+                      genome = c("hg38", "hg19"),
                       bin_size = "200kb",
                       remove_Y = FALSE,
-                      vst = 'ft',
+                      vst = c("ft", "log"),
                       seed = 17,
-                      slot = 'segment_ratios',
+                      name = 'segment_ratios',
                       BPPARAM = bpparam()) {
 
 
@@ -47,7 +77,7 @@ runVarbin <- function(dir,
 
   copykit_object <- runSegmentation(copykit_object,
                                     seed = seed,
-                                    slot = slot,
+                                    name = name,
                                     BPPARAM = BPPARAM)
 
   return(copykit_object)
