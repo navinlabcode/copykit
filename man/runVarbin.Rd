@@ -60,7 +60,7 @@ A lowess function is applied to perform GC correction across the bins. The argum
 \code{genome} can be set to 'hg38' or 'hg19' to select the scaffolds genome
 assembly.
 Information regarding the alignment of the reads to the bins and from the bam
-files are stored in the #' \code{\link{[SummarizedExperiment]{colData}}}.
+files are stored in the #' \code{\link[SummarizedExperiment]{colData}}.
 
 \code{runVst} performs variance stabilization to reduce the overdispersion
 from the negative binomial distribution nature of the bin counts and reduce
@@ -70,7 +70,7 @@ or a logarithmic transformation with the option 'log'. Using a 'log' transformat
 may result in long segmentation times for a few cells with large breakpoint counts.
 
 \code{runSegmentation} Fits a piece-wise constant function to the transformed
- bin counts using the Circular Binary Segmentation algorithm from \code{\link{[DNAcopy{segment}]}}.
+ bin counts using the Circular Binary Segmentation algorithm from \code{\link[DNAcopy]{segment}}.
  By default it applies undo.prune with value of 0.05. The resulting segment
  means are further refined with MergeLevels to join adjacent segments with
  non-significant differences in segmented means.
@@ -78,6 +78,22 @@ may result in long segmentation times for a few cells with large breakpoint coun
 \examples{
 
 
+}
+\references{
+Navin, N., Kendall, J., Troge, J. et al. Tumour evolution inferred by single-cell
+sequencing. Nature 472, 90–94 (2011). https://doi.org/10.1038/nature09807
+
+Baslan, T., Kendall, J., Ward, B., et al (2015). Optimizing sparse sequencing
+of single cells for highly multiplex copy number profiling.
+Genome research, 25(5), 714–724. https://doi.org/10.1101/gr.188060.114
+
+Olshen AB, Venkatraman ES, Lucito R, Wigler M. Circular binary segmentation
+for the analysis of array-based DNA copy number data. Biostatistics.
+2004 Oct;5(4):557-72. doi: 10.1093/biostatistics/kxh008. PMID: 15475419.
+
+Freeman, M. F.; Tukey, J. W. (1950), "Transformations related to the angular
+and the square root", The Annals of Mathematical Statistics,
+21 (4), pp. 607–611, doi:10.1214/aoms/1177729756, JSTOR 2236611
 }
 \author{
 Darlan Conterno Minussi
