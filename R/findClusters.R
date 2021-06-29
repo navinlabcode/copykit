@@ -1,33 +1,59 @@
 #' Find Clusters
 #'
-#' Search for clusters in the scCNA data by
-#' using a graph based approach. \code{findClusters()}
-#' builds an SNN graph of the k-nearest neighbors and
-#' attempts to find two different configuration of clusters.
-#' Major and minor subpopulations.
-#' Major clusters are found by looking at the graph connected components,
-#'  whereas the minor clusters use the hdbscan or leiden
-#'   algorithm to detect connected communities within the major clusters.
-#' \code{findClusters()} generates the graph by using the
-#' UMAP embedding that can be obtained after running \code{runUmap()}.
-#'
+#' Search for clusters in the scCNA data.
 #'
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
 #' @param embedding String with the name of the reducedDim to pull data from.
-#' @param method Which method should be used for clustering,
-#' options are "hdbscan" or "leiden". Defaults to "hdbscan".
-#' @param k_superclones k-nearest-neighbor value.
-#' Used to find the major clusters.
-#' @param k_subclones k-nearest-neighbor value.
-#' Used to find the minor clusters
-#' @param seed Seed passed on to pseudorandom dependent functions (Defaults to 17).
+#' @param method A string with method used for clustering.
+#' @param k_superclones A numeric scalar k-nearest-neighbor value.
+#' Used to find the superclones.
+#' @param k_subclones A numeric scalar k-nearest-neighbor value.
+#' Used to find the subclones
+#' @param seed A numeric scalar seed passed on to pseudo-random dependent functions.
 #'
-#' @return Metadata cluster information that can be found in
-#' \code{SummarizedExperiment::colData(scCNA)$superclones}
-#' for the major clusters and \code{SummarizedExperiment::colData(scCNA)$subclones}
-#' for the minor clusters.
+#' @details \code{findClusters} uses the reduced dimensional embedding resulting
+#'  from \code{\link{runUmap}} to perform clustering at two levels, hereby referred
+#'  to as superclones, and subclones. When clustering for superclones findClusters
+#'  creates a graph representation of the dataset reduced dimension embedding
+#'  using a shared nearest neighbor algorithm (SNN) \code{\link[scran]{buildSNNGraph}},
+#'  from this graph the connected components are extracted and generally
+#'  represent high-level structures that share large, lineage defining copy
+#'  number events. At a more fine-grained resolution, CopyKit can also be
+#'  used to detect subclones, i. e. groups of cells containing a unique
+#'  copy number event per cluster, to do so the umap embedding is again
+#'  used as the pre-processing step, this time to perform a density-based
+#'  clustering with hdbscan \code{\link[dbscan]{hdbscan}}. Network clustering
+#'  algorithms on top of the SNN graph such as the leiden algorithm
+#'  \code{\link[leidenbase]{leiden_find_partition}}.
+#'
+#'  \itemize{
+#'  \item{hdbscan}: hdbscan is an outlier aware clustering algorithm, since
+#'  extensive filtering of the dataset can be applied before clustering with
+#'  \code{\link{filterCells}}, any cell classified as an outlier is inferred
+#'  to the same cluster group as its closest, non-outlier, nearest-neighbor
+#'   according to Euclidean distance.
+#'  }
+#'
+#' @return Cluster information is added to \code{\link[SummarizedExperiment]{colData}}
+#' in columns superclones or subclones. Superclones are prefixed by 's' whereas subclones
+#' are prefixed by 'c'
+#'
+#' @seealso \code{\link{findSuggestedK}} to obtain suggestions of k_subclones values.
+#'
+#' @references Laks, E., McPherson, A., Zahn, H., et al. (2019). Clonal Decomposition
+#' and DNA Replication States Defined by Scaled Single-Cell Genome Sequencing.
+#' Cell, 179(5), 1207–1221.e22. https://doi.org/10.1016/j.cell.2019.10.026
+#'
+#' Leland McInnes and John Healy and James Melville. UMAP: Uniform Manifold
+#' Approximation and Projection for Dimension Reduction. arXiv:1802.03426
+#'
+#' Lun ATL, McCarthy DJ, Marioni JC (2016). “A step-by-step workflow for low-level
+#' analysis of single-cell RNA-seq data with Bioconductor.”
+#' F1000Res., 5, 2122. doi: 10.12688/f1000research.9501.2.
+#'
+#' @seealso \code{\link[dbscan]{hdbscan}} For hdbscan clustering.
 #'
 #' @export
 #' @import leidenbase
@@ -45,10 +71,12 @@
 
 findClusters <- function(scCNA,
                          embedding = "umap",
-                         method = "hdbscan",
+                         method = c("hdbscan", "leiden"),
                          k_superclones = NULL,
                          k_subclones = NULL,
                          seed = 17) {
+
+  method <- match.arg(method)
 
   # obtaining data from reducedDim slot
   if (!is.null(SingleCellExperiment::reducedDim(scCNA, embedding))) {

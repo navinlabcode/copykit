@@ -2,39 +2,57 @@
 % Please edit documentation in R/runCountReads.R
 \name{runCountReads}
 \alias{runCountReads}
-\title{Aligns the reads from the BAM counts to the variable binning pipelines}
+\title{Aligns the reads from the BAM file to the variable binning pipeline.}
 \usage{
 runCountReads(
   dir,
-  genome = "hg38",
+  genome = c("hg38", "hg19"),
   bin_size = "200kb",
   remove_Y = FALSE,
   BPPARAM = bpparam()
 )
 }
 \arguments{
-\item{dir}{A path for the directory containing .BAM files from short-read sequencing.}
+\item{dir}{A path for the directory containing BAM files from short-read sequencing.}
 
 \item{genome}{Name of the genome assembly. Default: 'hg38'.}
 
 \item{bin_size}{The resolution of the VarBin method. Default: '200kb'.}
 
-\item{remove_Y}{(default == FALSE) If set to TRUE, removes information from the chrY from the dataset.}
+\item{remove_Y}{(default == FALSE) If set to TRUE, removes information from
+the chrY from the dataset.}
 
 \item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
 should be parallelized.}
 }
 \value{
-Segment ratios can be accessed with \code{copykit::segment_ratios}.
+A matrix of bin counts within the scCNA object that can be accessed
+with \code{bin_counts}
 
-Ratios can be accessed with \code{copykit::ratios}.
+#' @references
+Navin, N., Kendall, J., Troge, J. et al. Tumour evolution inferred by single-cell
+sequencing. Nature 472, 90–94 (2011). https://doi.org/10.1038/nature09807
 
-Bin counts can be accessed with \code{copykit::bin_counts}.
-
-Genomic ranges can be accessed with \code{SummarizedExperiment::rowRanges()}
+Baslan, T., Kendall, J., Ward, B., et al (2015). Optimizing sparse sequencing
+of single cells for highly multiplex copy number profiling.
+Genome research, 25(5), 714–724. https://doi.org/10.1101/gr.188060.114
 }
 \description{
-runCountReads performs the variable binning (VarBin) algorithm to a series of BAM files resulting from short-read sequencing.
+runCountReads performs the variable binning (VarBin) algorithm to a series of
+BAM files resulting from short-read sequencing.
+}
+\details{
+\code{runCountReads} takes as input duplicate marked BAM files from whole
+genome sequencing and runs the variable binning pipeline algorithm. It is important
+that BAM files are duplicate marked. Briefly, the genome is split into pre-determined bins.
+ The bin size is controlled by the argument \code{bin_size}. By using VarBin,
+ for a diploid cell, each bin will receive equal amount of reads, controlling for mappability.
+A lowess function is applied to perform GC correction across the bins. The argument
+\code{genome} can be set to 'hg38' or 'hg19' to select the scaffolds genome
+assembly. The scaffolds are GenomicRanges objects that can be seen with
+copykit:::hg38_rg and copykit:::hg19_rg.
+Information regarding the alignment of the reads to the bins and from the bam
+files are stored in the #' \code{\link[SummarizedExperiment]{colData}}.
 }
 \examples{
 
