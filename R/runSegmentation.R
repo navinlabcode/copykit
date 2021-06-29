@@ -14,6 +14,7 @@
 #' @importFrom dplyr mutate bind_cols
 #' @importFrom stringr str_detect str_remove str_replace
 #' @importFrom S4Vectors metadata
+#' @importFrom SummarizedExperiment assay
 #' @importFrom BiocParallel bplapply bpparam
 #' @importMethodsFrom SummarizedExperiment assay
 #' @export
@@ -88,10 +89,12 @@ runSegmentation <- function(scCNA,
 
   }
 
+
+
   if (method == "CBS") {
 
     if (S4Vectors::metadata(scCNA)$vst == 'ft') {
-      counts_df <- assay(scCNA, 'ft')
+      counts_df <- SummarizedExperiment::assay(scCNA, 'ft')
 
       CBS_seg <- BiocParallel::bplapply(counts_df, FUN = function(x) {
         CNA_object <-
@@ -129,7 +132,7 @@ runSegmentation <- function(scCNA,
               noBreaks. = TRUE)
       # segmentation with undo.splits = "prune"
 
-      counts_df <- assay(scCNA, 'log')
+      counts_df <- SummarizedExperiment::assay(scCNA, 'log')
 
       CBS_seg <-
         BiocParallel::bplapply(as.data.frame(counts_df), function(x) {

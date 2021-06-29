@@ -80,8 +80,9 @@ plotUmap <- function(scCNA,
       ),
       size = 1.8,
       shape = 21) +
-    scale_fill_manual(values = c(subclones_pal()),
-                       name = "subclones") +
+    scale_fill_manual(values = subclones_pal(),
+                       name = "subclones",
+                      limits = force) +
     theme_classic() +
       my_theme
 
@@ -110,8 +111,9 @@ plotUmap <- function(scCNA,
       ),
       size = 1.8,
       shape = 21) +
-      scale_fill_manual(values = c(subclones_pal()),
-                        name = "subclones") + # palettes are in sysdata.rda
+      scale_fill_manual(values = subclones_pal(),
+                        name = "subclones",
+                        limits = force) +
       theme_classic() +
       my_theme
 

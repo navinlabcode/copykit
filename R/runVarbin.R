@@ -82,6 +82,8 @@ runVarbin <- function(dir,
                       name = 'segment_ratios',
                       BPPARAM = bpparam()) {
 
+  genome <- match.arg(genome)
+  vst <- match.arg(vst)
 
   copykit_object <- runCountReads(dir,
                                   bin_size = bin_size,

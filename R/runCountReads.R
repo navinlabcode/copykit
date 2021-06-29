@@ -17,7 +17,7 @@
 #' @return Genomic ranges can be accessed with \code{SummarizedExperiment::rowRanges()}
 #'
 #' @importFrom Rsubread featureCounts
-#' @importFrom stringr str_replace str_remove str_detect
+#' @importFrom stringr str_replace str_remove str_detect fixed
 #' @importFrom dplyr rename mutate relocate
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom S4Vectors DataFrame metadata
@@ -114,7 +114,13 @@ runCountReads <- function(dir,
                                '[[',
                                1)
 
-  names(varbin_counts_list) <- files_names
+  varbin_counts_list <- lapply(varbin_counts_list,
+                               as.vector)
+
+  names(varbin_counts_list) <- stringr::str_remove(files_names,
+                                                   stringr::fixed(".bam",
+                                                                  ignore_case = TRUE))
+
 
   #LOWESS GC normalization
 
@@ -166,7 +172,9 @@ runCountReads <- function(dir,
                               '[[',
                               4)
 
-  names(varbin_reads_list) <- files_names
+  names(varbin_reads_list) <- stringr::str_remove(files_names,
+                                                  stringr::fixed(".bam",
+                                                                 ignore_case = TRUE))
 
   # saving info and removing columns from list elements
   metadata_info_names <- varbin_reads_list[[1]][c(1, 2, 8, 9, 12, 14), 1]

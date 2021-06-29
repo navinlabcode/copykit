@@ -28,6 +28,8 @@
 runVst <- function(scCNA,
                    transformation = c('ft','log')) {
 
+  transformation <- match.arg(transformation)
+
   varbin_counts_df <- copykit::bin_counts(scCNA)
 
   if (transformation == 'ft') {
