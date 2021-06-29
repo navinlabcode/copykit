@@ -60,9 +60,6 @@ filterCells <- function(scCNA,
 
   dst <- 1-as.matrix(amap::Dist(t(seg), method = "correlation", upper = T, diag = T, nbproc = n_threads))
 
-  message("Performing knn filtering.")
-
-
   dst_knn_df <- apply(as.matrix(dst), 1, function(x) {
     mean(sort(x, decreasing = T)[2:(k + 1)])
   }) %>%
