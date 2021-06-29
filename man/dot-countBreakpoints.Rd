@@ -13,6 +13,7 @@
 The scCNA object with a column of breakpoint counts added to the colData.
 }
 \description{
-Considers changes in the segment ratios as breakpoints. Counts the breakpoints for each chromosome separately.
+Considers changes in the segment ratios as breakpoints.
+Counts the breakpoints for each chromosome separately.
 }
 \keyword{internal}

@@ -1,6 +1,7 @@
 #' Counting breakpoints from
 #'
-#' Considers changes in the segment ratios as breakpoints. Counts the breakpoints for each chromosome separately.
+#' Considers changes in the segment ratios as breakpoints.
+#' Counts the breakpoints for each chromosome separately.
 #'
 #' @param scCNA
 #'

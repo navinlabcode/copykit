@@ -1,15 +1,30 @@
-#' identifies possible normal cells in the dataset
-#'  based on coefficient of variation.
+#' findNormalCells
+#'
+#' Find cells that are not aneuploid in the dataset.
 #'
 #' @param scCNA scCNA object
 #' @param assay String with the name of the assay to pull data from to find normal cells.
-#' @param resolution Numeric. Threshold which will be used to detect normal cells.
-#' @param remove_XY Boolean. Removes chrX and chrY from the analysis. Recommended.
-#' @param simul Add a simulated normal dataset to boost
-#' identifying normal cells when a dataset has a small proportion of those.
+#' @param resolution A numeric scalar used as threshold to detect normal cells. See details.
+#' @param remove_XY A boolean that removes chrX and chrY from the analysis. Recommended.
+#' @param simul A boolean that if TRUE adds a simulated normal dataset to boost
+#' identifying normal cells in datasets with small proportions of normal cells.
 #'
-#' @return Adds is_normal column to the scCNA metadata.
-#' Can be accessed with colData(scCNA)
+#' @details performs a sample-wise calculation of the segment means coefficient
+#'  of variation and fits a normal mixture model to the observed distribution f
+#'  rom all cells. To increase the sensitivity of the model, the expected
+#'  distribution of the coefficient of variation for diploid cells is simulated
+#'  for a thousand cells (mean = 0, sd = 0.01). This way, CopyKit can adequately
+#'  detect normal cells even in datasets with limited amounts of diploid cells
+#'  and guarantees that no aneuploid cell will be removed from datasets without
+#'  any normal cells. The distribution with the smallest coefficient of variance
+#'  is assumed to be originating from normal cells. Cells are classified as normal
+#'  if they have a coefficient of variance smaller than the mean plus five times
+#'  the standard deviation of the normal cell distribution.
+#'
+#' @return information is added to \code{\link[SummarizedExperiment]{colData}}
+#' in a columns named 'is_normal' being TRUE if a cell is detected as normal and
+#' FALSE if the cell is detected as aneuploid.
+#'
 #' @export
 #'
 #' @importFrom tibble enframe

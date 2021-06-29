@@ -1,23 +1,43 @@
-#' Aligns the reads from the BAM counts to the variable binning pipelines
+#' Aligns the reads from the BAM file to the variable binning pipeline.
 #'
-#' runCountReads performs the variable binning (VarBin) algorithm to a series of BAM files resulting from short-read sequencing.
+#' runCountReads performs the variable binning (VarBin) algorithm to a series of
+#' BAM files resulting from short-read sequencing.
 #'
 #' @author Darlan Conterno Minussi
 #'
-#' @param dir A path for the directory containing .BAM files from short-read sequencing.
+#' @param dir A path for the directory containing BAM files from short-read sequencing.
 #' @param genome Name of the genome assembly. Default: 'hg38'.
 #' @param bin_size The resolution of the VarBin method. Default: '200kb'.
-#' @param remove_Y (default == FALSE) If set to TRUE, removes information from the chrY from the dataset.
+#' @param remove_Y (default == FALSE) If set to TRUE, removes information from
+#' the chrY from the dataset.
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
 #'
-#' @return Segment ratios can be accessed with \code{copykit::segment_ratios}.
-#' @return Ratios can be accessed with \code{copykit::ratios}.
-#' @return Bin counts can be accessed with \code{copykit::bin_counts}.
-#' @return Genomic ranges can be accessed with \code{SummarizedExperiment::rowRanges()}
+#' @details \code{runCountReads} takes as input duplicate marked BAM files from whole
+#' genome sequencing and runs the variable binning pipeline algorithm. It is important
+#' that BAM files are duplicate marked. Briefly, the genome is split into pre-determined bins.
+#'  The bin size is controlled by the argument \code{bin_size}. By using VarBin,
+#'  for a diploid cell, each bin will receive equal amount of reads, controlling for mappability.
+#' A lowess function is applied to perform GC correction across the bins. The argument
+#' \code{genome} can be set to 'hg38' or 'hg19' to select the scaffolds genome
+#' assembly. The scaffolds are GenomicRanges objects that can be seen with
+#' copykit:::hg38_rg and copykit:::hg19_rg.
+#' Information regarding the alignment of the reads to the bins and from the bam
+#' files are stored in the #' \code{\link[SummarizedExperiment]{colData}}.
+#'
+#' @return A matrix of bin counts within the scCNA object that can be accessed
+#' with \code{bin_counts}
+#'
+#'#' @references
+#' Navin, N., Kendall, J., Troge, J. et al. Tumour evolution inferred by single-cell
+#' sequencing. Nature 472, 90–94 (2011). https://doi.org/10.1038/nature09807
+#'
+#' Baslan, T., Kendall, J., Ward, B., et al (2015). Optimizing sparse sequencing
+#' of single cells for highly multiplex copy number profiling.
+#' Genome research, 25(5), 714–724. https://doi.org/10.1101/gr.188060.114
 #'
 #' @importFrom Rsubread featureCounts
-#' @importFrom stringr str_replace str_remove str_detect
+#' @importFrom stringr str_replace str_remove str_detect fixed
 #' @importFrom dplyr rename mutate relocate
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom S4Vectors DataFrame metadata
@@ -29,19 +49,18 @@
 #'
 
 runCountReads <- function(dir,
-                          genome = "hg38",
+                          genome = c("hg38", "hg19"),
                           bin_size = "200kb",
                           remove_Y = FALSE,
                           BPPARAM = bpparam()) {
+
+  genome <- match.arg(genome)
+
   #checks
   files <- list.files(dir, pattern = "*.bam", full.names = T)
 
   if (rlang::is_empty(files)) {
     stop("No .bam files detected.")
-  }
-
-  if (genome %!in% c("hg19", "hg38")) {
-    stop("Genome assembly must be 'hg19' or 'hg38'")
   }
 
   # Reading hg38 VarBin ranges
@@ -114,7 +133,13 @@ runCountReads <- function(dir,
                                '[[',
                                1)
 
-  names(varbin_counts_list) <- files_names
+  varbin_counts_list <- lapply(varbin_counts_list,
+                               as.vector)
+
+  names(varbin_counts_list) <- stringr::str_remove(files_names,
+                                                   stringr::fixed(".bam",
+                                                                  ignore_case = TRUE))
+
 
   #LOWESS GC normalization
 
@@ -166,7 +191,9 @@ runCountReads <- function(dir,
                               '[[',
                               4)
 
-  names(varbin_reads_list) <- files_names
+  names(varbin_reads_list) <- stringr::str_remove(files_names,
+                                                  stringr::fixed(".bam",
+                                                                 ignore_case = TRUE))
 
   # saving info and removing columns from list elements
   metadata_info_names <- varbin_reads_list[[1]][c(1, 2, 8, 9, 12, 14), 1]

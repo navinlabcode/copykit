@@ -8,7 +8,7 @@ runSegmentation(
   scCNA,
   method = "CBS",
   seed = 17,
-  slot = "segment_ratios",
+  name = "segment_ratios",
   BPPARAM = bpparam()
 )
 }
@@ -19,7 +19,7 @@ runSegmentation(
 
 \item{seed}{Numeric. Set seed for CBS segmentation permutation reproducibility.}
 
-\item{slot}{Character. Target slot for the resulting segment ratios.}
+\item{name}{Character. Target slot for the resulting segment ratios.}
 
 \item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
 should be parallelized.}

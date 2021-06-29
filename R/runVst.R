@@ -1,9 +1,22 @@
 #' Variance Stabilizing Transformation
 #'
-#' Performs variance stabilization by using the Freeman-Tukey transformation
+#' Performs variance stabilization transformation of the bin counts
 #'
 #' @param scCNA The scCNA object
-#' @param transformation Character. Transformation to be performed, available options are 'log' or 'ft'
+#' @param transformation A character indicating the variance stabilization
+#' transformation to be performed. See \link{runVst} details.
+#'
+#' @details \code{runVst} performs variance stabilization to reduce the overdispersion
+#' from the negative binomial distribution nature of the bin counts and reduce
+#' technical bias. The argument \code{vst} controls the choice of the transformation
+#' allowing either the Freeman-Tukey transformation by using the option 'ft' (recommended)
+#' or a logarithmic transformation with the option 'log'. Using a 'log' transformation
+#' may result in long segmentation times for a few cells with large breakpoint counts.
+#'
+#' @references
+#' Freeman, M. F.; Tukey, J. W. (1950), "Transformations related to the angular
+#' and the square root", The Annals of Mathematical Statistics,
+#' 21 (4), pp. 607–611, doi:10.1214/aoms/1177729756, JSTOR 2236611
 #'
 #' @return A slot into the scCNA object containing the variance stabilized matrix.
 #' @importFrom SummarizedExperiment assay
@@ -13,7 +26,9 @@
 #'
 #' @examples
 runVst <- function(scCNA,
-                   transformation = 'ft') {
+                   transformation = c('ft','log')) {
+
+  transformation <- match.arg(transformation)
 
   varbin_counts_df <- copykit::bin_counts(scCNA)
 

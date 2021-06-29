@@ -1,12 +1,17 @@
-#' Calculate a consensus matrix of segment ratios based on metadata
+#' Calculate a consensus matrix of segment means based on \code{colData}
 #'
 #' @param scCNA The scCNA object.
 #' @param assay String with the name of the assay to pull data from to calculate
 #' the consensus matrix.
-#' @param consensus_by The column from metadata that will be used
+#' @param consensus_by A string with the column from colData that will be used
 #'  to isolate the cells by factor and calculate the consensus.
+#' @param fun A string indicating the summarizing function to be used.
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
+#'
+#' @details Consensus profiles are calculated by averaging or taking the median
+#'  of the ith segment mean of all single cells assigned to the same element of
+#'  \link{colData},
 #'
 #' @return
 #' @export
@@ -15,7 +20,11 @@
 calcConsensus <- function(scCNA,
                           assay = "segment_ratios",
                           consensus_by = "subclones",
+                          fun = c("median", "mean"),
                           BPPARAM = bpparam()) {
+
+  fun <- match.arg(fun)
+
   if (consensus_by == 'subclones' &
       is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
     stop("Calculating consensus requires cluster information. use findClusters(scCNA)")
@@ -49,7 +58,7 @@ calcConsensus <- function(scCNA,
 
   consensus_list <-
     BiocParallel::bplapply(long_list, function(x) {
-      apply(x, 2, median)
+      apply(x, 2, fun)
     }, BPPARAM = BPPARAM)
 
   cs_df <- as.data.frame(t(do.call(rbind, consensus_list)))

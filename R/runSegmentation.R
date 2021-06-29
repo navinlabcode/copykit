@@ -5,7 +5,7 @@
 #' @param scCNA The scCNA object
 #' @param method Character. Segmentation method of choice.
 #' @param seed Numeric. Set seed for CBS segmentation permutation reproducibility.
-#' @param slot Character. Target slot for the resulting segment ratios.
+#' @param name Character. Target slot for the resulting segment ratios.
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
 #'
@@ -14,6 +14,7 @@
 #' @importFrom dplyr mutate bind_cols
 #' @importFrom stringr str_detect str_remove str_replace
 #' @importFrom S4Vectors metadata
+#' @importFrom SummarizedExperiment assay
 #' @importFrom BiocParallel bplapply bpparam
 #' @importMethodsFrom SummarizedExperiment assay
 #' @export
@@ -22,7 +23,7 @@
 runSegmentation <- function(scCNA,
                             method = "CBS",
                             seed = 17,
-                            slot = 'segment_ratios',
+                            name = 'segment_ratios',
                             BPPARAM = bpparam()) {
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:45 2021
   # Checks
@@ -88,10 +89,12 @@ runSegmentation <- function(scCNA,
 
   }
 
+
+
   if (method == "CBS") {
 
     if (S4Vectors::metadata(scCNA)$vst == 'ft') {
-      counts_df <- assay(scCNA, 'ft')
+      counts_df <- SummarizedExperiment::assay(scCNA, 'ft')
 
       CBS_seg <- BiocParallel::bplapply(counts_df, FUN = function(x) {
         CNA_object <-
@@ -129,7 +132,7 @@ runSegmentation <- function(scCNA,
               noBreaks. = TRUE)
       # segmentation with undo.splits = "prune"
 
-      counts_df <- assay(scCNA, 'log')
+      counts_df <- SummarizedExperiment::assay(scCNA, 'log')
 
       CBS_seg <-
         BiocParallel::bplapply(as.data.frame(counts_df), function(x) {
@@ -168,7 +171,7 @@ runSegmentation <- function(scCNA,
     # calculating ratios
     scCNA <- calcRatios(scCNA, assay = 'bin_counts')
 
-    SummarizedExperiment::assay(scCNA, slot) <-
+    SummarizedExperiment::assay(scCNA, name) <-
       apply(cbs_seg_df, 2, function(x)
         x / mean(x)) %>%
       as.data.frame()

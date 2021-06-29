@@ -11,23 +11,20 @@ filterCells(scCNA, assay = "segment_ratios", k = 5, resolution = 0.9)
 
 \item{assay}{String with the name of the assay to pull data from to filter cells.}
 
-\item{k}{K-nearest-neighbor, defaults to 5.}
+\item{k}{A numeric scalar with the number k-nearest-neighbor cells to calculate the
+mean correlation}
 
-\item{resolution}{Set's how strict the correlation cut off will be. Defaults to 0.8.}
+\item{resolution}{A numeric scalar that set's how strict the correlation cut off will be.}
 }
 \value{
-Adds a filtered cells label to the scCNA metadata.
+Adds a column named 'filtered' to \code{\link[SummarizedExperiment]{colData}}
 Cells that pass the filtering criteria receive the label "kept",
 whereas cells that do not pass the filtering criteria
 receive the label "removed".
-
-Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 }
 \description{
-filterCells uses a k-nearest-neighbor approach to remove cells
-with random CNA profiles, largely due to noise data.
-It calculates a correlation matrix and sets a resolution
-below which non neighbors will be classified as noise cells.
+Uses a nearest neighbor approach to find noise copy number profiles within the
+segment means.
 }
 \examples{
 
