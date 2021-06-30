@@ -1,20 +1,30 @@
-#' Plot gene segment ratios
+#' plotGeneCopy
 #'
-#' geneCopyPlot is a way to visualize the number of copies
-#'  for different genes across all the cells.
-#'   It outputs a violin plot with the desired genes.
+#' Visualization for gene-wise copy number states
 #'
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param genes Vector containing the HUGO Symbol for the genes of interest.
-#' @param genome Genome assembly, either hg19 or hg38
-#' @param geom Which geom should be used for plotting.
-#' Options are "violin" or "swarm" and 'barplot'.
-#' @param label Color by an element of metadata.
-#' Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
+#' @param genes A vector of strings containing the HUGO Symbol for the gene
+#' of interest.
+#' @param genome A string with the chosen genome assembly.
+#' @param geom A string with the geom for plotting.
+#' @param label A string with the name of the column from
+#' \code{\link[SummarizedExperiment]{colData}} to color the points
 #'
-#' @return A violin plot with the segment ratios for the genes of interest.
+#' @details plotGeneCopy finds overlaps of the varbin scaffolds genomic ranges
+#' which can be accessed with \code{\link[SummarizedExperiment]{rowRanges}}
+#' with the genes from the assemblies of either hg19 or hg38. The genomic ranges
+#' from hg19 comes from package \code{TxDb.Hsapiens.UCSC.hg19.knownGene} whereas
+#' for hg38 package \code{TxDb.Hsapiens.UCSC.hg38.knownGene}.
+#'
+#' If the argument geom is set to 'barplot' plotGeneCopy calculates the gene-wise
+#'  frequencies of each copy number state for the selected genes across all of
+#'  the cells. For this reason, geom 'barplot' can only be used with the argument
+#'  assay set to 'integer'.
+#'
+#' @return A ggplot object with a plot of the gene-wise copy number states.
+#'
 #' @importFrom BiocGenerics subset
 #' @importFrom BiocGenerics `%in%`
 #' @importFrom S4Vectors subjectHits metadata
@@ -29,9 +39,12 @@
 
 plotGeneCopy <- function(scCNA,
                          genes,
-                         geom = "swarm",
+                         geom = c("swarm", "barplot", "violin"),
                          label = NULL,
                          assay = "segment_ratios") {
+
+  geom <- match.arg(geom)
+
   # checks
   # check if label exists
   if (!is.null(label)) {
