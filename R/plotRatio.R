@@ -6,9 +6,18 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param sample_name Optional character vector with the name of the sample to be visualized
+#' @param sample_name Optional character vector with the name of the sample to
+#' be visualized
 #'
-#' @return Ratio plot from the selected sample.
+#' @details plotRatio will return a ratio plot for the selected cell. If
+#' \code{\link{calcInteger}} was run and an 'integer' assay exists, plotRatio will
+#' color the ratio dots based on the copy number integer state of the segment
+#' automatically.
+#'
+#' @return Opens an app for interactive visualization of the ratio plots where
+#' the desired cell can be selected. If a 'sample_name' is provided, returns a ggplot
+#' object with the ratio plot for the selected cell.
+#'
 #' @importFrom stringr str_extract
 #' @importFrom miniUI miniPage miniContentPanel gadgetTitleBar
 #' @importFrom dplyr filter arrange ungroup group_by select row_number

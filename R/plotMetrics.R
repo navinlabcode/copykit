@@ -1,7 +1,6 @@
-#' Plot metrics
+#' plotMetrics
 #'
-#' Provides a plot of the metrics to quickly assess
-#' the quality and overall look of the copy number data.
+#' Plots swarm plots from selected elements of \code{\link[SummarizedExperiment{colData}]}.
 #'
 #' @author Darlan Conterno Minussi
 #'
@@ -11,7 +10,7 @@
 #' @param label A character indicating which element of the \code{colData()} to
 #' color the plots.
 #'
-#' @return A ggplot object with the metrics available in the metadata.
+#' @return A ggplot object with swarm plots of the selected metrics.
 #' @export
 #' @import ggplot2
 #'

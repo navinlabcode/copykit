@@ -1,8 +1,6 @@
 #' Run metrics
 #'
-#' Calculates the RMSE and the breakpoint counts for each cell.
-#' Stores it in the metadata that can be accessed with \code{SummarizedExperiment::colData(scCNA)}
-#' Results can be visualized with \code{plotMetrics()}
+#' Calculates the overdispersion and the breakpoint counts for each cell.
 #'
 #' @author Darlan Conterno Minussi
 #'
@@ -10,8 +8,13 @@
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
 #'
-#' @return Adds a the metrics to the scCNA metadata. Those metrics can be used for subsetting the data if desired
-#' @return Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
+#' @details Adds the metrics to the scCNA \code{\link[SummarizedExperiment]{colData}}.
+#'  Those metrics can be used for subsetting the data if desired.
+#'  results can be visualized with \code{\link{plotMetrics}}.
+#'
+#' @return Adds columns 'overdispersion' and 'breakpoint_count' to
+#'  \code{\link[SummarizedExperiment]{colData}}.
+#'
 #' @export
 #' @import ggplot2
 #'
