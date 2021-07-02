@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotMetrics.R
 \name{plotMetrics}
 \alias{plotMetrics}
-\title{Plot metrics}
+\title{plotMetrics}
 \usage{
 plotMetrics(scCNA, metric, label = NULL)
 }
@@ -16,11 +16,10 @@ should be plotted.}
 color the plots.}
 }
 \value{
-A ggplot object with the metrics available in the metadata.
+A ggplot object with swarm plots of the selected metrics.
 }
 \description{
-Provides a plot of the metrics to quickly assess
-the quality and overall look of the copy number data.
+Plots swarm plots from selected elements of \code{\link[SummarizedExperiment{colData}]}.
 }
 \examples{
 

@@ -14,5 +14,6 @@ An interactive plot where different groups
 can be selected for easier visualization
 }
 \description{
-plotConsensusLine
+Opens an interactive app showing ratio line plots of the different consensus
+groups
 }

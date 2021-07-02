@@ -2,20 +2,31 @@
 % Please edit documentation in R/plotUmap.R
 \name{plotUmap}
 \alias{plotUmap}
-\title{Plot UMAP embedding}
+\title{plotUmap}
 \usage{
 plotUmap(scCNA, label = NULL)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{label}{Color by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
+\item{label}{A string with the elements from \code{\link[SummarizedExperiment]{colData}}
+to color the umap points.}
 }
 \value{
-A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SummarizedExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)}. \code{plotUmap} searches for cluster information in the \code{SummarizedExperiment::colData()} metadata and colors the clusters according to that information.
+A ggplot object containing the reduced dimensions UMAP plot.
 }
 \description{
-Plots UMAP embedding stored in \code{reducedDims()} slot.
+Plots UMAP embedding stored in \code{\link[SingleCellExperiment]{reducedDim}} slot.
+}
+\details{
+A reduced dimension representation with UMAP in the slot
+\code{\link[SingleCellExperiment]{reducedDim}} from the scCNA object.
+\code{plotUmap} automatically searches for cluster information in the
+ \code{\link[SummarizedExperiment]{colData}} and colors the clusters according
+to that information.
+
+Otherwise a column from \code{\link[SummarizedExperiment]{colData}} can be used
+as an argument for 'label' to color the points on the plot.
 }
 \examples{
 
