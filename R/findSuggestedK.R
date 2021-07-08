@@ -1,17 +1,37 @@
-#' Finds the suggested K value to be used for subclone clustering
+#' findSuggestedK
+#'
+#' Performs a grid search over a range of k values to assess cluster stability.
 #'
 #' @param scCNA  scCNA object.
-#' @param k_range Range of values to be tested.
-#'  Defaults to 7 to the sqrt of the number of cells
-#' @param method Method which where the values will be tested.
-#' Only "hdbscan" available.
-#' @param seed Seed (Defaults to 17).
-#' @param B Number of bootstrapping. Defaults to 100.
-#' Higher values yield better results at a cost of performance
+#' @param embedding String with the name of the reducedDim embedding to pull data from.
+#' @param k_range A numeric range of values to be tested.
+#' @param method A string with the method of clustering to be tested.
+#' @param seed A numerical scalar with a seed value to be passed on to
+#' \code{\link[uwot]{umap}}.
+#' @param B A numeric with the number of bootstrapping iterations passed on to
+#' \code{\link[fpc]{clusterboot}}. Higher values yield better results at a cost
+#' of performance
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
+#'
+#' @details performs a grid-search over a range of k values and returns the value
+#' that maximizes the jaccard similarity. Importantly, while this approach does
+#' not guarantee optimal clustering, it provides a guide that maximizes cluster
+#' stability.
+#'
 #' @return Adds a table with the mean jaccard coefficient of clusters for each
-#' tested k and the suggested k value to be used for clustering to the scCNA metadata.
+#' tested k and the suggested k value to be used for clustering to
+#' \code{\link[SummarizedExperiment]{metadata}}
+#'
+#' @seealso \code{\link[fpc]{clusterboot}}
+#'
+#' @references Hennig, C. (2007) Cluster-wise assessment of cluster stability.
+#' Computational Statistics and Data Analysis, 52, 258-271.
+#'
+#' Hennig, C. (2008) Dissolution point and isolation robustness: robustness
+#' criteria for general cluster analysis methods.
+#' Journal of Multivariate Analysis 99, 1154-1176.
+#'
 #' @export
 #'
 #' @importFrom fpc clusterboot
@@ -22,14 +42,16 @@
 #'
 #' @examples
 findSuggestedK <- function(scCNA,
-                         k_range = 7:sqrt(ncol(segment_ratios(scCNA))),
-                         method = "hdbscan",
-                         seed = 17,
-                         B = 100,
-                         BPPARAM = bpparam()) {
+                           embedding = 'umap',
+                           k_range = 7:sqrt(ncol(segment_ratios(scCNA))),
+                           method = "hdbscan",
+                           seed = 17,
+                           B = 200,
+                           BPPARAM = bpparam())
+{
 
   # obtaining data from reducedDim slot
-  if (is.null(SingleCellExperiment::reducedDim(scCNA))) {
+  if (is.null(SingleCellExperiment::reducedDim(scCNA, embedding))) {
     stop("Reduced dimensions slot is NULL. Use runUmap().")
   }
 

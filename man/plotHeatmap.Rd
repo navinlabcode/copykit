@@ -6,15 +6,19 @@
 \usage{
 plotHeatmap(
   scCNA,
+  assay = "segment_ratios",
   order_cells = "consensus_tree",
   label = NULL,
   label_colors = NULL,
   consensus = FALSE,
+  rounding_error = FALSE,
   row_split = NULL
 )
 }
 \arguments{
 \item{scCNA}{scCNA object.}
+
+\item{assay}{String with the name of the assay to pull data from to plot heatmap.}
 
 \item{order_cells}{Methods to order the cells within the heatmap.
 Accepted values are "consensus_tree", "phylogeny", "hclust".
@@ -27,6 +31,9 @@ Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
 Must match label length}
 
 \item{consensus}{Boolean. Indicates if the consensus heatmap should be plotted.}
+
+\item{rounding_error}{A boolean indicating if the rounding error matrix
+should be plotted.}
 
 \item{row_split}{Character. Element of the metadata to split the heatmap.
 Must have length = 1.}

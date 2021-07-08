@@ -4,20 +4,25 @@
 \alias{calcRatios}
 \title{Calculates the ratios from a matrix of counts}
 \usage{
-calcRatios(scCNA, assay = "ft", fun = "mean")
+calcRatios(scCNA, assay = c("ft", "bin_counts"), fun = c("mean", "median"))
 }
 \arguments{
 \item{scCNA}{The scCNA object}
 
-\item{assay}{The assay that will be used}
+\item{assay}{String with the name of the assay to pull data from to calculate
+the ratios.}
 
-\item{fun}{Character. Function used to calculate the ratios.
-Defaults to "median"}
+\item{fun}{A string indicating the summarizing function to be used.}
 }
 \value{
-A ratio matrix within the slot \code{assay(scCNA, 'ratios')}
-can be accessed with \code{copykit::ratios(scCNA)}.
+A ratio matrix within the slot assay(scCNA, 'ratios')
+can be accessed with \code{ratios}.
 }
 \description{
 Calculates the ratios from a matrix of counts
+}
+\details{
+Calculates a sample-wise normalization of the selected assay by the
+mean bin counts returns ratios where a value of 1 corresponds to the neutral
+copy number state of the sample
 }

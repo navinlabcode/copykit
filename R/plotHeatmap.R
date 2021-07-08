@@ -6,6 +6,7 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
+#' @param assay String with the name of the assay to pull data from to plot heatmap.
 #' @param order_cells Methods to order the cells within the heatmap.
 #' Accepted values are "consensus_tree", "phylogeny", "hclust".
 #' Defaults to "consensus_tree".
@@ -15,6 +16,8 @@
 #'  Must match label length
 #' @param row_split Character. Element of the metadata to split the heatmap.
 #' Must have length = 1.
+#' @param rounding_error A boolean indicating if the rounding error matrix
+#' should be plotted.
 #' @param consensus Boolean. Indicates if the consensus heatmap should be plotted.
 #'
 #' @return A heatmap visualization.
@@ -23,15 +26,20 @@
 #'
 #' @import ComplexHeatmap
 #' @importFrom circlize colorRamp2
+#' @importFrom pals ocean.balance
+#' @importFrom S4Vectors metadata
+#' @importFrom SummarizedExperiment assay
 #' @importFrom dplyr select pull all_of
 #' @examples
 #'
 
 plotHeatmap <- function(scCNA,
+                        assay = "segment_ratios",
                         order_cells = "consensus_tree",
                         label = NULL,
                         label_colors = NULL,
                         consensus = FALSE,
+                        rounding_error = FALSE,
                         row_split = NULL) {
   # check annotation colors
   if (is.null(label) & !is.null(label_colors)) {
@@ -57,9 +65,53 @@ plotHeatmap <- function(scCNA,
     order_cells <- "hclust"
   }
 
+  # rounding error check
+  if (rounding_error == TRUE && assay != 'integer') {
+    stop("Rounding error argument must be used with assay 'integer'.")
+  }
+
+  # Uses the hidden consensus_by attribute from the calcConsensus function
+  # to plot integer color scheme in case consensus = TRUE
+  if (consensus == TRUE) {
+    if (attr(consensus(scCNA), "consensus_assay") == 'integer') {
+      assay <- 'integer'
+    }
+  }
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 11:57:50 2021
+# setup and colors for assay = integer
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 11:58:01 2021
+
+  if (assay == 'integer') {
+
+    # truncate ploidy colors to 2* the mean ploidy
+    mean_ploidy <- mean(SummarizedExperiment::colData(scCNA)$ploidy)
+    ploidy_trunc <- 2*round(mean_ploidy)
+
+    # colors
+    color_heat <- structure(pals::ocean.balance(length(0:ploidy_trunc)),
+                            names = 0:ploidy_trunc)
+
+    # special ploidy colors if ground state rounds to 2
+    if (round(mean_ploidy) == 2) {
+      color_heat <- structure(
+        c(
+          "#3787BA",
+          "#95B8C5",
+          "#F0ECEB",
+          "#D7A290",
+          "#BF583B",
+          "#8D1128",
+          "#3C0912"
+        ),
+        names = c("0", "1", "2", "3", "4", "5", "6")
+      )
+    }
+  }
 
   #obtaining data
-  seg_data <- t(segment_ratios(scCNA))
+  seg_data <- t(SummarizedExperiment::assay(scCNA, assay))
 
   #chromosome bar aesthetic
   chr_ranges <-
@@ -184,32 +236,109 @@ plotHeatmap <- function(scCNA,
     seg_data_ordered <- as.data.frame(t(consensus(scCNA)))
   }
 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:11:34 2021
+  # In case assay == integer truncating to a maximum value for ht color
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:11:54 2021
+
+  if (assay == 'integer') {
+    seg_data_int <- seg_data_ordered
+    seg_data_int[seg_data_int > ploidy_trunc] <- ploidy_trunc
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wed Jun 23 11:55:08 2021
+    # Calculating rounding error matrix
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Wed Jun 23 11:55:18 2021
+
+    if (rounding_error == TRUE) {
+      # calculate the integer matrix without rounding
+      int_nr <- as.matrix(SummarizedExperiment::assay(scCNA, 'segment_ratios')) %*%
+        diag(SummarizedExperiment::colData(scCNA)$ploidy)
+
+      # restoring sample names
+      names(int_nr) <- names(SummarizedExperiment::assay(scCNA, 'segment_ratios'))
+
+      # calculating absolute error and plotting
+      err <- abs(int_nr - assay(scCNA, 'integer'))
+
+      # making sure order is the same
+      err <- err[rownames(seg_data_int)]
+
+    }
+
+  }
+
+
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:20 2021
+  # Complex heatmap plotting
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:32 2021
+
+  message("Plotting Heatmap.")
+
+  #plotting
+  complex_args <- list(
+    use_raster = TRUE,
+    column_title = "genomic coordinates",
+    column_title_gp = grid::gpar(fontsize = 18),
+    column_title_side = "bottom",
+    row_title = paste0(nrow(seg_data_ordered), " samples"),
+    row_title_gp = grid::gpar(fontsize = 18),
+    top_annotation = chr_bar,
+    cluster_rows = FALSE,
+    border = TRUE,
+    cluster_columns = FALSE,
+    show_column_names = FALSE,
+    show_row_names = FALSE,
+    show_heatmap_legend = TRUE
+  )
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:55 2021
+    # Setup for label colData annotation and integer
+
+    # There are two main conditions: if argument label is provided or if
+    # the assay contains integer values.
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:13:10 2021
+
+
 
   # plotting
   if (is.null(label)) {
     # plotting without clusters
 
-    message("Plotting Heatmap.")
+    if (assay != 'integer') {
 
-    ComplexHeatmap::Heatmap(
-      log2(seg_data_ordered + 1e-3),
-      use_raster = TRUE,
-      column_title = "genomic coordinates",
-      column_title_gp = grid::gpar(fontsize = 18),
-      column_title_side = "bottom",
-      row_title = paste0(nrow(seg_data_ordered), " samples"),
-      row_title_gp = grid::gpar(fontsize = 18),
-      heatmap_legend_param = list(title = "log2 (segratio)"),
-      top_annotation = chr_bar,
-      cluster_rows = FALSE,
-      border = TRUE,
-      cluster_columns = FALSE,
-      show_column_names = FALSE,
-      show_row_names = FALSE,
-      show_heatmap_legend = TRUE
-    )
+      do.call(ComplexHeatmap::Heatmap, c(list(
+        matrix = log2(seg_data_ordered + 1e-3),
+        heatmap_legend_param = list(title = "log2 (segratio)")
+      ), complex_args))
+
+    } else {
+      # if assay is integer
+
+      if (rounding_error == FALSE) {
+
+        do.call(ComplexHeatmap::Heatmap, c(list(
+          matrix = seg_data_int,
+          heatmap_legend_param = list(title = "copy number"),
+          col = color_heat
+        ), complex_args))
+
+      } else {
+
+        # if rounding_error == TRUE
+        do.call(ComplexHeatmap::Heatmap, c(list(
+          matrix = t(err),
+          heatmap_legend_param = list(title = "rounding error"),
+          col = viridis::viridis(200)
+        ), complex_args))
+
+      }
+
+    }
+
   } else {
-    #cluster annotation
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:05:00 2021
+    # If argument label is provided
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:05:09 2021
 
     # retrieving metadata
     metadata <- SummarizedExperiment::colData(scCNA) %>%
@@ -325,42 +454,77 @@ plotHeatmap <- function(scCNA,
                                     show_annotation_name = FALSE)
 
     #plotting
-    complex_args <- list(
-      use_raster = TRUE,
-      left_annotation = cluster_anno,
-      column_title = "genomic coordinates",
-      column_title_gp = grid::gpar(fontsize = 18),
-      column_title_side = "bottom",
-      row_title = paste0(nrow(seg_data_ordered), " samples"),
-      row_title_gp = grid::gpar(fontsize = 18),
-      heatmap_legend_param = list(title = "log2 (segratio)"),
-      top_annotation = chr_bar,
-      cluster_rows = FALSE,
-      border = TRUE,
-      cluster_columns = FALSE,
-      show_column_names = FALSE,
-      show_row_names = FALSE,
-      show_heatmap_legend = TRUE
-    )
-
 
     if (!is.null(row_split)) {
       if (length(row_split) > 1) {
         stop("row_split length must be 1")
       } else {
-        do.call(ComplexHeatmap::Heatmap,
-                c(
-                  list(
-                    matrix = log2(seg_data_ordered + 1e-3),
-                    row_split = dplyr::pull(metadata_anno_df, row_split)
-                  ),
-                  complex_args
-                ))
+
+        if (assay != 'integer') {
+
+          do.call(ComplexHeatmap::Heatmap,
+                  c(
+                    list(
+                      matrix = log2(seg_data_ordered + 1e-3),
+                      row_split = dplyr::pull(metadata_anno_df, row_split),
+                      left_annotation = cluster_anno,
+                      heatmap_legend_param = list(title = "log2 (segratio)")
+                    ),
+                    complex_args
+                  ))
+
+        } else {
+          # if assay is integer
+
+          do.call(ComplexHeatmap::Heatmap,
+                  c(
+                    list(
+                      matrix = seg_data_int,
+                      row_split = dplyr::pull(metadata_anno_df, row_split),
+                      left_annotation = cluster_anno,
+                      heatmap_legend_param = list(title = "copy number"),
+                      col = color_heat
+                    ),
+                    complex_args
+                  ))
+
+        }
+
       }
     } else {
-      do.call(ComplexHeatmap::Heatmap, c(list(matrix = log2(
-        seg_data_ordered + 1e-3
-      )), complex_args))
+
+      if (assay != 'integer') {
+        do.call(ComplexHeatmap::Heatmap, c(list(
+          matrix = log2(seg_data_ordered + 1e-3),
+          left_annotation = cluster_anno,
+          heatmap_legend_param = list(title = "log2 (segratio)")
+        ), complex_args))
+      } else {
+        # if assay == integer and rounding_error == FALSE it will plot the integer matrix
+        # otherwise it will plot the rounding error matrix
+
+        if (rounding_error == FALSE) {
+
+          do.call(ComplexHeatmap::Heatmap, c(list(
+            matrix = seg_data_int,
+            left_annotation = cluster_anno,
+            heatmap_legend_param = list(title = "copy number"),
+            col = color_heat
+          ), complex_args))
+
+        } else {
+          # if rounding_error == TRUE
+          do.call(ComplexHeatmap::Heatmap, c(list(
+            matrix = t(err),
+            left_annotation = cluster_anno,
+            heatmap_legend_param = list(title = "rounding error"),
+            col = viridis::viridis(200)
+          ), complex_args))
+
+        }
+
+      }
+
     }
 
   }

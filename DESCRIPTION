@@ -2,7 +2,7 @@ Package: copykit
 Title: CopyKit
 URL: https://github.com/navinlabcode/copykit
 BugReports: https://github.com/navinlabcode/copykit/issues
-Version: 0.0.0.9016
+Version: 0.0.0.9019
 Authors@R: c(
     person(given = "Darlan",
            family = "Conterno Minussi",
@@ -63,7 +63,11 @@ Imports:
     gtools,
     forcats,
     circlize,
-    BiocParallel
+    BiocParallel,
+    fpc,
+    ggnewscale,
+    miniUI,
+    pals
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Depends: 

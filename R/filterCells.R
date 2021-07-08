@@ -1,23 +1,28 @@
 #' Filter noise cells
 #'
-#' filterCells uses a k-nearest-neighbor approach to remove cells
-#' with random CNA profiles, largely due to noise data.
-#' It calculates a correlation matrix and sets a resolution
-#' below which non neighbors will be classified as noise cells.
+#' Uses a nearest neighbor approach to find noise copy number profiles within the
+#' segment means.
 #'
 #' @author Hua-Jun Wu
 #' @author Darlan Conterno Minussi
 #'
-#' @param scCNA scCNA object.
-#' @param k K-nearest-neighbor, defaults to 5.
-#' @param resolution Set's how strict the correlation cut off will be. Defaults to 0.8.
+#' @detail \code{filterCells} Calculates a correlation matrix across the segment
+#' means among all cells and takes the mean of its k-nearest neighbors correlation.
+#' A threshold (argument resolution) is used for the minimum acceptable mean
+#' correlation among the cell and its neighbors. Values below the set resolution
+#' will be classified as noise cells.
 #'
-#' @return Adds a filtered cells label to the scCNA metadata.
+#' @param scCNA scCNA object.
+#' @param assay String with the name of the assay to pull data from to filter cells.
+#' @param k A numeric scalar with the number k-nearest-neighbor cells to calculate the
+#' mean correlation
+#' @param resolution A numeric scalar that set's how strict the correlation cut off will be.
+#'
+#' @return Adds a column named 'filtered' to \code{\link[SummarizedExperiment]{colData}}
 #' Cells that pass the filtering criteria receive the label "kept",
 #' whereas cells that do not pass the filtering criteria
 #' receive the label "removed".
 #'
-#' @return Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #' @export
 #'
 #' @examples
@@ -25,8 +30,10 @@
 #'
 
 filterCells <- function(scCNA,
+                        assay = 'segment_ratios',
                         k = 5,
-                        resolution = 0.8) {
+                        resolution = 0.9) {
+
   if (!is.numeric(resolution)) {
     stop("Resolution needs to be a number between 0 and 1")
   }
@@ -35,7 +42,7 @@ filterCells <- function(scCNA,
     stop("Resolution needs to be a number between 0 and 1")
   }
 
-  seg <- copykit::segment_ratios(scCNA)
+  seg <- SummarizedExperiment::assay(scCNA, assay)
 
   message("Calculating correlation matrix.")
 
@@ -61,7 +68,7 @@ filterCells <- function(scCNA,
                                               cor < resolution ~ "removed"))
 
   message(
-    "Adding information to metadata. Access with SummarizedExperiment::colData(scCNA)."
+    "Adding information to metadata. Access with colData(scCNA)."
   )
   if (identical(SummarizedExperiment::colData(scCNA)$sample,
                 dst_knn_df$sample)) {

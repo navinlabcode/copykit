@@ -2,38 +2,59 @@
 % Please edit documentation in R/findSuggestedK.R
 \name{findSuggestedK}
 \alias{findSuggestedK}
-\title{Finds the suggested K value to be used for subclone clustering}
+\title{findSuggestedK}
 \usage{
 findSuggestedK(
   scCNA,
+  embedding = "umap",
   k_range = 7:sqrt(ncol(segment_ratios(scCNA))),
   method = "hdbscan",
   seed = 17,
-  B = 100,
+  B = 200,
   BPPARAM = bpparam()
 )
 }
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{k_range}{Range of values to be tested.
-Defaults to 7 to the sqrt of the number of cells}
+\item{embedding}{String with the name of the reducedDim embedding to pull data from.}
 
-\item{method}{Method which where the values will be tested.
-Only "hdbscan" available.}
+\item{k_range}{A numeric range of values to be tested.}
 
-\item{seed}{Seed (Defaults to 17).}
+\item{method}{A string with the method of clustering to be tested.}
 
-\item{B}{Number of bootstrapping. Defaults to 100.
-Higher values yield better results at a cost of performance}
+\item{seed}{A numerical scalar with a seed value to be passed on to
+\code{\link[uwot]{umap}}.}
+
+\item{B}{A numeric with the number of bootstrapping iterations passed on to
+\code{\link[fpc]{clusterboot}}. Higher values yield better results at a cost
+of performance}
 
 \item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
 should be parallelized.}
 }
 \value{
 Adds a table with the mean jaccard coefficient of clusters for each
-tested k and the suggested k value to be used for clustering to the scCNA metadata.
+tested k and the suggested k value to be used for clustering to
+\code{\link[SummarizedExperiment]{metadata}}
 }
 \description{
-Finds the suggested K value to be used for subclone clustering
+Performs a grid search over a range of k values to assess cluster stability.
+}
+\details{
+performs a grid-search over a range of k values and returns the value
+that maximizes the jaccard similarity. Importantly, while this approach does
+not guarantee optimal clustering, it provides a guide that maximizes cluster
+stability.
+}
+\references{
+Hennig, C. (2007) Cluster-wise assessment of cluster stability.
+Computational Statistics and Data Analysis, 52, 258-271.
+
+Hennig, C. (2008) Dissolution point and isolation robustness: robustness
+criteria for general cluster analysis methods.
+Journal of Multivariate Analysis 99, 1154-1176.
+}
+\seealso{
+\code{\link[fpc]{clusterboot}}
 }
