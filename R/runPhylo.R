@@ -7,7 +7,7 @@
 #' @param scCNA scCNA object.
 #' @param method Phylogenetic method to be run, currently accepts "nj" (neighbor-joining) and "me" (minimum evolution). Defaults to "nj".
 #' @param metric distance metric passed to construct the phylogeny (Defaults to "euclidean").
-#' @param integer Whether the analysis is performed on the integer data. Defaults to FALSE (using segment ratios data).
+#' @param assay String with the name of the assay to pull data from to run phylogenetic analysis. Note that only assay named "integer" will be treated as integer.
 #' @param n_threads Number of threads used to calculate the distance matrix. Passed to `amap::Dist`
 #'
 #' @return A rooted phylogenetic tree object in the slot \code{phylo} from scCNA object. Access phylo slot with: \code{copykit::phylo(scCNA)}
@@ -19,7 +19,7 @@
 runPhylo <- function(scCNA,
                      method = "nj",
                      metric = "euclidean",
-                     integer =  FALSE,
+                     assay = "segment_ratios",
                      n_threads = parallel::detectCores() / 4) {
 
   # cores check
@@ -29,36 +29,29 @@ runPhylo <- function(scCNA,
 
 
   # getting data
+  if ( assay %in% names(SummarizedExperiment::assays(scCNA)) ){
+    stop("No data found in the assay! Please check the assay name.")
+  }
 
-  ## with ratios
-  if (! integer) {
+  seg_data <- SummarizedExperiment::assay(scCNA, assay)
 
+
+  if (assay=="integer") {
+    ## with integers
+    message("Using integer data...")
+    seg_data[, ncol(seg_data)+1] <- 2
+    seg_data[, ncol(seg_data)+1] <- 2
+    seg_data <- t(seg_data) %>% as.data.frame()
+
+  } else {
+    # with ratios
     message("Using ratio data...")
-    seg_data <- segment_ratios(scCNA)
     seg_data[, ncol(seg_data)+1] <- 1
     seg_data[, ncol(seg_data)+1] <- 1
     seg_data <- t(seg_data) %>% as.data.frame()
 
   }  
 
-  ## with integers
-  if (integer) {
-
-    if ("integer" %in% names(SummarizedExperiment::assays(scCNA))) {
-
-      message("Using integer data...")
-      seg_data <- SummarizedExperiment::assay(scCNA, "integer")
-      seg_data[, ncol(seg_data)+1] <- 2
-      seg_data[, ncol(seg_data)+1] <- 2
-      seg_data <- t(seg_data) %>% as.data.frame()
-
-    } else {
-
-      stop("Integer data not found! Please make sure the integer data is in SummarizedExperiment::assay(scCNA, \"integer\").")
-
-    }
-
-  }
 
   # calculating distance matrix
   message("Calculating distance matrix")
