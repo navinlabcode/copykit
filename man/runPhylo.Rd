@@ -4,22 +4,30 @@
 \alias{runPhylo}
 \title{Run phylogenetic analysis}
 \usage{
-runPhylo(scCNA, method = "nj", metric = "euclidean", n_threads = 1)
+runPhylo(
+  scCNA,
+  method = "nj",
+  metric = "euclidean",
+  assay = "segment_ratios",
+  n_threads = parallel::detectCores()/4
+)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{method}{Phylogenetic method to be run, currently only accepts "nj" (neighbor-joining).}
+\item{method}{Phylogenetic method to be run, currently accepts "nj" (neighbor-joining) and "me" (minimum evolution). Defaults to "nj".}
 
 \item{metric}{distance metric passed to construct the phylogeny (Defaults to "euclidean").}
+
+\item{assay}{String with the name of the assay to pull data from to run phylogenetic analysis. Note that only assay named "integer" will be treated as integer.}
 
 \item{n_threads}{Number of threads used to calculate the distance matrix. Passed to `amap::Dist`}
 }
 \value{
-A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDim(scCNA, 'umap')}
+A rooted phylogenetic tree object in the slot \code{phylo} from scCNA object. Access phylo slot with: \code{copykit::phylo(scCNA)}
 }
 \description{
-Performs phylogenetic analysis using the segment ratios data
+Performs phylogenetic analysis
 }
 \author{
 Darlan Conterno Minussi

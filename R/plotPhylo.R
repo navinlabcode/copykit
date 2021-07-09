@@ -2,17 +2,16 @@
 #'
 #' Plots a phylogenetic tree.
 #'
-#' @author Darlan Conterno Minussi
+#' @author Junke Wang
 #'
 #' @param scCNA scCNA object.
 #' @param label Character. Annotate tree tip by one of the element of metadata.
 #' Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
 #' @param label_colors List. Named list with colors for the label annotation.
 #'  Must match label length
-#' @param consensus Boolean. Indicates if the consensus phylogenetic tree should be plotted. Default to FALSE. The label/label_color option will be disabled.
+#' @param consensus Boolean. Indicates if the consensus phylogenetic tree should be plotted. Default to FALSE. 
 #'
 #' @return A phylogenetic tree visualization.
-#'
 #' @export
 #'
 #' @import ggtree
@@ -152,7 +151,7 @@ plotPhylo <- function(scCNA,
     	scale_color_manual(values=label_colors, name=label)
 
     if(consensus){
-    	p<- p + geom_tiplab(aes(color=group), size=5, hjust=-0.5)
+    	p <- p + geom_tiplab(aes(color=group), size=5, hjust=-0.5)
     }
 
     p
