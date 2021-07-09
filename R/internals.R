@@ -514,5 +514,7 @@ parCor <- function(x, BPPARAM=BiocParallel::bpparam())
     res_parcor_reserve[result[[i]][[2]],result[[i]][[1]]] <- t(result[[i]][[3]])
   }
   
+  colnames(res_parcor_reserve) <- colnames(x)
+  rownames(res_parcor_reserve) <- colnames(x)
   return(res_parcor_reserve)
 }

@@ -34,7 +34,7 @@ filterCells <- function(scCNA,
                         assay = 'segment_ratios',
                         k = 5,
                         resolution = 0.9,
-                        BPPARAM = bpparam()) {
+                        BPPARAM = BiocParallel::bpparam()) {
 
   if (!is.numeric(resolution)) {
     stop("Resolution needs to be a number between 0 and 1")
