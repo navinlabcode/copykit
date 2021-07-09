@@ -29,7 +29,7 @@ runPhylo <- function(scCNA,
 
 
   # getting data
-  if ( assay %in% names(SummarizedExperiment::assays(scCNA)) ){
+  if ( ! assay %in% names(SummarizedExperiment::assays(scCNA)) ){
     stop("No data found in the assay! Please check the assay name.")
   }
 

@@ -7,7 +7,7 @@
 #' @param scCNA scCNA object.
 #' @param label Character. Annotate tree tip by one of the element of metadata.
 #' Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
-#' @param label_color List. Named list with colors for the label annotation.
+#' @param label_colors List. Named list with colors for the label annotation.
 #'  Must match label length
 #' @param consensus Boolean. Indicates if the consensus phylogenetic tree should be plotted. Default to FALSE. The label/label_color option will be disabled.
 #'
@@ -20,8 +20,8 @@
 #'
 
 plotPhylo <- function(scCNA,
-					  label,
-					  label_color,
+					  label = NULL,
+					  label_colors = NULL,
 					  consensus = FALSE){
 
   # consensus and not consensus logic
@@ -29,10 +29,7 @@ plotPhylo <- function(scCNA,
     tryCatch(
       phylo(scCNA),
       error = function(e) {
-        message("No phylogeny detected in scCNA object.")
-      },
-      finally = {
-        scCNA <- runPhylo(scCNA)
+        stop("No phylogeny detected in scCNA object. Please run runPhylo() first.")
       }
     )
 
@@ -43,10 +40,7 @@ plotPhylo <- function(scCNA,
   	tryCatch(
       consensusPhylo(scCNA),
       error = function(e) {
-        message("No consensus phylogeny detected in scCNA object.")
-      },
-      finally = {
-        scCNA <- runConsensusPhylo(scCNA)
+        stop("No consensus phylogeny detected in scCNA object. Please run runConsensusPhylo() first.")
       }
     )
 
@@ -63,7 +57,7 @@ plotPhylo <- function(scCNA,
 
   } else {
   	# plotting with labels
-  	if (length(label)>1) {
+  	if ( length(label)>1 ) {
   		stop("Only one label can be visualized in the tree.")
   	}
 
@@ -78,7 +72,8 @@ plotPhylo <- function(scCNA,
 
     if (consensus == FALSE) {
       
-    	metadata_anno_df <- metadata_anno_df[tree$tip.label,]
+    	metadata_anno_df <- metadata_anno_df[tree$tip.label,, drop=F]
+    	size <- 1
 
     }
 
@@ -97,9 +92,11 @@ plotPhylo <- function(scCNA,
       metadata_anno_df <-
         metadata_anno_df[names(consensus(scCNA)), , drop = FALSE]
 
+      size <- 5
+
     }
 
-    if (is.null(label_color)) {
+    if (is.null(label_colors)) {
      
       #default colors superclones and subclones
       label_colors <- c(
@@ -110,8 +107,7 @@ plotPhylo <- function(scCNA,
                        "kept" = "#5F917A"),
           is_normal = c("TRUE" = "#396DB3",
                         "FALSE" = "#11181D")
-        ),
-        label_colors
+        )
       )
 
         if (any(str_detect(
@@ -119,21 +115,7 @@ plotPhylo <- function(scCNA,
           c("superclones", "subclones", "filtered", "is_normal")
         ))) {
           # if label is one of the four above, uses the default specifed colors above
-          label_color <- label_colors[[label]]
-
-        } else if (is.numeric(dplyr::pull(metadata_anno_df, label)))  {
-          # if label is a numeric vector
-          n = 300
-          min_v = min(dplyr::pull(metadata_anno_df, label))
-          max_v = max(dplyr::pull(metadata_anno_df, label))
-
-          label_color <-
-            list(circlize::colorRamp2(
-              seq(min_v, max_v, length = n),
-              viridis::viridis(n, option = "D")
-            ))
-          names(label_color) <- label
-
+          label_colors <- label_colors[[label]]
 
         } else {
           # if label is not numeric
@@ -151,27 +133,30 @@ plotPhylo <- function(scCNA,
           col <- structure(hex,
                            names = elements)
 
-          label_color <- list(col)
-          names(label_color) <- label
+          label_colors <- col
 
 
         }
 
       
 
+    } else if (is.list(label_colors)) {
+    	label_colors <- label_colors[[label]]
     }
 
 
     list_samples <- split(rownames(metadata_anno_df), metadata_anno_df[,label])
     tree <- ggtree::groupOTU(tree, list_samples)
     p <- ggtree::ggtree(tree, ladderize=F) +
-    	geom_tippoint(aes(color=group), size=1) +
-    	scale_color_manual(values=label_color, name=label)
+    	geom_tippoint(aes(color=group), size=size) +
+    	scale_color_manual(values=label_colors, name=label)
 
     if(consensus){
-    	p<-p+geom_tiplab(aes(color=group), size=2)
+    	p<- p + geom_tiplab(aes(color=group), size=5, hjust=-0.5)
     }
 
     p
+  }
 
 }
+
