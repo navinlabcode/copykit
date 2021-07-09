@@ -35,7 +35,7 @@ filterCells <- function(scCNA,
                         assay = 'segment_ratios',
                         k = 5,
                         resolution = 0.9,
-                        n_threads = 1) {
+                        BPPARAM = bpparam()) {
 
   if (!is.numeric(resolution)) {
     stop("Resolution needs to be a number between 0 and 1")
@@ -58,7 +58,7 @@ filterCells <- function(scCNA,
 
   # calculating correlations
 
-  dst <- 1-as.matrix(amap::Dist(t(seg), method = "correlation", upper = T, diag = T, nbproc = n_threads))
+  dst <- parCor(seg, BPPARAM=BPPARAM)
 
   dst_knn_df <- apply(as.matrix(dst), 1, function(x) {
     mean(sort(x, decreasing = T)[2:(k + 1)])

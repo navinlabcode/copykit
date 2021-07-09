@@ -474,3 +474,44 @@ overdispersion <- function(v)
   return(iod.norm)
 
 }
+
+#' @author Junke Wang
+#' @export
+parCor <- function(x, BPPARAM=BiocParallel::bpparam()){
+  ncol <- ncol(x)
+  
+  ## skip parallelization if # of cell less than 2000
+  if (ncol < 2001) {
+    return(cor(x))
+  }
+  
+  nSplit <- floor(ncol/1000)
+  lSplit <- floor(ncol / nSplit)
+  iSplit <- vector("list", nSplit)
+  for (i in seq_len((nSplit - 1))) {
+    iSplit[[i]] <- (lSplit * (i - 1) + 1):(lSplit * i)
+  }
+  iSplit[[nSplit]] <- (lSplit * (nSplit - 1) + 1):ncol
+  
+  comb <- expand.grid(1:nSplit, 1:nSplit)
+  comb <- unique(t(apply(comb, 1, sort)))
+  
+  ## result matrix
+  result <- BiocParallel::bplapply(X = 1:nrow(comb), 
+                                   FUN = function(i){
+                                     a <- list()
+                                     a[[1]] <- iSplit[[comb[i,1]]]
+                                     a[[2]] <- iSplit[[comb[i,2]]]
+                                     a[[3]] <- cor(x[,a[[1]]], x[,a[[2]]])
+                                     a
+                                   },
+                                   BPPARAM = BPPARAM) 
+  
+  res_parcor_reserve <- matrix(, nrow = ncol, ncol = ncol)
+  for(i in 1:length(result)){
+    res_parcor_reserve[result[[i]][[1]],result[[i]][[2]]] <- result[[i]][[3]]
+    res_parcor_reserve[result[[i]][[2]],result[[i]][[1]]] <- t(result[[i]][[3]])
+  }
+  
+  return(res_parcor_reserve)
+}
