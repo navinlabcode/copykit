@@ -17,8 +17,7 @@
 #' @param k A numeric scalar with the number k-nearest-neighbor cells to calculate the
 #' mean correlation
 #' @param resolution A numeric scalar that set's how strict the correlation cut off will be.
-#' @param n_threads Number of threads used to calculate the correlation matrix. Passed to `amap::Dist`. Default to 1.
-
+#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function should be parallelized.
 #'
 #' @return Adds a column named 'filtered' to \code{\link[SummarizedExperiment]{colData}}
 #' Cells that pass the filtering criteria receive the label "kept",

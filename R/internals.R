@@ -477,7 +477,8 @@ overdispersion <- function(v)
 
 #' @author Junke Wang
 #' @export
-parCor <- function(x, BPPARAM=BiocParallel::bpparam()){
+parCor <- function(x, BPPARAM=BiocParallel::bpparam())
+{
   ncol <- ncol(x)
   
   ## skip parallelization if # of cell less than 2000
