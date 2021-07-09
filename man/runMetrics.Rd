@@ -13,14 +13,16 @@ runMetrics(scCNA, BPPARAM = bpparam())
 should be parallelized.}
 }
 \value{
-Adds a the metrics to the scCNA metadata. Those metrics can be used for subsetting the data if desired
-
-Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
+Adds columns 'overdispersion' and 'breakpoint_count' to
+ \code{\link[SummarizedExperiment]{colData}}.
 }
 \description{
-Calculates the RMSE and the breakpoint counts for each cell.
-Stores it in the metadata that can be accessed with \code{SummarizedExperiment::colData(scCNA)}
-Results can be visualized with \code{plotMetrics()}
+Calculates the overdispersion and the breakpoint counts for each cell.
+}
+\details{
+Adds the metrics to the scCNA \code{\link[SummarizedExperiment]{colData}}.
+ Those metrics can be used for subsetting the data if desired.
+ results can be visualized with \code{\link{plotMetrics}}.
 }
 \examples{
 

@@ -1,9 +1,13 @@
 #' plotConsensusLine
 #'
+#' Opens an interactive app showing ratio line plots of the different consensus
+#' groups
+#'
 #' @param scCNA The scCNA object
 #'
 #' @return An interactive plot where different groups
 #' can be selected for easier visualization
+#'
 #' @export
 #'
 #' @import shiny

@@ -1,4 +1,6 @@
-#' Runs a minimal evolution tree algorithm for the consensus data frame
+#' runConsensusPhylo
+#'
+#'  Runs a minimal evolution tree algorithm for the consensus data frame
 #'
 #' @param consensus_df The consensus data frame from the segmented dataset
 #' @param clusters The results from clustering

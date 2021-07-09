@@ -2,7 +2,7 @@
 % Please edit documentation in R/runConsensusPhylo.R
 \name{runConsensusPhylo}
 \alias{runConsensusPhylo}
-\title{Runs a minimal evolution tree algorithm for the consensus data frame}
+\title{runConsensusPhylo}
 \usage{
 runConsensusPhylo(scCNA)
 }

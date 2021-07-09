@@ -1,4 +1,4 @@
-#' Plot heatmap
+#' plotHeatmap
 #'
 #' Plots a heatmap of the copy number data.
 #' Each row is a cell and colums represent genomic positions.
@@ -7,20 +7,71 @@
 #'
 #' @param scCNA scCNA object.
 #' @param assay String with the name of the assay to pull data from to plot heatmap.
-#' @param order_cells Methods to order the cells within the heatmap.
-#' Accepted values are "consensus_tree", "phylogeny", "hclust".
-#' Defaults to "consensus_tree".
-#' @param label Character. Annotate heatmap by an element of metadata.
-#' Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
-#' @param label_colors List. Named list with colors for the label annotation.
-#'  Must match label length
-#' @param row_split Character. Element of the metadata to split the heatmap.
-#' Must have length = 1.
+#' @param order_cells A string with the desired method to order the cells within
+#' @param label A vector with the string names of the columns from
+#' \code{\link[SummarizedExperiment]{colData}} for heatmap annotation.
+#' @param label_colors A named list with colors for the label annotation.
+#'  Must match label length and have the same names as label
+#' @param row_split A string with the names of the columns from
+#' \code{\link[SummarizedExperiment]{colData}} to split the heatmap.
 #' @param rounding_error A boolean indicating if the rounding error matrix
 #' should be plotted.
-#' @param consensus Boolean. Indicates if the consensus heatmap should be plotted.
+#' @param consensus A boolean indicating if the consensus heatmap should be plotted.
+#' @param n_threads A numeric scalar passed on to \code{\link[amap]{Dist}} for
+#' parallel calculation of the distance matrix needed for 'hclust'.
 #'
-#' @return A heatmap visualization.
+#' @return A \code{ComplexHeatmap} object with a heatmap of copy number data
+#' where the columns are the genomic positions and each row is a cell.
+#'
+#' @details
+#' \itemize{
+#'    \item{order_cells}: If order_cells argument is set to 'consensus_tree'
+#'    \code{\link{plotHeatmap}} checks for the existence of a consensus matrix.
+#'    From the consensus matrix, a minimum evolution tree is built and cells are
+#'     ordered following the order of their respective groups from the tree.
+#'     If order_cells is set to 'hclust' cells are ordered according to hierarchical
+#'      clustering. 'hclust' calculation can be sped up by changing the parameter
+#'      'n_threads' if you have more threads available to use. If order_cells
+#'      is set to 'phylogeny' \code{\link{plotHeatmap}} will use the tree stored
+#'      in the \code{\link{phylo}} slot of the scCNA object to order the cells.
+#'      If the \code{\link{phylo}} is empty \code{\link{plotHeatmap}} wil run
+#'      \code{\link{runPhylo}} to generate the tree.
+#'
+#'    \item{label}: A vector with the string names of the columns from
+#'    \code{\link[SummarizedExperiment]{colData}} for heatmap annotation. The 'label'
+#'    argument can take as many columns as desired as argument as long as they
+#'    are elements from \code{\link[SummarizedExperiment]{colData}}.
+#'
+#'    \item{label_colors}: A named list, list element names must match column
+#'    names for \code{\link[SummarizedExperiment]{colData}} and list elements
+#'    must match the number of items present in the columns provided in argument
+#'     'label'. For example: to set colors for column 'filtered' containing
+#'     elements 'kept' or 'filtered' a valid input would be:
+#'     'list(filtered = c('kept' = 'green', 'filtered' = 'red))'.
+#'      Default colors are provided for 'superclones', 'subclones', 'is_normal',
+#'      and 'filtered' that can be overriden with 'label_colors'.
+#'
+#'    \item{rounding_error}: Must be used with assay = 'integer'.
+#'    \code{plotHeatmap} will access the ploidies stored into colData(scCNA)$ploidy
+#'     that are generated from \code{\link{calcInteger}} and scale rounded integer
+#'      values to the segment means. Later this scaled matrix will be subtracted
+#'      from the 'integer' assay from \code{\link{calcInteger}} and the resulting
+#'       matrix from this subtraction will be plotted. Useful to visualize regions
+#'       of high rounding error. Such regions can indicate issues with the ploidy
+#'       scaling in use.
+#'
+#'    \item{consensus}: If set to TRUE, \code{\link{plotHeatmap}} will search for
+#'     the consensus matrix in the slot \code{\link{consensus}} and plot the
+#'     resulting matrix. Labels annotations can be added with the argument 'label'.
+#'
+#' }
+#'
+#' @seealso \code{\link{calcInteger}} For methods of obtaning the 'integer' assay.
+#'
+#' @references Zuguang Gu, Roland Eils, Matthias Schlesner, Complex heatmaps
+#' reveal patterns and correlations in multidimensional genomic data,
+#' Bioinformatics, Volume 32, Issue 18, 15 September 2016, Pages 2847–2849,
+#' https://doi.org/10.1093/bioinformatics/btw313
 #'
 #' @export
 #'
@@ -30,17 +81,21 @@
 #' @importFrom S4Vectors metadata
 #' @importFrom SummarizedExperiment assay
 #' @importFrom dplyr select pull all_of
+#' @importFrom viridis viridis
 #' @examples
 #'
 
 plotHeatmap <- function(scCNA,
                         assay = "segment_ratios",
-                        order_cells = "consensus_tree",
+                        order_cells = c("consensus_tree", "hclust", "phylogeny"),
                         label = NULL,
                         label_colors = NULL,
                         consensus = FALSE,
                         rounding_error = FALSE,
                         row_split = NULL) {
+
+  order_cells <- match.arg(order_cells)
+
   # check annotation colors
   if (is.null(label) & !is.null(label_colors)) {
     stop("Please provide a label argument if colors are being specified for it.")

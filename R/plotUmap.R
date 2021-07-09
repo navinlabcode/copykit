@@ -1,17 +1,28 @@
-#' Plot UMAP embedding
+#' plotUmap
 #'
-#' Plots UMAP embedding stored in \code{reducedDims()} slot.
+#' Plots UMAP embedding stored in \code{\link[SingleCellExperiment]{reducedDim}} slot.
 #'
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param label Color by an element of metadata. Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
+#' @param label A string with the elements from \code{\link[SummarizedExperiment]{colData}}
+#' to color the umap points.
 #'
-#' @return A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SummarizedExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)}. \code{plotUmap} searches for cluster information in the \code{SummarizedExperiment::colData()} metadata and colors the clusters according to that information.
+#' @details A reduced dimension representation with UMAP in the slot
+#' \code{\link[SingleCellExperiment]{reducedDim}} from the scCNA object.
+#' \code{plotUmap} automatically searches for cluster information in the
+#'  \code{\link[SummarizedExperiment]{colData}} and colors the clusters according
+#' to that information.
+#'
+#' Otherwise a column from \code{\link[SummarizedExperiment]{colData}} can be used
+#' as an argument for 'label' to color the points on the plot.
+#'
+#' @return A ggplot object containing the reduced dimensions UMAP plot.
 #'
 #' @export
 #'
 #' @importFrom ggnewscale new_scale_color
+#' @import ggplot2
 #' @examples
 #'
 
