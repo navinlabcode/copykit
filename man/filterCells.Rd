@@ -9,7 +9,7 @@ filterCells(
   assay = "segment_ratios",
   k = 5,
   resolution = 0.9,
-  BPPARAM = bpparam()
+  BPPARAM = BiocParallel::bpparam()
 )
 }
 \arguments{
