@@ -99,7 +99,7 @@ plotPhylo <- function(scCNA,
 
     }
 
-    if (is.null(label_colors)) {
+    if (is.null(label_color)) {
      
       #default colors superclones and subclones
       label_colors <- c(
@@ -119,7 +119,7 @@ plotPhylo <- function(scCNA,
           c("superclones", "subclones", "filtered", "is_normal")
         ))) {
           # if label is one of the four above, uses the default specifed colors above
-          label_colors <- label_colors[[label]]
+          label_color <- label_colors[[label]]
 
         } else if (is.numeric(dplyr::pull(metadata_anno_df, label)))  {
           # if label is a numeric vector
@@ -127,12 +127,12 @@ plotPhylo <- function(scCNA,
           min_v = min(dplyr::pull(metadata_anno_df, label))
           max_v = max(dplyr::pull(metadata_anno_df, label))
 
-          label_colors <-
+          label_color <-
             list(circlize::colorRamp2(
               seq(min_v, max_v, length = n),
               viridis::viridis(n, option = "D")
             ))
-          names(label_colors) <- label
+          names(label_color) <- label
 
 
         } else {
@@ -151,8 +151,8 @@ plotPhylo <- function(scCNA,
           col <- structure(hex,
                            names = elements)
 
-          label_colors <- list(col)
-          names(label_colors) <- label
+          label_color <- list(col)
+          names(label_color) <- label
 
 
         }
@@ -161,15 +161,12 @@ plotPhylo <- function(scCNA,
 
     }
 
-    # removing null elements from the label_colors vector
-    # in case they contained elements with default colors
-    label_colors[sapply(label_colors, is.null)] <- NULL
 
     list_samples <- split(rownames(metadata_anno_df), metadata_anno_df[,label])
     tree <- ggtree::groupOTU(tree, list_samples)
     p <- ggtree::ggtree(tree, ladderize=F) +
     	geom_tippoint(aes(color=group), size=1) +
-    	scale_color_manual(values=label_colors, name=label)
+    	scale_color_manual(values=label_color, name=label)
 
     if(consensus){
     	p<-p+geom_tiplab(aes(color=group), size=2)
