@@ -4,7 +4,13 @@
 \alias{filterCells}
 \title{Filter noise cells}
 \usage{
-filterCells(scCNA, assay = "segment_ratios", k = 5, resolution = 0.9)
+filterCells(
+  scCNA,
+  assay = "segment_ratios",
+  k = 5,
+  resolution = 0.9,
+  BPPARAM = BiocParallel::bpparam()
+)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
@@ -15,6 +21,8 @@ filterCells(scCNA, assay = "segment_ratios", k = 5, resolution = 0.9)
 mean correlation}
 
 \item{resolution}{A numeric scalar that set's how strict the correlation cut off will be.}
+
+\item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function should be parallelized.}
 }
 \value{
 Adds a column named 'filtered' to \code{\link[SummarizedExperiment]{colData}}

@@ -17,6 +17,7 @@
 #' @param k A numeric scalar with the number k-nearest-neighbor cells to calculate the
 #' mean correlation
 #' @param resolution A numeric scalar that set's how strict the correlation cut off will be.
+#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function should be parallelized.
 #'
 #' @return Adds a column named 'filtered' to \code{\link[SummarizedExperiment]{colData}}
 #' Cells that pass the filtering criteria receive the label "kept",
@@ -32,7 +33,8 @@
 filterCells <- function(scCNA,
                         assay = 'segment_ratios',
                         k = 5,
-                        resolution = 0.9) {
+                        resolution = 0.9,
+                        BPPARAM = BiocParallel::bpparam()) {
 
   if (!is.numeric(resolution)) {
     stop("Resolution needs to be a number between 0 and 1")
@@ -55,7 +57,7 @@ filterCells <- function(scCNA,
 
   # calculating correlations
 
-  dst <- cor(seg)
+  dst <- parCor(seg, BPPARAM=BPPARAM)
 
   dst_knn_df <- apply(as.matrix(dst), 1, function(x) {
     mean(sort(x, decreasing = T)[2:(k + 1)])
