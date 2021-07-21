@@ -5,11 +5,12 @@
 #' @author Junke Wang
 #'
 #' @param scCNA scCNA object.
-#' @param label Character. Annotate tree tip by one of the element of metadata.
-#' Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}
-#' @param label_colors List. Named list with colors for the label annotation.
+#' @param label A string with the element of \code{\link[SummarizedExperiment]{colData}}.
+#' to annotate the tips of the tree.
+#' @param label_colors A named list with colors for the label annotation.
 #'  Must match label length
-#' @param consensus Boolean. Indicates if the consensus phylogenetic tree should be plotted. Default to FALSE. 
+#' @param consensus A boolean indicating if the consensus phylogenetic tree
+#' should be plotted.
 #'
 #' @return A phylogenetic tree visualization.
 #' @export
@@ -70,7 +71,7 @@ plotPhylo <- function(scCNA,
 	metadata_anno_df <- metadata %>% dplyr::select(dplyr::all_of(label))
 
     if (consensus == FALSE) {
-      
+
     	metadata_anno_df <- metadata_anno_df[tree$tip.label,, drop=F]
     	size <- 1
 
@@ -96,7 +97,7 @@ plotPhylo <- function(scCNA,
     }
 
     if (is.null(label_colors)) {
-     
+
       #default colors superclones and subclones
       label_colors <- c(
         list(
@@ -137,7 +138,7 @@ plotPhylo <- function(scCNA,
 
         }
 
-      
+
 
     } else if (is.list(label_colors)) {
     	label_colors <- label_colors[[label]]
