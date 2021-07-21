@@ -31,4 +31,6 @@ Performs phylogenetic analysis
 }
 \author{
 Darlan Conterno Minussi
+
+Junke Wang
 }

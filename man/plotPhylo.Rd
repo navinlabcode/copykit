@@ -9,13 +9,14 @@ plotPhylo(scCNA, label = NULL, label_colors = NULL, consensus = FALSE)
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{label}{Character. Annotate tree tip by one of the element of metadata.
-Metadata can be accessed with \code{SummarizedExperiment::colData(scCNA)}}
+\item{label}{A string with the element of \code{\link[SummarizedExperiment]{colData}}.
+to annotate the tips of the tree.}
 
-\item{label_colors}{List. Named list with colors for the label annotation.
+\item{label_colors}{A named list with colors for the label annotation.
 Must match label length}
 
-\item{consensus}{Boolean. Indicates if the consensus phylogenetic tree should be plotted. Default to FALSE.}
+\item{consensus}{A boolean indicating if the consensus phylogenetic tree
+should be plotted.}
 }
 \value{
 A phylogenetic tree visualization.

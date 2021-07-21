@@ -9,9 +9,6 @@
 #' @keywords internal
 phylo <- structure(list(), class = "phylo")
 
-#' @exportClass phylo
-setOldClass("phylo")
-
 #' @exportClass igraph
 setOldClass("igraph")
 

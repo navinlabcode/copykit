@@ -53,7 +53,7 @@ plotPhylo <- function(scCNA,
   if (is.null(label)) {
     # plotting without labels
 
-    ggtree::ggtree(tree, laderize = F)
+    ggtree::ggtree(tree, ladderize = F)
 
   } else {
   	# plotting with labels

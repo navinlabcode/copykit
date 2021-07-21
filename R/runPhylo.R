@@ -3,6 +3,7 @@
 #' Performs phylogenetic analysis
 #'
 #' @author Darlan Conterno Minussi
+#' @author Junke Wang
 #'
 #' @param scCNA scCNA object.
 #' @param method Phylogenetic method to be run, currently accepts "nj" (neighbor-joining) and "me" (minimum evolution). Defaults to "nj".
@@ -50,7 +51,7 @@ runPhylo <- function(scCNA,
     seg_data[, ncol(seg_data)+1] <- 1
     seg_data <- t(seg_data) %>% as.data.frame()
 
-  }  
+  }
 
 
   # calculating distance matrix
@@ -74,7 +75,7 @@ runPhylo <- function(scCNA,
   } else {
     stop("Currently only nj and me trees are supported.")
   }
-  
+
 
   # root the tree
   tree <- ape::root.phylo(tree,

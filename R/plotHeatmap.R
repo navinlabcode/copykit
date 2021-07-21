@@ -115,7 +115,7 @@ plotHeatmap <- function(scCNA,
     stop("Label must be a character vector.")
   }
 
-  if (is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
+  if (is.null(SummarizedExperiment::colData(scCNA)$subclones) && order_cells != 'phylogeny') {
     message("Ordering by consensus requires cluster information.\nSwitching to hclust")
     order_cells <- "hclust"
   }
@@ -216,15 +216,10 @@ plotHeatmap <- function(scCNA,
   if (consensus == FALSE) {
     # ordering cells
     if (order_cells == "phylogeny") {
-      tryCatch(
-        phylo(scCNA),
-        error = function(e) {
-          message("No phylogeny detected in scCNA object.")
-        },
-        finally = {
-          scCNA <- runPhylo(scCNA)
-        }
-      )
+
+      if (ape::Ntip(phylo(scCNA)) == 0) {
+        stop("No phylogeny detected in scCNA object. Use runPhylo")
+      }
 
       tree <- phylo(scCNA)
 
