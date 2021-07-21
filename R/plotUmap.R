@@ -5,6 +5,7 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
+#' @param embedding String with the name of the reducedDim to pull data from.
 #' @param label A string with the elements from \code{\link[SummarizedExperiment]{colData}}
 #' to color the umap points.
 #'
@@ -27,10 +28,24 @@
 #'
 
 plotUmap <- function(scCNA,
+                     embedding = 'umap',
                      label = NULL) {
 
-  # retrieving metadata
+  message("Plotting Umap.")
+
+  # retrieving data
   df <- as.data.frame(SummarizedExperiment::colData(scCNA))
+  umap_df <- SingleCellExperiment::reducedDim(scCNA, embedding) %>%
+    as.data.frame()
+
+  # check if label exists
+  if (!is.null(label) && !(label %in% colnames(df))) {
+    stop(paste0("Label ", label, " is not a column of the scCNA object."))
+  }
+
+  if (!is.null(label)) {
+    message(paste0("Coloring by: ", label, '. '))
+  }
 
   # theme setup
   my_theme <- list(
@@ -49,60 +64,49 @@ plotUmap <- function(scCNA,
     ylab("umap2")
   )
 
-  # check if label exists
-  if (!is.null(label)) {
-    message(paste0("Coloring by: ", label))
+  # Base plot
+  p <- ggplot(umap_df, aes(V1, V2)) +
+    theme_classic() +
+    my_theme
+
+  if (is.null(label)) {
+    p <- p +
+      geom_point()
+
+    return(print(p))
   }
 
-  if (!is.null(label) && !(label %in% colnames(df))) {
-    stop(paste0("Label ", label, " is not a column of the scCNA object."))
-  }
-
-  # obtaining data from reducedDim slot
-  if (!is.null(SingleCellExperiment::reducedDim(scCNA))) {
-    umap_df <- SingleCellExperiment::reducedDim(scCNA, 'umap') %>%
-      as.data.frame()
-
-  } else
-    stop("Reduced dimensions slot is null. Use runUmap() to create it.")
-
-  message("Plotting Umap.")
-
-  if (is.null(label) && is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
-    # if label is not provided and clusters were not run
-
-    message("No cluster information detected, use findClusters() to create it.")
-
-    ggplot(umap_df) +
-      geom_point(aes(V1, V2)) +
-      theme_classic() +
-      my_theme
-
-  } else if (is.null(label) && is.null(SummarizedExperiment::colData(scCNA)$superclones)) {
-    # if label is not provided but findClusters was run for subclones
-
-    message("Using colData(scCNA) subclones information.")
-
-    ggplot(umap_df) +
-      geom_point(aes(
-        x = V1,
-        y = V2,
-        fill = as.factor(SummarizedExperiment::colData(scCNA)$subclones)
-      ),
+  if (all(label == 'subclones')) {
+    p <- p +
+      geom_point(aes(fill = as.factor(
+        SummarizedExperiment::colData(scCNA)$subclones
+      )),
       size = 1.8,
       shape = 21) +
-    scale_fill_manual(values = subclones_pal(),
-                       name = "subclones",
-                      limits = force) +
-    theme_classic() +
-      my_theme
+      scale_fill_manual(values = subclones_pal(),
+                        name = "subclones",
+                        limits = force)
 
-  }  else if (is.null(label) && !is.null(SummarizedExperiment::colData(scCNA)$superclones)) {
-    # if label is not provided but findClusters was run for superclones and subclones
+    return(print(p))
+  }
 
-    message("Using colData(scCNA) cluster information.")
+  if (all(label == 'superclones')) {
+    p <- p +
+      geom_point(aes(fill = as.factor(
+        SummarizedExperiment::colData(scCNA)$superclones
+      )),
+      size = 1.8,
+      shape = 21) +
+      scale_fill_manual(values = superclones_pal(),
+                        name = "superclones",
+                        limits = force)
 
-    ggplot(umap_df) +
+    return(print(p))
+
+  }
+
+  if ('subclones' %in% label && 'superclones' %in% label) {
+    p <- p +
       geom_point(
         aes(
           x = V1,
@@ -124,19 +128,23 @@ plotUmap <- function(scCNA,
       shape = 21) +
       scale_fill_manual(values = subclones_pal(),
                         name = "subclones",
-                        limits = force) +
-      theme_classic() +
-      my_theme
+                        limits = force)
 
-  } else if (!is.null(label)) {
-    # if label is provided, coloring by the label
+    return(print(p))
+
+  }
+
+  if (!is.null(label) && !('subclones' %in% label && 'superclones' %in% label)) {
+
+    if (length(label) > 1) {
+      stop("Label must be of length 1.")
+    }
 
     lab <- dplyr::pull(df,
                        var = label)
 
-        p <- ggplot(umap_df) +
-      geom_point(aes(V1, V2,
-                     fill = lab),
+    p <- p +
+      geom_point(aes(fill = lab),
                  size = 1.8,
                  shape = 21) +
       theme_classic() +
@@ -146,18 +154,16 @@ plotUmap <- function(scCNA,
     # coloring by continuos variable
     if (is.numeric(lab)) {
 
-      color_lab <- list(ggplot2::scale_fill_viridis_c())
+      p <- p +
+        geom_point(aes(fill = lab),
+                   size = 1.8,
+                   shape = 21) +
+        ggplot2::scale_fill_viridis_c()
 
-      p <- p + color_lab
-
-      print(p)
-
-    } else {
-
-      print(p)
     }
 
-  }
+    print(p)
 
+  }
 
 }
