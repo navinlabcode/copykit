@@ -117,7 +117,8 @@ plotUmap <- function(scCNA,
         size = 5
       ) +
       scale_color_manual(values = superclones_pal(),
-                         name = "superclones") +
+                         name = "superclones",
+                         limits = force) +
       ggnewscale::new_scale_color() +
       geom_point(aes(
         x = V1,
