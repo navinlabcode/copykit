@@ -6,18 +6,13 @@
 # the solution adopted here is the same as the one adopted phyloseq package
 # which creates S3 and S4 placeholders for the phylo class
 
-#' @export
 #' @keywords internal
 phylo <- structure(list(), class = "phylo")
 
 #' @exportClass phylo
 setOldClass("phylo")
 
-#' @export
-#' @keywords internal
-phylo <- structure(list(), class = "igraph")
-
-#' @exportClass phylo
+#' @exportClass igraph
 setOldClass("igraph")
 
 ###################################################################
