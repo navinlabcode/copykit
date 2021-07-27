@@ -4,12 +4,16 @@
 #'
 #' @param scCNA The scCNA object
 #' @param method Character. Segmentation method of choice.
-#' @param seed Numeric. Set seed for CBS segmentation permutation reproducibility.
+#' @param seed Numeric. Set seed for CBS segmentation permutation reproducibility
+#' @param undo.splits A character string specifying how change-points are to be
+#' undone, if at all. Default is "none". Other choices are "prune", which uses
+#'  a sum of squares criterion, and "sdundo", which undoes splits that are not
+#'  at least this many SDs apart. See \code{\link[DNAcopy]{segment}}
 #' @param name Character. Target slot for the resulting segment ratios.
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
 #'
-#' @return The segment profile for all cells inside the scCNA object. Can be retrieved with \code{copykit::segment_ratios()}
+#' @return The segment profile for all cells inside the scCNA object.
 #' @importFrom DNAcopy CNA smooth.CNA segment
 #' @importFrom dplyr mutate bind_cols
 #' @importFrom stringr str_detect str_remove str_replace
@@ -23,6 +27,7 @@
 runSegmentation <- function(scCNA,
                             method = "CBS",
                             seed = 17,
+                            undo.splits = 'sdundo',
                             name = 'segment_ratios',
                             BPPARAM = bpparam()) {
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:45 2021
@@ -111,7 +116,7 @@ runSegmentation <- function(scCNA,
               smoothed_CNA_object,
               alpha = 0.01,
               min.width = 5,
-              undo.splits = "prune"
+              undo.splits = undo.splits
             )
           )
         short_cbs <- segment_smoothed_CNA_object[[2]]
@@ -145,12 +150,12 @@ runSegmentation <- function(scCNA,
           set.seed(seed)
           smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
           segment_smoothed_CNA_object <-
-            .quietly(
+            .quiet(
               DNAcopy::segment(
                 smoothed_CNA_object,
                 alpha = 0.01,
                 min.width = 5,
-                undo.splits = "prune"
+                undo.splits = undo.splits
               )
             )
           short_cbs <- segment_smoothed_CNA_object[[2]]
