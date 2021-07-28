@@ -10,7 +10,12 @@
 #' element suggestedK_df that is saved to the scDNA object after running
 #' \code{\link{findSugggestedK}}. The dataframe is used for plotting either a
 #' heatmap, when the argument geom = 'tile', or a dotplot when argument geom =
-#' 'dotplo'
+#' 'dotplot' or a boxplot when geom = 'boxplot'.
+#'
+#' \itemize{
+#' \item{geom = 'boxplot':} With geom boxplot the red dots represent the mean
+#' jaccard similarity for each assesed k.
+#' }
 #'
 #' @return A ggplot2 object with the plot of different tested k values and their
 #' jaccard similarity for each subclone
@@ -22,7 +27,7 @@
 #'
 #' @examples
 plotSuggestedK <- function(scCNA,
-                           geom = c('tile', 'dotplot')) {
+                           geom = c('boxplot', 'tile', 'dotplot')) {
 
   geom = match.arg(geom)
 
@@ -38,7 +43,7 @@ plotSuggestedK <- function(scCNA,
   # common layers
   common_layers <- list(scale_y_discrete(limits = gtools::mixedsort(unique(df$subclones))),
                         scale_x_discrete(limits = gtools::mixedsort(unique(df$k))),
-                        theme_classic)
+                        theme_classic(), labs(fill = 'jaccard\nsimilarity'))
 
   if( geom == 'dotplot') {
 
@@ -58,6 +63,24 @@ plotSuggestedK <- function(scCNA,
       scale_fill_viridis_c(na.value = 'grey', option = 2) +
       common_layers +
       theme(panel.border = element_rect(fill = NA, size = 3))
+
+  }
+
+  if (geom == 'boxplot') {
+
+    mean_per_k <- df %>%
+      dplyr::group_by(k) %>%
+      dplyr::summarise(mean_jac = mean(bootmean))
+
+    p <- ggplot() +
+      geom_boxplot(data = df, aes(k, bootmean)) +
+      geom_point(data = mean_per_k, aes(k, mean_jac),
+                 fill = 'red',
+                 shape = 21,
+                 size = 3) +
+      scale_x_discrete(limits = gtools::mixedsort(unique(df$k))) +
+      theme_classic() +
+      labs(y = 'jaccard similarity')
 
   }
 

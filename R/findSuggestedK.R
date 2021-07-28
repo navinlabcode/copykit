@@ -137,7 +137,9 @@ findSuggestedK <- function(scCNA,
         )
       )
 
-    n_subclones <- sort(unique(df_clusterboot$partition))
+    # -1 since the first partition is the outlier partition
+    # which will be subclone 'c0'
+    n_subclones <- sort(unique(df_clusterboot$partition)) - 1
 
     df_result <- data.frame(k = i,
                             subclones = paste0('c', n_subclones),
