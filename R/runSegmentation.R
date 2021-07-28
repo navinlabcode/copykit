@@ -187,4 +187,64 @@ runSegmentation <- function(scCNA,
 
   }
 
+
+  if (method == 'WBS') {
+
+    counts_df <- SummarizedExperiment::assay(scCNA, 'ft')
+
+    # smoothing counts
+    smooth_counts <- BiocParallel::bplapply(as.data.frame(counts_df), function(x) {
+      CNA_object <-
+        DNAcopy::CNA(x,
+                     chr_info,
+                     ref$start,
+                     data.type = "logratio",
+                     sampleid = names(x))
+      set.seed(seed)
+      smoothed_CNA_counts <- DNAcopy::smooth.CNA(CNA_object)[,3]
+    }, BPPARAM = BPPARAM)
+
+    smooth_counts_df <- dplyr::bind_cols(smooth_counts) %>%
+      as.data.frame()
+
+    ref_chrarm <- ref %>%
+      dplyr::mutate(chrarm = paste0(stringr::str_remove(chr, 'chr'), arm)) %>%
+      dplyr::mutate(chrarm = chrarm)
+
+    levels_chrarm <- gtools::mixedsort(unique(ref_chrarm$chrarm))
+
+    ref_chrarm <- ref_chrarm %>%
+      dplyr::mutate(chrarm = as.factor(chrarm)) %>%
+      dplyr::mutate(chrarm = forcats::fct_relevel(chrarm, levels_chrarm))
+
+    counts_chrarm <- split(smooth_counts_df, ref_chrarm$chrarm)
+
+    WBS_seg <- lapply(counts_chrarm, function(z) {
+      BiocParallel::bplapply(z, function(i) {
+        seg <- wbs::wbs(i)
+        seg_means <- wbs::means.between.cpt(seg$x,
+                                            wbs::changepoints(seg, penalty = "ssic.penalty")$cpt.ic[["ssic.penalty"]])
+        seg_means <- seg_means
+
+        seg_means_ml <- .MergeLevels(i, seg_means)$vecMerged
+
+        inv_ft <- .invft(seg_means_ml)
+
+      }, BPPARAM = BPPARAM)
+    })
+
+    wbs_seg_df <- dplyr::bind_rows(WBS_seg) %>%
+      as.data.frame()
+
+    scCNA <- calcRatios(scCNA, assay = 'bin_counts')
+
+    SummarizedExperiment::assay(scCNA, name) <-
+      apply(wbs_seg_df, 2, function(x)
+        x / mean(x)) %>%
+      as.data.frame()
+
+    return(scCNA)
+
+  }
+
 }
