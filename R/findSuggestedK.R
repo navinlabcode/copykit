@@ -6,6 +6,8 @@
 #' @param embedding String with the name of the reducedDim embedding to pull data from.
 #' @param k_range A numeric range of values to be tested.
 #' @param method A string with the method of clustering to be tested.
+#' @param fun A string with the function to summarize the jaccard similarity
+#' value from all clusters.
 #' @param seed A numerical scalar with a seed value to be passed on to
 #' \code{\link[uwot]{umap}}.
 #' @param B A numeric with the number of bootstrapping iterations passed on to
@@ -14,10 +16,14 @@
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
 #'
-#' @details performs a grid-search over a range of k values and returns the value
+#' @details Performs a grid-search over a range of k values and returns the value
 #' that maximizes the jaccard similarity. Importantly, while this approach does
 #' not guarantee optimal clustering, it provides a guide that maximizes cluster
 #' stability.
+#'
+#' The default tested range is from 7 to the square root of the number of cells
+#' in the scCNA object. If sqrt(n_cells) is smaller than 7 a range of 5 to 15
+#' is tested.
 #'
 #' @return Adds a table with the mean jaccard coefficient of clusters for each
 #' tested k and the suggested k value to be used for clustering to
@@ -36,6 +42,7 @@
 #'
 #' @importFrom fpc clusterboot
 #' @importFrom tibble enframe
+#' @importFrom dplyr group_by summarise
 #' @importFrom dbscan hdbscan
 #' @importFrom S4Vectors metadata
 #' @importFrom SingleCellExperiment reducedDim
@@ -43,18 +50,35 @@
 #' @examples
 findSuggestedK <- function(scCNA,
                            embedding = 'umap',
-                           k_range = 7:sqrt(ncol(segment_ratios(scCNA))),
+                           k_range = NULL,
                            method = "hdbscan",
+                           fun = "median",
                            seed = 17,
                            B = 200,
                            BPPARAM = bpparam())
 {
+
+  # defining k_range
+  if (is.null(k_range)) {
+
+    n_cells <- ncol(segment_ratios(scCNA))
+    max_range <- round(sqrt(n_cells))
+    min_range <- 7
+
+    if (min_range > max_range) {
+      k_range <- 5:15
+    } else {
+      k_range <- min_range:max_range
+    }
+
+  }
 
   # obtaining data from reducedDim slot
   if (is.null(SingleCellExperiment::reducedDim(scCNA, embedding))) {
     stop("Reduced dimensions slot is NULL. Use runUmap().")
   }
 
+  # custom hdbscan function to pass to fpc::clusterboot
   hdbscanCBI <-
     function(data, minPts, diss = inherits(data, "dist"), ...) {
       if (diss)
@@ -70,38 +94,6 @@ findSuggestedK <- function(scCNA,
       tmp_data_df <- as.data.frame(data)
       tmp_data_df$hdb <- c1$cluster
       tmp_data_df$cell <- rownames(tmp_data_df)
-
-      # for hdb
-      # adding the ones classified as outliers to the closest cluster possible
-      # according to euclidean distance
-      dist_umap <-
-        dist(tmp_data_df[, c(1:2)]) %>% as.matrix() %>% as.data.frame() %>%
-        rownames_to_column("cell2") %>%
-        tidyr::gather(key = "cell1",
-               value = "dist",-cell2) %>%
-        dplyr::filter(cell1 != cell2)
-
-      dist_min <- dist_umap %>%
-        right_join(tmp_data_df %>% dplyr::select(cell, hdb),
-                   by = c("cell2" = "cell")) %>%
-        dplyr::filter(hdb != 0) %>%
-        dplyr::group_by(cell1) %>%
-        dplyr::slice_min(dist) %>%
-        ungroup()
-
-
-      for (i in 1:nrow(tmp_data_df)) {
-        if (tmp_data_df$hdb[i] == 0) {
-          cellname <- rownames(tmp_data_df)[i]
-          closest_cell <-
-            dplyr::filter(dist_min, cell1 == rownames(tmp_data_df)[i])$cell2
-          closest_cell_cluster <-
-            dplyr::filter(tmp_data_df, cell == closest_cell)$hdb
-          tmp_data_df$hdb[i] <- closest_cell_cluster
-
-        }
-
-      }
 
       if (identical(rownames(tmp_data_df), rownames(data))) {
         c1$cluster <- tmp_data_df$hdb
@@ -133,7 +125,7 @@ findSuggestedK <- function(scCNA,
 
   message(cat("Calculating jaccard similarity for k range:", k_range))
 
-  mean_jaccard <- BiocParallel::bplapply(k_range, function(i) {
+  jaccard <- BiocParallel::bplapply(k_range, function(i) {
     df_clusterboot <-
       .quiet(
         fpc::clusterboot(
@@ -145,39 +137,64 @@ findSuggestedK <- function(scCNA,
         )
       )
 
-    mean_jc_cl <- mean(df_clusterboot$bootmean)
+    n_subclones <- sort(unique(df_clusterboot$partition))
+
+    df_result <- data.frame(k = i,
+                            subclones = paste0('c', n_subclones),
+                            bootmean = df_clusterboot$bootmean)
 
   }, BPPARAM = BPPARAM)
 
-  names(mean_jaccard) <- k_range
+  # Obtaining values from the list and binding to a dataframe
+  names(jaccard) <- k_range
+  bootmean_df <- do.call(rbind, jaccard)
+  jc_df <- bootmean_df %>%
+    dplyr::group_by(k) %>%
+    dplyr::summarise(mean = mean(bootmean),
+              median = median(bootmean))
 
-  mean_jc_df <- tibble::enframe(unlist(mean_jaccard),
-                                name = "k",
-                                value = "mean_jaccard") %>%
-    mutate(k = as.numeric(k))
 
-  mean_jc_df_opt <- mean_jc_df %>%
-    filter(mean_jaccard == max(mean_jc_df$mean_jaccard))
+  # Using selected summarising function
+  if (fun == 'mean') {
 
-  if (nrow(mean_jc_df) > 1) {
-    # If the best jaccard similarity score is found in more than one k value
-    # it prioritizes the maximum value. If the score remains tied (possible
-    # when score == 1) prioritizes the smaller k
+    jc_df_opt <- jc_df %>%
+      dplyr::filter(mean == max(jc_df$mean))
 
-    mean_jc_df_opt <- mean_jc_df %>%
-      filter(mean_jaccard == max(mean_jaccard)) %>%
+    selected_k_jac_value <- jc_df_opt$mean
+
+  }
+
+  if (fun == 'median') {
+
+    jc_df_opt <- jc_df %>%
+      filter(median == max(jc_df$median))
+
+    selected_k_jac_value <- jc_df_opt$median
+
+  }
+
+  # If the best jaccard similarity score is found in more than one k value
+  # it prioritizes the maximum value. If the score remains tied (possible
+  # when score == 1) prioritizes the smaller k
+  if (nrow(jc_df_opt) > 1) {
+
+    jc_df_opt <- jc_df_opt %>%
       filter(k == min(k))
+
+    selected_k_jac_value <- jc_df_opt$median
+
   }
 
   message(paste(
     "Suggested k =",
-    mean_jc_df_opt$k,
-    "with mean jaccard similarity of:",
-    round(mean_jc_df_opt$mean_jaccard, 3)
+    jc_df_opt$k,
+    "with", fun, "jaccard similarity of:",
+    round(selected_k_jac_value, 3)
   ))
 
-  S4Vectors::metadata(scCNA)$suggestedK_df <- mean_jc_df
-  S4Vectors::metadata(scCNA)$suggestedK <- mean_jc_df_opt$k
+  # adding values to metadata
+  S4Vectors::metadata(scCNA)$suggestedK_df <- bootmean_df
+  S4Vectors::metadata(scCNA)$suggestedK <- jc_df_opt$k
 
   return(scCNA)
 

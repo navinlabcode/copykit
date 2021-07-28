@@ -155,44 +155,19 @@ findClusters <- function(scCNA,
                            minPts = k_subclones)
     hdb_clusters <- as.character(hdb$cluster)
 
-    # hdbscan is an outlier aware clustering algorithm.
-    # Copykit assumes that filterCells already took care of removing bad cells
-    # this is why any outlier is added to the ones classified as
-    # outliers to the closest cluster possible according to euclidean distance
-
-    dist_umap <- dist(umap_df) %>%
-      as.matrix() %>%
-      as.data.frame() %>%
-      tibble::rownames_to_column("cell2") %>%
-      tidyr::gather(key = "cell1",
-                    value = "dist",-cell2) %>%
-      dplyr::filter(cell1 != cell2)
-
     hdb_df <- data.frame(cell = rownames(umap_df),
                          hdb = hdb_clusters)
 
-    dist_min <- dist_umap %>%
-      dplyr::right_join(hdb_df, by = c("cell2" = "cell")) %>%
-      dplyr::filter(hdb != "0") %>%
-      dplyr::group_by(cell1) %>%
-      dplyr::slice_min(dist) %>%
-      dplyr::ungroup()
-
-    for (i in 1:nrow(umap_df)) {
-      if (hdb_df$hdb[i] == "0") {
-        cellname <- rownames(umap_df)[i]
-        closest_cell <-
-          dplyr::filter(dist_min, cell1 == rownames(umap_df)[i])$cell2
-        closest_cell_cluster <-
-          dplyr::filter(hdb_df, cell == closest_cell)$hdb
-        hdb_df$hdb[i] <- closest_cell_cluster
-      }
-
-      subclones <- as.factor(paste0('c', hdb_df$hdb))
-
-    }
+    subclones <- as.factor(paste0('c', hdb_df$hdb))
 
   }
+
+  n_clones <- length(unique(subclones))
+  n_outliers <- length(subclones[subclones == 'c0'])
+
+  message(paste("Found", n_clones, "subclones."))
+  message(paste(n_outliers, "cells were classified as outliers. Check subclone group 'c0'."))
+
 
   # storing subclones info
   SummarizedExperiment::colData(scCNA)$subclones <-

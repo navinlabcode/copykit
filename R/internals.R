@@ -366,7 +366,7 @@ superclones_pal <- function() {
 #subclones palette
 subclones_pal <- function() {
   structure(
-    c(
+    c("gray",
       "#5050FF",
       "#CE3D32",
       "#749B58",
@@ -419,7 +419,7 @@ subclones_pal <- function() {
       "#00D68F",
       "#14FFB1"
     ),
-    names = paste0('c', 1:51)
+    names = paste0('c', 0:51)
   )
 }
 
@@ -480,12 +480,12 @@ overdispersion <- function(v)
 parCor <- function(x, BPPARAM=BiocParallel::bpparam())
 {
   ncol <- ncol(x)
-  
+
   ## skip parallelization if # of cell less than 2000
   if (ncol < 2001) {
     return(cor(x))
   }
-  
+
   nSplit <- floor(ncol/1000)
   lSplit <- floor(ncol / nSplit)
   iSplit <- vector("list", nSplit)
@@ -493,12 +493,12 @@ parCor <- function(x, BPPARAM=BiocParallel::bpparam())
     iSplit[[i]] <- (lSplit * (i - 1) + 1):(lSplit * i)
   }
   iSplit[[nSplit]] <- (lSplit * (nSplit - 1) + 1):ncol
-  
+
   comb <- expand.grid(1:nSplit, 1:nSplit)
   comb <- unique(t(apply(comb, 1, sort)))
-  
+
   ## result matrix
-  result <- BiocParallel::bplapply(X = 1:nrow(comb), 
+  result <- BiocParallel::bplapply(X = 1:nrow(comb),
                                    FUN = function(i){
                                      a <- list()
                                      a[[1]] <- iSplit[[comb[i,1]]]
@@ -506,14 +506,14 @@ parCor <- function(x, BPPARAM=BiocParallel::bpparam())
                                      a[[3]] <- cor(x[,a[[1]]], x[,a[[2]]])
                                      a
                                    },
-                                   BPPARAM = BPPARAM) 
-  
+                                   BPPARAM = BPPARAM)
+
   res_parcor_reserve <- matrix(, nrow = ncol, ncol = ncol)
   for(i in 1:length(result)){
     res_parcor_reserve[result[[i]][[1]],result[[i]][[2]]] <- result[[i]][[3]]
     res_parcor_reserve[result[[i]][[2]],result[[i]][[1]]] <- t(result[[i]][[3]])
   }
-  
+
   colnames(res_parcor_reserve) <- colnames(x)
   rownames(res_parcor_reserve) <- colnames(x)
   return(res_parcor_reserve)
