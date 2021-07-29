@@ -86,7 +86,7 @@ runCountReads <- function(dir,
 
     if (remove_Y == TRUE) {
       rg <- dplyr::filter(rg,
-                          Chr != "chrY")
+                          chr != "chrY")
 
     }
 
@@ -249,7 +249,6 @@ runCountReads <- function(dir,
     )
   }
 
-  message("Done.")
   # adding to metadata
   SummarizedExperiment::colData(cna_obj) <-
     S4Vectors::DataFrame(bam_metrics)

@@ -46,10 +46,13 @@
 #' may result in long segmentation times for a few cells with large breakpoint counts.
 #'
 #' \code{runSegmentation} Fits a piece-wise constant function to the transformed
-#'  bin counts using the Circular Binary Segmentation algorithm from \code{\link[DNAcopy]{segment}}.
-#'  By default it applies undo.prune with value of 0.05. The resulting segment
-#'  means are further refined with MergeLevels to join adjacent segments with
-#'  non-significant differences in segmented means.
+#' the smoothed bin counts. Bin counts are smoothed with \code{\link[DNAcopy]{smooth.CNA}}
+#' using the Circular Binary Segmentation (CBS) algorithm from
+#' \code{\link[DNAcopy]{segment}} with default it applies undo.prune with value of 0.05.
+#' Or with Wild Binary Segmentation (WBS) from \code{\link[wbs]{wbs}}.
+#'
+#' The resulting segment means are further refined with MergeLevels to join
+#' adjacent segments with non-significant differences in segmented means.
 #'
 #' @references
 #' Navin, N., Kendall, J., Troge, J. et al. Tumour evolution inferred by single-cell
@@ -88,6 +91,7 @@ runVarbin <- function(dir,
   method <- match.arg(method)
 
   copykit_object <- runCountReads(dir,
+                                  genome = genome,
                                   bin_size = bin_size,
                                   remove_Y = remove_Y,
                                   BPPARAM = BPPARAM)
