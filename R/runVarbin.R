@@ -77,6 +77,7 @@ runVarbin <- function(dir,
                       genome = c("hg38", "hg19"),
                       bin_size = "200kb",
                       remove_Y = FALSE,
+                      method = c('WBS', 'CBS'),
                       vst = c("ft", "log"),
                       seed = 17,
                       name = 'segment_ratios',
@@ -84,6 +85,7 @@ runVarbin <- function(dir,
 
   genome <- match.arg(genome)
   vst <- match.arg(vst)
+  method <- match.arg(method)
 
   copykit_object <- runCountReads(dir,
                                   bin_size = bin_size,
@@ -96,6 +98,7 @@ runVarbin <- function(dir,
   copykit_object <- runSegmentation(copykit_object,
                                     seed = seed,
                                     name = name,
+                                    method = method,
                                     BPPARAM = BPPARAM)
 
   return(copykit_object)
