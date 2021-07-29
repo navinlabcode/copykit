@@ -181,14 +181,12 @@ runSegmentation <- function(scCNA,
           short_cbs <- segment_smoothed_CNA_object[[2]]
           log_seg_mean_LOWESS <-
             rep(short_cbs$seg.mean, short_cbs$num.mark)
-          merge_obj <-
-            .MergeLevels(x, log_seg_mean_LOWESS)$vecMerged
 
         },
         BPPARAM = BPPARAM
       )
 
-    seg_ml_df <- dplyr::bind_cols(seg_list) %>%
+    seg_df <- dplyr::bind_cols(seg_list) %>%
       as.data.frame()
 
   }
@@ -201,18 +199,36 @@ runSegmentation <- function(scCNA,
       BiocParallel::bplapply(z, function(i) {
         seg <- wbs::wbs(i)
         seg_means <- wbs::means.between.cpt(seg$x,
-                                            wbs::changepoints(seg, penalty = "ssic.penalty")$cpt.ic[["ssic.penalty"]])
-        seg_means <- seg_means
-
-        seg_means_ml <- .MergeLevels(i, seg_means)$vecMerged
+                                            wbs::changepoints(seg,
+                                                              penalty = "ssic.penalty")$cpt.ic[["ssic.penalty"]])
 
       }, BPPARAM = BPPARAM)
     })
 
-    seg_ml_df <- dplyr::bind_rows(WBS_seg) %>%
+    seg_df <- dplyr::bind_rows(WBS_seg) %>%
       as.data.frame()
 
   }
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # merge levels
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  message("Merging levels.")
+  seg_ml_list <- BiocParallel::bplapply(seq_along(seg_df), function(i) {
+
+    cell_name <- names(seg_df)[i]
+    smoothed_cell_ct <- smooth_counts_df[,i]
+    seg_means_cell <- seg_df[,i]
+    seg_means_ml <- .MergeLevels(smoothed_cell_ct,
+                                 seg_means_cell,
+                                 pv.thres = 1e-15)$vecMerged
+
+  })
+
+  names(seg_ml_list) <- names(seg_df)
+
+  seg_ml_df <- dplyr::bind_cols(seg_ml_list)
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # reverting the transformation back to ratios
