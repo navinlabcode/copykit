@@ -6,7 +6,7 @@
 #' @param embedding String with the name of the reducedDim embedding to pull data from.
 #' @param k_range A numeric range of values to be tested.
 #' @param method A string with the method of clustering to be tested.
-#' @param fun A string with the function to summarize the jaccard similarity
+#' @param metric A string with the function to summarize the jaccard similarity
 #' value from all clusters.
 #' @param seed A numerical scalar with a seed value to be passed on to
 #' \code{\link[uwot]{umap}}.
@@ -30,6 +30,7 @@
 #' \code{\link[SummarizedExperiment]{metadata}}
 #'
 #' @seealso \code{\link[fpc]{clusterboot}}
+#' @seealso \code{\link{plotSuggestedK}}
 #'
 #' @references Hennig, C. (2007) Cluster-wise assessment of cluster stability.
 #' Computational Statistics and Data Analysis, 52, 258-271.
@@ -51,12 +52,15 @@
 findSuggestedK <- function(scCNA,
                            embedding = 'umap',
                            k_range = NULL,
-                           method = "hdbscan",
-                           fun = "median",
+                           method = c("hdbscan", "leiden"),
+                           metric = c("mean", "median"),
                            seed = 17,
                            B = 200,
                            BPPARAM = bpparam())
 {
+
+  metric <- match.arg(metric)
+  method <- match.arg(method)
 
   # defining k_range
   if (is.null(k_range)) {
@@ -78,74 +82,63 @@ findSuggestedK <- function(scCNA,
     stop("Reduced dimensions slot is NULL. Use runUmap().")
   }
 
-  # custom hdbscan function to pass to fpc::clusterboot
-  hdbscanCBI <-
-    function(data, minPts, diss = inherits(data, "dist"), ...) {
-      if (diss)
-        c1 <- dbscan::hdbscan(data, minPts, method = "dist", ...)
-      else
-        c1 <- dbscan::hdbscan(data, minPts, ...)
-
-      # check in case all of the cells are classified as outliers.
-      if(length(unique(c1$cluster))==1){
-        c1$cluster <- c1$cluster+1
-      }
-
-      tmp_data_df <- as.data.frame(data)
-      tmp_data_df$hdb <- c1$cluster
-      tmp_data_df$cell <- rownames(tmp_data_df)
-
-      if (identical(rownames(tmp_data_df), rownames(data))) {
-        c1$cluster <- tmp_data_df$hdb
-        partition <- c1$cluster
-      } else
-        stop("order of dataframes is not identical.")
-
-      #  plot(c1, data)
-
-      cl <- list()
-      nccl <- max(partition)
-      partition[partition == 0] <- nccl + 1
-      nc <- max(partition)
-      #  print(nc)
-      #  print(sc1)
-      for (i in 1:nc)
-        cl[[i]] <- partition == i
-      out <-
-        list(
-          result = c1,
-          nc = nc,
-          nccl = nccl,
-          clusterlist = cl,
-          partition = partition,
-          clustermethod = "hdbscan"
-        )
-      out
-    }
-
   message(cat("Calculating jaccard similarity for k range:", k_range))
 
-  jaccard <- BiocParallel::bplapply(k_range, function(i) {
-    df_clusterboot <-
-      .quiet(
-        fpc::clusterboot(
-          SingleCellExperiment::reducedDim(scCNA, "umap"),
-          B = B,
-          clustermethod = hdbscanCBI,
-          seed = seed,
-          minPts = i
+  if (method == 'leiden') {
+
+    # setting seed to a different variable to avoid recursive call
+    seed_val <- seed
+
+    jaccard <- BiocParallel::bplapply(k_range, function(i) {
+      df_clusterboot <-
+        .quiet(
+          fpc::clusterboot(
+            SingleCellExperiment::reducedDim(scCNA, "umap"),
+            B = B,
+            clustermethod = leidenCBI,
+            seed_leid = seed_val,
+            k = i
+          )
         )
-      )
 
-    # -1 since the first partition is the outlier partition
-    # which will be subclone 'c0'
-    n_subclones <- sort(unique(df_clusterboot$partition)) - 1
+      n_subclones <- 1:df_clusterboot$nc
 
-    df_result <- data.frame(k = i,
-                            subclones = paste0('c', n_subclones),
-                            bootmean = df_clusterboot$bootmean)
+      df_result <- data.frame(k = i,
+                              subclones = paste0('c', n_subclones),
+                              bootmean = df_clusterboot$bootmean)
 
-  }, BPPARAM = BPPARAM)
+    }, BPPARAM = BPPARAM)
+
+  }
+
+  if (method == 'hdbscan') {
+
+    jaccard <- BiocParallel::bplapply(k_range, function(i) {
+      df_clusterboot <-
+        .quiet(
+          fpc::clusterboot(
+            SingleCellExperiment::reducedDim(scCNA, "umap"),
+            B = B,
+            clustermethod = hdbscanCBI,
+            seed = seed,
+            minPts = i,
+            noisemethod=TRUE
+          )
+        )
+
+      # the outlier partition is the last element see ?fpc::clusterboot
+      # here the oulier partition will be named as 'c0'
+      n_subclones <- 1:df_clusterboot$nc
+      names(n_subclones) <- paste0('c', n_subclones)
+      names(n_subclones)[length(n_subclones)] <- 'c0'
+
+      df_result <- data.frame(k = i,
+                              subclones = names(n_subclones),
+                              bootmean = df_clusterboot$bootmean)
+
+    }, BPPARAM = BPPARAM)
+
+  }
 
   # Obtaining values from the list and binding to a dataframe
   names(jaccard) <- k_range
@@ -157,7 +150,7 @@ findSuggestedK <- function(scCNA,
 
 
   # Using selected summarising function
-  if (fun == 'mean') {
+  if (metric == 'mean') {
 
     jc_df_opt <- jc_df %>%
       dplyr::filter(mean == max(jc_df$mean))
@@ -166,7 +159,7 @@ findSuggestedK <- function(scCNA,
 
   }
 
-  if (fun == 'median') {
+  if (metric == 'median') {
 
     jc_df_opt <- jc_df %>%
       filter(median == max(jc_df$median))
@@ -190,7 +183,7 @@ findSuggestedK <- function(scCNA,
   message(paste(
     "Suggested k =",
     jc_df_opt$k,
-    "with", fun, "jaccard similarity of:",
+    "with", metric, "jaccard similarity of:",
     round(selected_k_jac_value, 3)
   ))
 
@@ -201,3 +194,68 @@ findSuggestedK <- function(scCNA,
   return(scCNA)
 
 }
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# custom hdbscan function to pass to fpc::clusterboot
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#' @internal
+#' @export
+hdbscanCBI <-
+  function(data, minPts, diss = inherits(data, "dist"), ...) {
+
+    if (diss)
+      c1 <- dbscan::hdbscan(data, minPts, method = "dist", ...)
+    else
+      c1 <- dbscan::hdbscan(data, minPts, ...)
+
+    partition <- c1$cluster
+    cl <- list()
+    nccl <- max(partition)
+    partition[partition == 0] <- nccl + 1
+    nc <- max(partition)
+    for (i in 1:nc) cl[[i]] <- partition == i
+    out <- list(result = c1, nc = nc, nccl = nccl, clusterlist = cl,
+                partition = partition, clustermethod = "dbscan")
+
+    out
+  }
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# custom leiden function to pass to fpc::clusterboot
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#' @internal
+#' @export
+leidenCBI <- function(data,k,seed_leid,diss=inherits(data,"dist"),...){
+
+  g_minor  <-
+    scran::buildSNNGraph(data, k = k, transposed = T)
+
+  if (diss)
+    c1 <- leidenbase::leiden_find_partition(
+      g_minor,
+      partition_type = 'RBConfigurationVertexPartition',
+      resolution_parameter = 1,
+      seed = seed_leid
+    )
+  else
+    c1 <- leidenbase::leiden_find_partition(
+      g_minor,
+      partition_type = 'RBConfigurationVertexPartition',
+      resolution_parameter = 1,
+      seed = seed_leid
+    )
+
+  partition <- c1$membership
+
+  cl <- list()
+  nc <- max(partition)
+
+  for (i in 1:nc)
+    cl[[i]] <- partition==i
+  out <- list(result=c1,nc=nc,clusterlist=cl,partition=partition,
+              clustermethod="leiden")
+  out
+}
+

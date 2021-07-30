@@ -70,6 +70,10 @@
 #' and the square root", The Annals of Mathematical Statistics,
 #' 21 (4), pp. 607–611, doi:10.1214/aoms/1177729756, JSTOR 2236611
 #'
+#' Fryzlewicz, P. (2014). WILD BINARY SEGMENTATION FOR MULTIPLE CHANGE-POINT
+#' DETECTION. The Annals of Statistics, 42(6), 2243-2281. Retrieved July 30,
+#' 2021, from http://www.jstor.org/stable/43556493
+#'
 #' @export
 #'
 #' @examples
