@@ -4,10 +4,12 @@
 \alias{plotUmap}
 \title{plotUmap}
 \usage{
-plotUmap(scCNA, label = NULL)
+plotUmap(scCNA, embedding = "umap", label = NULL)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
+
+\item{embedding}{String with the name of the reducedDim to pull data from.}
 
 \item{label}{A string with the elements from \code{\link[SummarizedExperiment]{colData}}
 to color the umap points.}

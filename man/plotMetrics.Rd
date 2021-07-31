@@ -19,7 +19,7 @@ color the plots.}
 A ggplot object with swarm plots of the selected metrics.
 }
 \description{
-Plots swarm plots from selected elements of \code{\link[SummarizedExperiment{colData}]}.
+Plots swarm plots from selected elements of \code{\link[SummarizedExperiment]{colData}}.
 }
 \examples{
 
