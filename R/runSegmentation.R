@@ -38,7 +38,7 @@
 #'
 #' @examples
 runSegmentation <- function(scCNA,
-                            method = c("WBS", "CBS"),
+                            method = c("CBS", "WBS"),
                             seed = 17,
                             undo.splits = 'prune',
                             name = 'segment_ratios',
@@ -222,7 +222,7 @@ runSegmentation <- function(scCNA,
     seg_means_cell <- seg_df[,i]
     seg_means_ml <- .MergeLevels(smoothed_cell_ct,
                                  seg_means_cell,
-                                 pv.thres = 1e-15)$vecMerged
+                                 pv.thres = 1e-10)$vecMerged
 
   })
 
@@ -251,6 +251,10 @@ runSegmentation <- function(scCNA,
     apply(seg_ratio_df, 2, function(x)
       x / mean(x)) %>%
     as.data.frame()
+
+  #saving logr
+  SummarizedExperiment::assay(scCNA, 'logr') <-
+    log2(SummarizedExperiment::assay(scCNA, name))
 
   # calculating ratios from the bincounts, used for ratio plots
   scCNA <- calcRatios(scCNA, assay = 'bin_counts')

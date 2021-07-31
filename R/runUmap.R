@@ -20,7 +20,7 @@
 #' @examples
 
 runUmap <- function(scCNA,
-                    assay = "segment_ratios",
+                    assay = "logr",
                     seed = 17,
                     name = "umap",
                     ...) {
