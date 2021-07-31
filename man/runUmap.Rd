@@ -4,7 +4,7 @@
 \alias{runUmap}
 \title{Creates UMAP embedding}
 \usage{
-runUmap(scCNA, assay = "segment_ratios", seed = 17, name = "umap", ...)
+runUmap(scCNA, assay = "logr", seed = 17, name = "umap", ...)
 }
 \arguments{
 \item{scCNA}{scCNA object.}

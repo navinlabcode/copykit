@@ -6,8 +6,9 @@
 \usage{
 runSegmentation(
   scCNA,
-  method = "CBS",
+  method = c("CBS", "WBS"),
   seed = 17,
+  undo.splits = "prune",
   name = "segment_ratios",
   BPPARAM = bpparam()
 )
@@ -15,18 +16,36 @@ runSegmentation(
 \arguments{
 \item{scCNA}{The scCNA object}
 
-\item{method}{Character. Segmentation method of choice.}
+\item{method}{A character with the segmentation method of choice.}
 
-\item{seed}{Numeric. Set seed for CBS segmentation permutation reproducibility.}
+\item{seed}{Numeric. Set seed for CBS segmentation permutation reproducibility}
+
+\item{undo.splits}{A character string specifying how change-points are to be
+undone, if at all. Default is "none". Other choices are "prune", which uses
+ a sum of squares criterion, and "sdundo", which undoes splits that are not
+ at least this many SDs apart. See \code{\link[DNAcopy]{segment}}}
 
 \item{name}{Character. Target slot for the resulting segment ratios.}
 
 \item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
 should be parallelized.}
+
+\item{assay}{String with the name of the assay to pull data from to run the
+segmentation.}
 }
 \value{
-The segment profile for all cells inside the scCNA object. Can be retrieved with \code{copykit::segment_ratios()}
+The segment profile for all cells inside the scCNA object.
 }
 \description{
 Runs a segmentation algorithm using the ratio data.
+}
+\details{
+\code{runSegmentation} Fits a piece-wise constant function to the transformed
+the smoothed bin counts. Bin counts are smoothed with \code{\link[DNAcopy]{smooth.CNA}}
+using the Circular Binary Segmentation (CBS) algorithm from
+\code{\link[DNAcopy]{segment}} with default it applies undo.prune with value of 0.05.
+Or with Wild Binary Segmentation (WBS) from \code{\link[wbs]{wbs}}.
+
+The resulting segment means are further refined with MergeLevels to join
+adjacent segments with non-significant differences in segmented means.
 }

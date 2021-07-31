@@ -73,13 +73,16 @@ plotSuggestedK <- function(scCNA,
       dplyr::summarise(mean_jac = mean(bootmean))
 
     p <- ggplot() +
-      geom_boxplot(data = df, aes(k, bootmean)) +
+      geom_boxplot(data = df, aes(k, bootmean),
+                   fill = 'grey80') +
       geom_point(data = mean_per_k, aes(k, mean_jac),
                  fill = 'red',
                  shape = 21,
                  size = 3) +
       scale_x_discrete(limits = gtools::mixedsort(unique(df$k))) +
       theme_classic() +
+      theme(axis.line.y = element_blank(),
+            axis.line.x = element_blank()) +
       labs(y = 'jaccard similarity')
 
   }

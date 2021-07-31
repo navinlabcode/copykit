@@ -146,6 +146,10 @@ findClusters <- function(scCNA,
     } else {
       subclones <- as.factor(paste0('c', leid_obj$membership))
     }
+
+    n_clones <- length(unique(subclones))
+    message(paste("Found", n_clones, "subclones."))
+
   }
 
   # subclones using hdbscan
@@ -160,14 +164,15 @@ findClusters <- function(scCNA,
 
     subclones <- as.factor(paste0('c', hdb_df$hdb))
 
+    n_clones <- length(unique(subclones))
+    n_outliers <- length(subclones[subclones == 'c0'])
+
+    message(paste("Found", n_clones, "subclones."))
+    message(paste(n_outliers,
+                  "cells were classified as outliers. Check subclone group 'c0'."))
+
+
   }
-
-  n_clones <- length(unique(subclones))
-  n_outliers <- length(subclones[subclones == 'c0'])
-
-  message(paste("Found", n_clones, "subclones."))
-  message(paste(n_outliers, "cells were classified as outliers. Check subclone group 'c0'."))
-
 
   # storing subclones info
   SummarizedExperiment::colData(scCNA)$subclones <-

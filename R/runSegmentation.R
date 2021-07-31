@@ -3,7 +3,9 @@
 #' Runs a segmentation algorithm using the ratio data.
 #'
 #' @param scCNA The scCNA object
-#' @param method Character. Segmentation method of choice.
+#' @param assay String with the name of the assay to pull data from to run the
+#' segmentation.
+#' @param method A character with the segmentation method of choice.
 #' @param seed Numeric. Set seed for CBS segmentation permutation reproducibility
 #' @param undo.splits A character string specifying how change-points are to be
 #' undone, if at all. Default is "none". Other choices are "prune", which uses
@@ -12,6 +14,17 @@
 #' @param name Character. Target slot for the resulting segment ratios.
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
+#'
+#' @details
+#' \code{runSegmentation} Fits a piece-wise constant function to the transformed
+#' the smoothed bin counts. Bin counts are smoothed with \code{\link[DNAcopy]{smooth.CNA}}
+#' using the Circular Binary Segmentation (CBS) algorithm from
+#' \code{\link[DNAcopy]{segment}} with default it applies undo.prune with value of 0.05.
+#' Or with Wild Binary Segmentation (WBS) from \code{\link[wbs]{wbs}}.
+#'
+#' The resulting segment means are further refined with MergeLevels to join
+#' adjacent segments with non-significant differences in segmented means.
+
 #'
 #' @return The segment profile for all cells inside the scCNA object.
 #' @importFrom DNAcopy CNA smooth.CNA segment
@@ -25,15 +38,19 @@
 #'
 #' @examples
 runSegmentation <- function(scCNA,
-                            method = "CBS",
+                            method = c("CBS", "WBS"),
                             seed = 17,
-                            undo.splits = 'sdundo',
+                            undo.splits = 'prune',
                             name = 'segment_ratios',
                             BPPARAM = bpparam()) {
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:45 2021
-  # Checks
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Thu Apr  8 16:01:50 2021
-  # genome assembly
+  # Args
+  method <- match.arg(method)
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Genome Assembly
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  # adding genome assembly info to metadata
   if (S4Vectors::metadata(scCNA)$genome == "hg19") {
     genome <- "hg19"
   }
@@ -42,14 +59,6 @@ runSegmentation <- function(scCNA,
     genome <- "hg38"
   }
 
-  message(paste0(
-    "Running segmentation algorithm: ",
-    method,
-    " for genome ",
-    genome
-  ))
-
-  # genome assembly
   # Reading hg38 VarBin ranges
   if (genome == "hg38") {
     hg38_rg_mod <- hg38_rg
@@ -57,7 +66,7 @@ runSegmentation <- function(scCNA,
     chr_sccna <-
       as.character(as.data.frame(SummarizedExperiment::rowRanges(scCNA))$seqnames)
     hg38_rg_mod <-
-      hg38_rg_mod[which(hg38_rg_mod$chr %in% chr_sccna), ]
+      hg38_rg_mod[which(hg38_rg_mod$chr %in% chr_sccna),]
 
     hg38_rg_mod <- hg38_rg_mod %>%
       dplyr::mutate(
@@ -79,7 +88,7 @@ runSegmentation <- function(scCNA,
     chr_sccna <-
       as.character(as.data.frame(SummarizedExperiment::rowRanges(scCNA))$seqnames)
     hg19_rg_mod <-
-      hg19_rg_mod[which(hg19_rg_mod$chr %in% chr_sccna), ]
+      hg19_rg_mod[which(hg19_rg_mod$chr %in% chr_sccna),]
 
     hg19_rg_mod <- hg19_rg_mod %>%
       dplyr::mutate(
@@ -94,65 +103,76 @@ runSegmentation <- function(scCNA,
 
   }
 
+  ref_chrarm <- ref %>%
+    dplyr::mutate(chrarm = paste0(stringr::str_remove(chr, 'chr'), arm)) %>%
+    dplyr::mutate(chrarm = chrarm)
 
+  levels_chrarm <- gtools::mixedsort(unique(ref_chrarm$chrarm))
+
+  ref_chrarm <- ref_chrarm %>%
+    dplyr::mutate(chrarm = as.factor(chrarm)) %>%
+    dplyr::mutate(chrarm = forcats::fct_relevel(chrarm, levels_chrarm))
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Data Setup
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  if (S4Vectors::metadata(scCNA)$vst == 'ft') {
+    counts_df <- SummarizedExperiment::assay(scCNA, 'ft')
+  }
+
+  if (S4Vectors::metadata(scCNA)$vst == 'log') {
+    counts_df <- SummarizedExperiment::assay(scCNA, 'log')
+  }
+
+  # smoothing data
+  message("Smoothing bin counts.")
+  smooth_counts <-
+    BiocParallel::bplapply(as.data.frame(counts_df), function(x) {
+      CNA_object <-
+        DNAcopy::CNA(x,
+                     ref_chrarm$chrarm,
+                     ref$start,
+                     data.type = "logratio",
+                     sampleid = names(x))
+      set.seed(seed)
+      smoothed_CNA_counts <- DNAcopy::smooth.CNA(CNA_object)[, 3]
+    }, BPPARAM = BPPARAM)
+
+  smooth_counts_df <- dplyr::bind_cols(smooth_counts) %>%
+    as.data.frame()
+
+  SummarizedExperiment::assay(scCNA, 'smoothed_bincounts') <-
+    smooth_counts_df
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Segmentation methods
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  message(paste0(
+    "Running segmentation algorithm: ",
+    method,
+    " for genome ",
+    genome
+  ))
 
   if (method == "CBS") {
-
-    if (S4Vectors::metadata(scCNA)$vst == 'ft') {
-      counts_df <- SummarizedExperiment::assay(scCNA, 'ft')
-
-      CBS_seg <- BiocParallel::bplapply(counts_df, FUN = function(x) {
-        CNA_object <-
-          DNAcopy::CNA(x,
-                       chr_info,
-                       ref$start,
-                       data.type = "logratio",
-                       sampleid = names(x))
-        set.seed(seed)
-        smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
-        segment_smoothed_CNA_object <-
-          .quiet(
-            DNAcopy::segment(
-              smoothed_CNA_object,
-              alpha = 0.01,
-              min.width = 5,
-              undo.splits = undo.splits
-            )
-          )
-        short_cbs <- segment_smoothed_CNA_object[[2]]
-        log_seg_mean_LOWESS <-
-          rep(short_cbs$seg.mean, short_cbs$num.mark)
-        merge_obj <-
-          .MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
-        merge_ratio <- .invft(merge_obj)
-
-      }, BPPARAM = BPPARAM)
-
-    }
-
-    if (S4Vectors::metadata(scCNA)$vst == 'log') {
-
-      warning("undo.splits = 'prune' and 'log' assay can run for long time
-              for cells with large number of breakpoints",
-              noBreaks. = TRUE)
-      # segmentation with undo.splits = "prune"
-
-      counts_df <- SummarizedExperiment::assay(scCNA, 'log')
-
-      CBS_seg <-
-        BiocParallel::bplapply(as.data.frame(counts_df), function(x) {
+    seg_list <-
+      BiocParallel::bplapply(
+        smooth_counts_df,
+        FUN = function(x) {
           CNA_object <-
             DNAcopy::CNA(x,
-                         chr_info,
+                         ref_chrarm$chrarm,
                          ref$start,
                          data.type = "logratio",
                          sampleid = names(x))
           set.seed(seed)
-          smoothed_CNA_object <- DNAcopy::smooth.CNA(CNA_object)
+
           segment_smoothed_CNA_object <-
             .quiet(
               DNAcopy::segment(
-                smoothed_CNA_object,
+                CNA_object,
                 alpha = 0.01,
                 min.width = 5,
                 undo.splits = undo.splits
@@ -161,30 +181,86 @@ runSegmentation <- function(scCNA,
           short_cbs <- segment_smoothed_CNA_object[[2]]
           log_seg_mean_LOWESS <-
             rep(short_cbs$seg.mean, short_cbs$num.mark)
-          merge_obj <-
-            .MergeLevels(smoothed_CNA_object[, 3], log_seg_mean_LOWESS)$vecMerged
-          merge_ratio <- 2 ^ merge_obj
 
+        },
+        BPPARAM = BPPARAM
+      )
 
-        }, BPPARAM = BPPARAM)
-
-    }
-
-    cbs_seg_df <- dplyr::bind_cols(CBS_seg) %>%
+    seg_df <- dplyr::bind_cols(seg_list) %>%
       as.data.frame()
-
-    # calculating ratios
-    scCNA <- calcRatios(scCNA, assay = 'bin_counts')
-
-    SummarizedExperiment::assay(scCNA, name) <-
-      apply(cbs_seg_df, 2, function(x)
-        x / mean(x)) %>%
-      as.data.frame()
-
-    message("Done.")
-
-    return(scCNA)
 
   }
+
+
+  if (method == 'WBS') {
+    counts_chrarm <- split(smooth_counts_df, ref_chrarm$chrarm)
+
+    WBS_seg <- lapply(counts_chrarm, function(z) {
+      BiocParallel::bplapply(z, function(i) {
+        seg <- wbs::wbs(i)
+        seg_means <- wbs::means.between.cpt(seg$x,
+                                            wbs::changepoints(seg,
+                                                              penalty = "ssic.penalty")$cpt.ic[["ssic.penalty"]])
+
+      }, BPPARAM = BPPARAM)
+    })
+
+    seg_df <- dplyr::bind_rows(WBS_seg) %>%
+      as.data.frame()
+
+  }
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # merge levels
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  message("Merging levels.")
+  seg_ml_list <- BiocParallel::bplapply(seq_along(seg_df), function(i) {
+
+    cell_name <- names(seg_df)[i]
+    smoothed_cell_ct <- smooth_counts_df[,i]
+    seg_means_cell <- seg_df[,i]
+    seg_means_ml <- .MergeLevels(smoothed_cell_ct,
+                                 seg_means_cell,
+                                 pv.thres = 1e-10)$vecMerged
+
+  })
+
+  names(seg_ml_list) <- names(seg_df)
+
+  seg_ml_df <- dplyr::bind_cols(seg_ml_list)
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # reverting the transformation back to ratios
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  if (S4Vectors::metadata(scCNA)$vst == 'ft') {
+    seg_ratio_df <- .invft(seg_ml_df)
+  }
+
+  if (S4Vectors::metadata(scCNA)$vst == 'log') {
+    seg_ratio_df <- 2 ^ seg_ml_df
+  }
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # saving information to the scCNA object
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  #saving as segment ratios
+  SummarizedExperiment::assay(scCNA, name) <-
+    apply(seg_ratio_df, 2, function(x)
+      x / mean(x)) %>%
+    as.data.frame()
+
+  #saving logr
+  SummarizedExperiment::assay(scCNA, 'logr') <-
+    log2(SummarizedExperiment::assay(scCNA, name))
+
+  # calculating ratios from the bincounts, used for ratio plots
+  scCNA <- calcRatios(scCNA, assay = 'bin_counts')
+
+  message("Done.")
+
+  return(scCNA)
 
 }

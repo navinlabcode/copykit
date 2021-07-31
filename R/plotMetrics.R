@@ -1,6 +1,6 @@
 #' plotMetrics
 #'
-#' Plots swarm plots from selected elements of \code{\link[SummarizedExperiment{colData}]}.
+#' Plots swarm plots from selected elements of \code{\link[SummarizedExperiment]{colData}}.
 #'
 #' @author Darlan Conterno Minussi
 #'

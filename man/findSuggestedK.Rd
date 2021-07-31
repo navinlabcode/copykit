@@ -7,8 +7,9 @@
 findSuggestedK(
   scCNA,
   embedding = "umap",
-  k_range = 7:sqrt(ncol(segment_ratios(scCNA))),
-  method = "hdbscan",
+  k_range = NULL,
+  method = c("hdbscan", "leiden"),
+  metric = c("mean", "median"),
   seed = 17,
   B = 200,
   BPPARAM = bpparam()
@@ -22,6 +23,9 @@ findSuggestedK(
 \item{k_range}{A numeric range of values to be tested.}
 
 \item{method}{A string with the method of clustering to be tested.}
+
+\item{metric}{A string with the function to summarize the jaccard similarity
+value from all clusters.}
 
 \item{seed}{A numerical scalar with a seed value to be passed on to
 \code{\link[uwot]{umap}}.}
@@ -42,10 +46,14 @@ tested k and the suggested k value to be used for clustering to
 Performs a grid search over a range of k values to assess cluster stability.
 }
 \details{
-performs a grid-search over a range of k values and returns the value
+Performs a grid-search over a range of k values and returns the value
 that maximizes the jaccard similarity. Importantly, while this approach does
 not guarantee optimal clustering, it provides a guide that maximizes cluster
 stability.
+
+The default tested range is from 7 to the square root of the number of cells
+in the scCNA object. If sqrt(n_cells) is smaller than 7 a range of 5 to 15
+is tested.
 }
 \references{
 Hennig, C. (2007) Cluster-wise assessment of cluster stability.
@@ -57,4 +65,6 @@ Journal of Multivariate Analysis 99, 1154-1176.
 }
 \seealso{
 \code{\link[fpc]{clusterboot}}
+
+\code{\link{plotSuggestedK}}
 }

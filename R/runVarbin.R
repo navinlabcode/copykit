@@ -46,10 +46,13 @@
 #' may result in long segmentation times for a few cells with large breakpoint counts.
 #'
 #' \code{runSegmentation} Fits a piece-wise constant function to the transformed
-#'  bin counts using the Circular Binary Segmentation algorithm from \code{\link[DNAcopy]{segment}}.
-#'  By default it applies undo.prune with value of 0.05. The resulting segment
-#'  means are further refined with MergeLevels to join adjacent segments with
-#'  non-significant differences in segmented means.
+#' the smoothed bin counts. Bin counts are smoothed with \code{\link[DNAcopy]{smooth.CNA}}
+#' using the Circular Binary Segmentation (CBS) algorithm from
+#' \code{\link[DNAcopy]{segment}} with default it applies undo.prune with value of 0.05.
+#' Or with Wild Binary Segmentation (WBS) from \code{\link[wbs]{wbs}}.
+#'
+#' The resulting segment means are further refined with MergeLevels to join
+#' adjacent segments with non-significant differences in segmented means.
 #'
 #' @references
 #' Navin, N., Kendall, J., Troge, J. et al. Tumour evolution inferred by single-cell
@@ -67,6 +70,10 @@
 #' and the square root", The Annals of Mathematical Statistics,
 #' 21 (4), pp. 607–611, doi:10.1214/aoms/1177729756, JSTOR 2236611
 #'
+#' Fryzlewicz, P. (2014). WILD BINARY SEGMENTATION FOR MULTIPLE CHANGE-POINT
+#' DETECTION. The Annals of Statistics, 42(6), 2243-2281. Retrieved July 30,
+#' 2021, from http://www.jstor.org/stable/43556493
+#'
 #' @export
 #'
 #' @examples
@@ -77,6 +84,7 @@ runVarbin <- function(dir,
                       genome = c("hg38", "hg19"),
                       bin_size = "200kb",
                       remove_Y = FALSE,
+                      method = c('CBS', 'WBS'),
                       vst = c("ft", "log"),
                       seed = 17,
                       name = 'segment_ratios',
@@ -84,8 +92,10 @@ runVarbin <- function(dir,
 
   genome <- match.arg(genome)
   vst <- match.arg(vst)
+  method <- match.arg(method)
 
   copykit_object <- runCountReads(dir,
+                                  genome = genome,
                                   bin_size = bin_size,
                                   remove_Y = remove_Y,
                                   BPPARAM = BPPARAM)
@@ -96,6 +106,7 @@ runVarbin <- function(dir,
   copykit_object <- runSegmentation(copykit_object,
                                     seed = seed,
                                     name = name,
+                                    method = method,
                                     BPPARAM = BPPARAM)
 
   return(copykit_object)
