@@ -1,7 +1,7 @@
-#' Counting breakpoints from
+#' countBreakpoints
 #'
 #' Considers changes in the segment ratios as breakpoints.
-#' Counts the breakpoints for each chromosome separately.
+#' Counts the breakpoints for each chromosome arm separately.
 #'
 #' @param scCNA
 #'
@@ -15,14 +15,14 @@
 
   rg_chr <- SummarizedExperiment::rowRanges(scCNA) %>%
     as.data.frame() %>%
-    dplyr::select(seqnames) %>%
-    dplyr::mutate(seqnames = as.character(seqnames))
+    dplyr::mutate(chrarm = paste0(seqnames, arm)) %>%
+    dplyr::select(chrarm)
 
   dat_seg_cp <- segment_ratios(scCNA)
 
   # split by chrom
   message("Counting breakpoints.")
-  dat_seg_split <- split(dat_seg_cp, pull(rg_chr, seqnames))
+  dat_seg_split <- split(dat_seg_cp, pull(rg_chr, chrarm))
 
   brkpt_by_chrom <-
     lapply(dat_seg_split, function(x) {
@@ -52,8 +52,6 @@
 
   SummarizedExperiment::colData(scCNA)$breakpoint_count <-
     brkpt_by_sample_cnt$n
-
-  message("Done counting breakpoints.")
 
   return(scCNA)
 }

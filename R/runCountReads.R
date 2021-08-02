@@ -233,7 +233,7 @@ runCountReads <- function(dir,
 
   bam_metrics$sample <- rownames(bam_metrics)
   bam_metrics <-
-    dplyr::relocate(bam_metrics, sample, before = "reads_assigned_bins")
+    dplyr::relocate(bam_metrics, sample, .before = reads_assigned_bins)
 
   bam_metrics <- bam_metrics %>%
     dplyr::mutate(
