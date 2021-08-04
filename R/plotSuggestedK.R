@@ -13,27 +13,44 @@
 #' 'dotplot' or a boxplot when geom = 'boxplot'.
 #'
 #' \itemize{
-#' \item{geom = 'boxplot':} With geom boxplot the red dots represent the mean
-#' jaccard similarity for each assesed k.
+#' \item{geom = 'boxplot':} Plots a boxplot of the jaccard similarities across
+#' all clusters detected in the grid search. The large red points represent
+#' the mean jaccard similarity.
+#'
+#' #' \item{geom = 'tile':} Plots a heatmap of the jaccard similarities across
+#' all clusters detected in the grid search. The filling collors represent the
+#' jaccard similarity value. Rows represent clusters and columns the k value.
+#'
+#' #' \item{geom = 'dotplot':} Plots a dotplot of the jaccard similarities across
+#' all clusters detected in the grid search. Where the size of the dots represent
+#' the jaccard similarity for each assesed k value.
+#'
+#' #' \item{geom = 'scatterplot':} Plots a scatterplot of the jaccard similarity
+#' explained by the number of cells. Points are colored by subclone and lines
+#' represent a linear regression across the points.
+#'
 #' }
 #'
 #' @return A ggplot2 object with the plot of different tested k values and their
 #' jaccard similarity for each subclone
+#'
 #' @export
 #'
 #' @import ggplot2
+#' @importFrom dplyr mutate
 #' @importFrom tidyr complete
 #' @importFrom S4Vectors metadata
+#' @importFrom gtools mixedsort
 #'
 #' @examples
 plotSuggestedK <- function(scCNA,
-                           geom = c('boxplot', 'tile', 'dotplot')) {
+                           geom = c('boxplot', 'tile', 'dotplot', 'scatterplot')) {
 
   geom = match.arg(geom)
 
   df <- S4Vectors::metadata(scCNA)$suggestedK_df
 
-  df <- mutate(df, k = as.character(k))
+  df <- dplyr::mutate(df, k = as.character(k))
 
   # df expanded for geom tile
   df_exp <- tidyr::complete(df,
@@ -84,6 +101,21 @@ plotSuggestedK <- function(scCNA,
       theme(axis.line.y = element_blank(),
             axis.line.x = element_blank()) +
       labs(y = 'jaccard similarity')
+
+  }
+
+  if (geom == 'scatterplot') {
+
+    p <- ggplot(df, aes(x = n_cells, y = bootmean)) +
+      geom_point(aes(fill = subclones), shape = 21) +
+      stat_smooth(method = 'lm', se = FALSE) +
+      facet_wrap(vars(as.numeric(k)), scales = 'free_x') +
+      scale_fill_manual(values = subclones_pal(),
+                        limits = gtools::mixedsort(unique(df$subclones))) +
+      theme_classic() +
+      labs(x = "number of cells",
+           y = 'jaccard similarity')
+
 
   }
 

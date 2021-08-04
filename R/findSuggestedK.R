@@ -102,9 +102,11 @@ findSuggestedK <- function(scCNA,
         )
 
       n_subclones <- 1:df_clusterboot$nc
+      n_cells_per_subclone <- as.numeric(table(df_clusterboot$partition))
 
       df_result <- data.frame(k = i,
                               subclones = paste0('c', n_subclones),
+                              n_cells = n_cells_per_subclone,
                               bootmean = df_clusterboot$bootmean)
 
     }, BPPARAM = BPPARAM)
@@ -130,10 +132,12 @@ findSuggestedK <- function(scCNA,
       # here the oulier partition will be named as 'c0'
       n_subclones <- 1:df_clusterboot$nc
       names(n_subclones) <- paste0('c', n_subclones)
+      n_cells_per_subclone <- as.numeric(table(df_clusterboot$partition))
       names(n_subclones)[length(n_subclones)] <- 'c0'
 
       df_result <- data.frame(k = i,
                               subclones = names(n_subclones),
+                              n_cells = n_cells_per_subclone,
                               bootmean = df_clusterboot$bootmean)
 
     }, BPPARAM = BPPARAM)

@@ -9,6 +9,8 @@
 #' should be plotted.
 #' @param label A character indicating which element of the \code{colData()} to
 #' color the plots.
+#' @param ncol A Integer specifying the number of columns to be used for the panels of a multi-facet plot.
+#'
 #'
 #' @return A ggplot object with swarm plots of the selected metrics.
 #' @export
@@ -20,7 +22,8 @@
 
 plotMetrics <- function(scCNA,
                         metric,
-                        label = NULL) {
+                        label = NULL,
+                        ncol = 2) {
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 14:16:37 2021
   # checks
@@ -104,7 +107,9 @@ plotMetrics <- function(scCNA,
 
   p <- ggplot2::ggplot(df_merge, aes(metric, value)) +
     ggbeeswarm::geom_quasirandom() +
-    ggplot2::facet_wrap(vars(metric), scales = 'free') +
+    ggplot2::facet_wrap(vars(metric),
+                        scales = 'free',
+                        ncol = ncol) +
     ggplot2::theme_classic() +
     ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) +
     xlab("") +
