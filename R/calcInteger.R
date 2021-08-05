@@ -6,6 +6,9 @@
 #' @param ploidy_value If method of choice is 'fixed' a ploidy value should be provided.
 #' @param name String specifying the name to be used to store the result in the
 #' reducedDims of the output.
+#' @param penalty An integer passed on to scquantum::ploidy.inference() penalty argument
+#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
+#' should be parallelized.
 #'
 #' @details
 #' \itemize{
@@ -26,7 +29,9 @@ calcInteger <- function(scCNA,
                         assay = 'segment_ratios',
                         method = 'fixed',
                         ploidy_value = NULL,
-                        name = 'integer') {
+                        name = 'integer',
+                        penalty = 25,
+                        BPPARAM = bpparam()) {
 
   seg_ratios_df <- SummarizedExperiment::assay(scCNA, assay)
 
@@ -51,22 +56,45 @@ calcInteger <- function(scCNA,
 
   }
 
-    # check to guarantee multiplication
-    if (!identical(names(seg_ratios_df), colData(scCNA)$sample)) {
-      stop("Order of cells in segment_ratios slot and colData(scCNA) is not identical.")
-    }
+  if (method == 'scquantum') {
 
-    # obtain the matrix of integer values by multiplying the seg ratios
-    # by the diagonal of the ploidy colData vector
-    int_values <- round(as.matrix(seg_ratios_df) %*% diag(colData(scCNA)$ploidy)) %>%
-      as.data.frame()
+    rg <- as.data.frame(rowRanges(scCNA))
 
-    # recovering names
-    names(int_values) <- names(seg_ratios_df)
+    sc_quants <-
+      BiocParallel::bplapply(
+        assay(scCNA, 'segment_ratios'),
+        scquantum::ploidy.inference,
+        chrom = rg$seqnames,
+        start = rg$start,
+        end = rg$end,
+        penalty = penalty,
+        BPPARAM = BPPARAM
+      )
 
-    SummarizedExperiment::assay(scCNA, name) <- int_values
+    sc_ploidies <- sapply(sc_quants, function(x) x$ploidy)
+    sc_confidence <- sapply(sc_quants, function(x) x$peak_height)
 
-    return(scCNA)
+    SummarizedExperiment::colData(scCNA)$ploidy <- sc_ploidies
+    SummarizedExperiment::colData(scCNA)$ploidy_confidence <- sc_confidence
+
+  }
+
+  # check to guarantee multiplication
+  if (!identical(names(seg_ratios_df), colData(scCNA)$sample)) {
+    stop("Order of cells in segment_ratios slot and colData(scCNA) is not identical.")
+  }
+
+  # obtain the matrix of integer values by multiplying the seg ratios
+  # by the diagonal of the ploidy colData vector
+  int_values <- round(as.matrix(seg_ratios_df) %*% diag(colData(scCNA)$ploidy)) %>%
+    as.data.frame()
+
+  # recovering names
+  names(int_values) <- names(seg_ratios_df)
+
+  SummarizedExperiment::assay(scCNA, name) <- int_values
+
+  return(scCNA)
 
 }
 
