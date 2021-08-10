@@ -22,7 +22,7 @@
 #' @export
 #'
 #' @importFrom S4Vectors metadata
-#' @importFrom SummarizedExperiment assay colData
+#' @importFrom SummarizedExperiment assay colData rowRanges
 #'
 #' @examples
 calcInteger <- function(scCNA,
@@ -58,7 +58,7 @@ calcInteger <- function(scCNA,
 
   if (method == 'scquantum') {
 
-    rg <- as.data.frame(rowRanges(scCNA))
+    rg <- as.data.frame(SummarizedExperiment::rowRanges(scCNA))
 
     sc_quants <-
       BiocParallel::bplapply(
