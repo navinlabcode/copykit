@@ -208,7 +208,8 @@ plotFreq <- function(scCNA,
       geom_line(data = subset(freq_df, value == 'gain'),
                 aes(abspos, freq, color = label)) +
       geom_line(data = subset(freq_df, value == 'loss'),
-                aes(abspos,-freq, color = label))
+                aes(abspos,-freq, color = label)) +
+      theme(legend.position = "bottom")
 
   }
 
