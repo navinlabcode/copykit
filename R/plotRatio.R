@@ -127,7 +127,7 @@ plotRatio <- function(scCNA,
 
   abspos <- chr_ranges$abspos
 
-  dat_seg <- SummarizedExperiment::assay(scCNA, 'smoothed_bincounts') %>%
+  dat_seg <- copykit::segment_ratios(scCNA) %>%
     dplyr::mutate(abspos = abspos)
 
   dat_ratios <- copykit::ratios(scCNA) %>%
