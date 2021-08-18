@@ -10,6 +10,10 @@
 #'
 #' @keywords internal
 #'
+#' @importFrom dplyr pull bind_rows mutate select
+#' @importFrom purrr map_dfc
+#' @importFrom SummarizedExperiment rowRanges
+#'
 #' @examples
 .countBreakpoints <- function(scCNA) {
 
@@ -22,7 +26,7 @@
 
   # split by chrom
   message("Counting breakpoints.")
-  dat_seg_split <- split(dat_seg_cp, pull(rg_chr, chrarm))
+  dat_seg_split <- split(dat_seg_cp, dplyr::pull(rg_chr, chrarm))
 
   brkpt_by_chrom <-
     lapply(dat_seg_split, function(x) {
@@ -36,22 +40,13 @@
     t() %>%
     as.data.frame()
 
-  brkpt_by_chrom_l <- brkpt_by_chrom_df %>%
-    tibble::rownames_to_column(var = "sample") %>%
-    tidyr::gather(key = "chr",
-                  value = "brkpts",-sample)
+  brkpt_count <- rowSums(brkpt_by_chrom_df)
 
-  brkpt_by_sample_cnt <- brkpt_by_chrom_l %>%
-    dplyr::group_by(sample) %>%
-    dplyr::tally(brkpts)
-
-  # making sure order is correct
-  brkpt_by_sample_cnt <-
-    brkpt_by_sample_cnt[match(brkpt_by_sample_cnt$sample,
-                              SummarizedExperiment::colData(scCNA)$sample), ]
+  # making sure order is identical
+  brkpt_count <- brkpt_count[SummarizedExperiment::colData(scCNA)$sample]
 
   SummarizedExperiment::colData(scCNA)$breakpoint_count <-
-    brkpt_by_sample_cnt$n
+    brkpt_count
 
   return(scCNA)
 }
