@@ -28,6 +28,7 @@
 #'
 #' @return The segment profile for all cells inside the scCNA object.
 #' @importFrom DNAcopy CNA smooth.CNA segment
+#' @importFrom aCGH mergeLevels combine.func
 #' @importFrom dplyr mutate bind_cols
 #' @importFrom stringr str_detect str_remove str_replace
 #' @importFrom S4Vectors metadata
@@ -220,9 +221,11 @@ runSegmentation <- function(scCNA,
     cell_name <- names(seg_df)[i]
     smoothed_cell_ct <- smooth_counts_df[,i]
     seg_means_cell <- seg_df[,i]
-    seg_means_ml <- .MergeLevels(smoothed_cell_ct,
-                                 seg_means_cell,
-                                 pv.thres = 1e-6)$vecMerged
+    seg_means_ml <- aCGH::mergeLevels(log2(smoothed_cell_ct),
+                                 log2(seg_means_cell),
+                                 verbose = 0,
+                                 pv.thres = 1e-10)$vecMerged
+    seg_means_ml <- 2^seg_means_ml
 
   })
 

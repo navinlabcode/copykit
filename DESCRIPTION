@@ -30,7 +30,6 @@ Imports:
     ggplot2,
     uwot,
     magrittr,
-    SingleCellExperiment,
     GenomicRanges,
     GenomeInfoDb,
     SummarizedExperiment,
@@ -67,8 +66,10 @@ Imports:
     fpc,
     ggnewscale,
     miniUI,
-    pals
+    pals,
+    aCGH
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Depends: 
+    SingleCellExperiment,
     R (>= 2.10)
