@@ -14,12 +14,13 @@
 #' @param vst A character indicating the variance stabilization transformation
 #'  to be performed. See \link{runVst} details.
 #' @param method A character indicating the segmentation method.
+#' @param min_bincount A numerical indicating the minimum mean bin counts a
+#' cell should have to remain in the dataset.
 #' @param seed A numeric scalar that sets the seed for CBS segmentation permutation
 #' reproducibility.
 #' @param name A character with the name for the slot returned by \code{runVarbin}
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
-#'
 #'
 #' @return An scCNA object containing the bin counts, the ratios and the segment
 #' ratios.
@@ -87,6 +88,7 @@ runVarbin <- function(dir,
                       method = c('CBS', 'WBS'),
                       vst = c("ft", "log"),
                       seed = 17,
+                      min_bincount = 10,
                       name = 'segment_ratios',
                       BPPARAM = bpparam()) {
 
@@ -98,6 +100,7 @@ runVarbin <- function(dir,
                                   genome = genome,
                                   bin_size = bin_size,
                                   remove_Y = remove_Y,
+                                  min_bincount = min_bincount,
                                   BPPARAM = BPPARAM)
 
   copykit_object <- runVst(copykit_object,
