@@ -221,8 +221,8 @@ runSegmentation <- function(scCNA,
     cell_name <- names(seg_df)[i]
     smoothed_cell_ct <- smooth_counts_df[,i]
     seg_means_cell <- seg_df[,i]
-    seg_means_ml <- aCGH::mergeLevels(log2(smoothed_cell_ct),
-                                 log2(seg_means_cell),
+    seg_means_ml <- aCGH::mergeLevels(log2(smoothed_cell_ct+1e-3),
+                                 log2(seg_means_cell+1e-3),
                                  verbose = 0,
                                  pv.thres = 1e-10)$vecMerged
     seg_means_ml <- 2^seg_means_ml
@@ -257,7 +257,7 @@ runSegmentation <- function(scCNA,
 
   #saving logr
   SummarizedExperiment::assay(scCNA, 'logr') <-
-    log2(SummarizedExperiment::assay(scCNA, name))
+    log2(SummarizedExperiment::assay(scCNA, name)+1e-3)
 
   # calculating ratios from the bincounts, used for ratio plots
   scCNA <- calcRatios(scCNA, assay = 'bin_counts')
