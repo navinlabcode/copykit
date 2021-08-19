@@ -222,7 +222,7 @@ runSegmentation <- function(scCNA,
     seg_means_cell <- seg_df[,i]
     seg_means_ml <- .MergeLevels(smoothed_cell_ct,
                                  seg_means_cell,
-                                 pv.thres = 1e-10)$vecMerged
+                                 pv.thres = 1e-6)$vecMerged
 
   })
 

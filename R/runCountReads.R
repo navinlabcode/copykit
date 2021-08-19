@@ -41,6 +41,7 @@
 #' @importFrom dplyr rename mutate relocate
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom S4Vectors DataFrame metadata
+#' @importFrom rlang is_empty
 #'
 #' @export
 #'
