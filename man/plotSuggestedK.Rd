@@ -4,7 +4,7 @@
 \alias{plotSuggestedK}
 \title{plotSuggestedK}
 \usage{
-plotSuggestedK(scCNA, geom = c("boxplot", "tile", "dotplot"))
+plotSuggestedK(scCNA, geom = c("boxplot", "tile", "dotplot", "scatterplot"))
 }
 \arguments{
 \item{scCNA}{The scCNA object.}
@@ -27,7 +27,21 @@ heatmap, when the argument geom = 'tile', or a dotplot when argument geom =
 'dotplot' or a boxplot when geom = 'boxplot'.
 
 \itemize{
-\item{geom = 'boxplot':} With geom boxplot the red dots represent the mean
-jaccard similarity for each assesed k.
+\item{geom = 'boxplot':} Plots a boxplot of the jaccard similarities across
+all clusters detected in the grid search. The large red points represent
+the mean jaccard similarity.
+
+#' \item{geom = 'tile':} Plots a heatmap of the jaccard similarities across
+all clusters detected in the grid search. The filling collors represent the
+jaccard similarity value. Rows represent clusters and columns the k value.
+
+#' \item{geom = 'dotplot':} Plots a dotplot of the jaccard similarities across
+all clusters detected in the grid search. Where the size of the dots represent
+the jaccard similarity for each assesed k value.
+
+#' \item{geom = 'scatterplot':} Plots a scatterplot of the jaccard similarity
+explained by the number of cells. Points are colored by subclone and lines
+represent a linear regression across the points.
+
 }
 }

@@ -12,6 +12,7 @@ runVarbin(
   method = c("CBS", "WBS"),
   vst = c("ft", "log"),
   seed = 17,
+  min_bincount = 10,
   name = "segment_ratios",
   BPPARAM = bpparam()
 )
@@ -34,6 +35,9 @@ to be performed. See \link{runVst} details.}
 
 \item{seed}{A numeric scalar that sets the seed for CBS segmentation permutation
 reproducibility.}
+
+\item{min_bincount}{A numerical indicating the minimum mean bin counts a
+cell should have to remain in the dataset.}
 
 \item{name}{A character with the name for the slot returned by \code{runVarbin}}
 

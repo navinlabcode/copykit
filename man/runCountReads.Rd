@@ -9,6 +9,7 @@ runCountReads(
   genome = c("hg38", "hg19"),
   bin_size = "200kb",
   remove_Y = FALSE,
+  min_bincount = 10,
   BPPARAM = bpparam()
 )
 }
@@ -21,6 +22,9 @@ runCountReads(
 
 \item{remove_Y}{(default == FALSE) If set to TRUE, removes information from
 the chrY from the dataset.}
+
+\item{min_bincount}{A numerical indicating the minimum mean bin counts a
+cell should have to remain in the dataset.}
 
 \item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
 should be parallelized.}
@@ -53,6 +57,9 @@ assembly. The scaffolds are GenomicRanges objects that can be seen with
 copykit:::hg38_rg and copykit:::hg19_rg.
 Information regarding the alignment of the reads to the bins and from the bam
 files are stored in the #' \code{\link[SummarizedExperiment]{colData}}.
+\code{min_bincount} Indicates the minimum mean bincount a cell must present to
+be kept in the dataset. Cells with low bincounts generally present bin dropouts
+due to low read count that will be poorly segmented.
 }
 \examples{
 
