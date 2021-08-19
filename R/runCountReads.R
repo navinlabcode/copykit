@@ -63,12 +63,39 @@ runCountReads <- function(dir,
 
   genome <- match.arg(genome)
 
-  #checks
   files <- list.files(dir, pattern = "*.bam", full.names = T, ignore.case = T)
+
+  # managing .bai files
+  if (any(sapply(files, function(x)
+    ! stringr::str_detect(x, ".bai")))) {
+    files <- files[!stringr::str_detect(files, ".bai")]
+  }
+
+  if (any(sapply(files, function(x)
+    ! stringr::str_detect(x, ".bam")))) {
+    stop("Directory does not contain .bam files.")
+  }
 
   if (rlang::is_empty(files)) {
     stop("No .bam files detected.")
   }
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # test pair end or single-read
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  pairend_test <-
+    suppressMessages(
+      BiocParallel::bplapply(files[1:5], Rsamtools::testPairedEndBam,
+                             BPPARAM = BPPARAM)
+    )
+
+  if (all(unlist(pairend_test))) {
+    is_paired_end <- TRUE
+  } else is_paired_end <- FALSE
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # genomic ranges (varbin scaffolds)
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # Reading hg38 VarBin ranges
   if (genome == "hg38") {
@@ -99,17 +126,6 @@ runCountReads <- function(dir,
 
   }
 
-  # managing .bai files
-  if (any(sapply(files, function(x)
-    ! stringr::str_detect(x, ".bai")))) {
-    files <- files[!stringr::str_detect(files, ".bai")]
-  }
-
-  if (any(sapply(files, function(x)
-    ! stringr::str_detect(x, ".bam")))) {
-    stop("Directory does not contain .bam files.")
-  }
-
   files_names <- list.files(dir, pattern = "*.bam", full.names = F)
   files_names <- stringr::str_remove(files_names, ".bam")
 
@@ -132,6 +148,7 @@ runCountReads <- function(dir,
         annot.ext = rg,
         useMetaFeatures = FALSE,
         verbose = FALSE,
+        isPairedEnd = is_paired_end,
         BPPARAM = BPPARAM
       )
     )
@@ -147,18 +164,17 @@ runCountReads <- function(dir,
   varbin_counts_list <- lapply(varbin_counts_list,
                                as.vector)
 
-
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # filtering for minimal mean bin count
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # obtaining the index of the ones that FAIL to meet the min_bincount arg
   min_bc <- which(vapply(varbin_counts_list, mean, numeric(1)) < min_bincount)
   #subsetting counts list and main counts list
-  varbin_counts_list <- varbin_counts_list[-min_bc]
-  varbin_counts_list_all_fields <- varbin_counts_list_all_fields[-min_bc]
 
   if (length(min_bc) > 0) {
 
+    varbin_counts_list <- varbin_counts_list[-min_bc]
+    varbin_counts_list_all_fields <- varbin_counts_list_all_fields[-min_bc]
     message(paste(length(min_bc), "bam files had less than", min_bincount,
                   "mean bincounts and were removed."))
 
