@@ -39,7 +39,7 @@
 #'
 #' @import ggplot2
 #' @importFrom dplyr mutate filter group_by ungroup arrange n count bind_rows
-#' @importFrom gather complete
+#' @importFrom tidyr gather complete
 #' @importFrom SummarizedExperiment assay rowRanges colData
 #'
 #' @examples

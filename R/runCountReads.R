@@ -10,6 +10,8 @@
 #' @param bin_size The resolution of the VarBin method. Default: '200kb'.
 #' @param remove_Y (default == FALSE) If set to TRUE, removes information from
 #' the chrY from the dataset.
+#' @param min_bincount A numerical indicating the minimum mean bin counts a
+#' cell should have to remain in the dataset.
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
 #'
@@ -24,6 +26,9 @@
 #' copykit:::hg38_rg and copykit:::hg19_rg.
 #' Information regarding the alignment of the reads to the bins and from the bam
 #' files are stored in the #' \code{\link[SummarizedExperiment]{colData}}.
+#' \code{min_bincount} Indicates the minimum mean bincount a cell must present to
+#' be kept in the dataset. Cells with low bincounts generally present bin dropouts
+#' due to low read count that will be poorly segmented.
 #'
 #' @return A matrix of bin counts within the scCNA object that can be accessed
 #' with \code{bin_counts}
@@ -53,12 +58,13 @@ runCountReads <- function(dir,
                           genome = c("hg38", "hg19"),
                           bin_size = "200kb",
                           remove_Y = FALSE,
+                          min_bincount = 10,
                           BPPARAM = bpparam()) {
 
   genome <- match.arg(genome)
 
   #checks
-  files <- list.files(dir, pattern = "*.bam", full.names = T)
+  files <- list.files(dir, pattern = "*.bam", full.names = T, ignore.case = T)
 
   if (rlang::is_empty(files)) {
     stop("No .bam files detected.")
@@ -130,6 +136,10 @@ runCountReads <- function(dir,
       )
     )
 
+  names(varbin_counts_list_all_fields) <- stringr::str_remove(files_names,
+                                                   stringr::fixed(".bam",
+                                                                  ignore_case = TRUE))
+
   varbin_counts_list <- lapply(varbin_counts_list_all_fields,
                                '[[',
                                1)
@@ -137,9 +147,22 @@ runCountReads <- function(dir,
   varbin_counts_list <- lapply(varbin_counts_list,
                                as.vector)
 
-  names(varbin_counts_list) <- stringr::str_remove(files_names,
-                                                   stringr::fixed(".bam",
-                                                                  ignore_case = TRUE))
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # filtering for minimal mean bin count
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # obtaining the index of the ones that FAIL to meet the min_bincount arg
+  min_bc <- which(vapply(varbin_counts_list, mean, numeric(1)) < min_bincount)
+  #subsetting counts list and main counts list
+  varbin_counts_list <- varbin_counts_list[-min_bc]
+  varbin_counts_list_all_fields <- varbin_counts_list_all_fields[-min_bc]
+
+  if (length(min_bc) > 0) {
+
+    message(paste(length(min_bc), "bam files had less than", min_bincount,
+                  "mean bincounts and were removed."))
+
+  }
 
 
   #LOWESS GC normalization
@@ -192,10 +215,6 @@ runCountReads <- function(dir,
                               '[[',
                               4)
 
-  names(varbin_reads_list) <- stringr::str_remove(files_names,
-                                                  stringr::fixed(".bam",
-                                                                 ignore_case = TRUE))
-
   # saving info and removing columns from list elements
   metadata_info_names <- varbin_reads_list[[1]][c(1, 2, 8, 9, 12, 14), 1]
   metadata_info_names <-
@@ -219,13 +238,10 @@ runCountReads <- function(dir,
       df
     })
 
-  names(varbin_reads_info) <- files_names
+  names(varbin_reads_list) <- names(varbin_counts_list_all_fields)
 
   bam_metrics <- dplyr::bind_cols(varbin_reads_info)
   rownames(bam_metrics) <- metadata_info_names
-
-  # filtering low read counts where the sum of bins does not reach 1 from metadata
-  bam_metrics <- bam_metrics[names(varbin_counts_df)]
 
   bam_metrics <- as.data.frame(t(bam_metrics))
 
@@ -244,7 +260,8 @@ runCountReads <- function(dir,
 
   if (sum(bam_metrics$reads_duplicates) == 0) {
     warning(
-      "runCountReads did not detect any duplicate reads, make sure your input bam files have duplicates marked.",
+      "runCountReads did not detect any duplicate reads.
+      Make sure your input bam files have duplicates marked.",
       call. = FALSE,
       noBreaks. = TRUE
     )

@@ -2,7 +2,7 @@
 % Please edit documentation in R/countBreakpoints.R
 \name{.countBreakpoints}
 \alias{.countBreakpoints}
-\title{Counting breakpoints from}
+\title{countBreakpoints}
 \usage{
 .countBreakpoints(scCNA)
 }
@@ -14,6 +14,6 @@ The scCNA object with a column of breakpoint counts added to the colData.
 }
 \description{
 Considers changes in the segment ratios as breakpoints.
-Counts the breakpoints for each chromosome separately.
+Counts the breakpoints for each chromosome arm separately.
 }
 \keyword{internal}

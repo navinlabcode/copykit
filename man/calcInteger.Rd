@@ -9,7 +9,9 @@ calcInteger(
   assay = "segment_ratios",
   method = "fixed",
   ploidy_value = NULL,
-  name = "integer"
+  name = "integer",
+  penalty = 25,
+  BPPARAM = bpparam()
 )
 }
 \arguments{
@@ -23,6 +25,11 @@ calcInteger(
 
 \item{name}{String specifying the name to be used to store the result in the
 reducedDims of the output.}
+
+\item{penalty}{An integer passed on to scquantum::ploidy.inference() penalty argument}
+
+\item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
+should be parallelized.}
 }
 \value{
 The scCNA object with an assay slot named 'integer' that contains
