@@ -47,6 +47,7 @@
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom S4Vectors DataFrame metadata
 #' @importFrom rlang is_empty
+#' @importFrom Rsamtools testPairedEndBam
 #'
 #' @export
 #'
