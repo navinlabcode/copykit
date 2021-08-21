@@ -356,10 +356,12 @@ plotHeatmap <- function(scCNA,
 
     if (assay != 'integer') {
 
-      do.call(ComplexHeatmap::Heatmap, c(list(
-        matrix = log2(seg_data_ordered + 1e-3),
-        heatmap_legend_param = list(title = "log2 (segratio)")
-      ), complex_args))
+      suppressMessages(
+        do.call(ComplexHeatmap::Heatmap, c(list(
+          matrix = log2(seg_data_ordered + 1e-3),
+          heatmap_legend_param = list(title = "log2 (segratio)")
+        ), complex_args))
+      )
 
     } else {
       # if assay is integer
