@@ -69,6 +69,9 @@ filterCells <- function(scCNA,
     dplyr::mutate(filtered = dplyr::case_when(cor >= resolution ~ "kept",
                                               cor < resolution ~ "removed"))
 
+  n_filtered <- table(dst_knn_df$filtered)['removed']
+  message(paste("Marked", n_filtered, "cells to be removed."))
+
   message(
     "Adding information to metadata. Access with colData(scCNA)."
   )
