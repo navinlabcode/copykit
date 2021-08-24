@@ -9,7 +9,18 @@
 #' @param seed Sets a seed for the pseudorandom number generator.
 #' @param name String specifying the name to be used to store the result in the
 #' reducedDims of the output.
-#' @param ... Additional parameters passed to \code{uwot::umap}.
+#' @param min_dist  	The effective minimum distance between embedded points.
+#' Smaller values will result in a more clustered/clumped embedding where nearby
+#' points on the manifold are drawn closer together, while larger values will
+#' result on a more even dispersal of points. The value should be set relative
+#' to the spread value, which determines the scale at which embedded points
+#' will be spread out. See \code{\link[uwot]{umap}}.
+#' @param n_neighbors The size of local neighborhood (in terms of number of
+#' neighboring sample points) used for manifold approximation.
+#' Larger values result in more global views of the manifold,
+#' while smaller values result in more local data being preserved.
+#' In general values should be in the range 2 to 100. See \code{\link[uwot]{umap}}.
+#' @param ... Additional parameters passed to \code{\link[uwot]{umap}}.
 #'
 #' @importFrom uwot umap
 #' @importFrom SummarizedExperiment assay
@@ -22,6 +33,8 @@
 runUmap <- function(scCNA,
                     assay = "logr",
                     seed = 17,
+                    min_dist = 0,
+                    n_neighbors = 30,
                     name = "umap",
                     ...) {
   seg_data <- t(SummarizedExperiment::assay(scCNA, assay)) %>%
