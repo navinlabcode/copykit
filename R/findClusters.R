@@ -167,8 +167,8 @@ findClusters <- function(scCNA,
     n_clones <- length(unique(subclones))
     n_outliers <- length(subclones[subclones == 'c0'])
 
-    if (length(n_outliers) > 0) {
-      message(paste("Found", n_outliers, "outliers (group 'c0')"))
+    if (n_outliers > 0) {
+      message(paste("Found", n_outliers, "outliers cells (group 'c0')"))
       message(paste("Found", n_clones-1, "subclones."))
     } else message(paste("Found", n_clones, "subclones."))
 
