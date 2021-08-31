@@ -63,6 +63,10 @@ calcConsensus <- function(scCNA,
 
   cs_df <- as.data.frame(t(do.call(rbind, consensus_list)))
 
+  if (assay == "integer") {
+    cs_df <- round(cs_df)
+  }
+
   names(cs_df) <- names(consensus_list)
 
   # This hidden attribute will allow plotHeatmap to figure it out which
