@@ -43,7 +43,7 @@
 runSegmentation <- function(scCNA,
                             method = c("CBS", "WBS"),
                             seed = 17,
-                            alpha = 1e-5,
+                            alpha = 0.001,
                             undo.splits = 'prune',
                             name = 'segment_ratios',
                             BPPARAM = bpparam()) {
