@@ -272,7 +272,7 @@ runCountReads <- function(dir,
   bam_metrics <- bam_metrics %>%
     dplyr::mutate(
       reads_total = reads_tot,
-      percentage_duplicates = round(reads_duplicates / reads_total, 2)
+      percentage_duplicates = round(reads_duplicates / reads_total, 3)
     )
 
   if (sum(bam_metrics$reads_duplicates) == 0) {

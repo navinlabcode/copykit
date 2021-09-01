@@ -283,7 +283,21 @@ plotHeatmap <- function(scCNA,
     }
 
   } else {
-    seg_data_ordered <- as.data.frame(t(consensus(scCNA)))
+
+    # getting order from tree
+    scCNA <- runConsensusPhylo(scCNA)
+    tree <- consensusPhylo(scCNA)
+    # getting order
+    is_tip <- tree$edge[, 2] <= length(tree$tip.label)
+    ordered_tips_index <- tree$edge[is_tip, 2]
+    tree_tips_order <-
+      tree$tip.label[ordered_tips_index] %>% rev()
+
+    # retrieving data
+    seg_data <- as.matrix(t(consensus(scCNA)))
+
+    #ordering data
+    seg_data_ordered <- seg_data[tree_tips_order,]
   }
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:11:34 2021
@@ -356,10 +370,12 @@ plotHeatmap <- function(scCNA,
 
     if (assay != 'integer') {
 
-      do.call(ComplexHeatmap::Heatmap, c(list(
-        matrix = log2(seg_data_ordered + 1e-3),
-        heatmap_legend_param = list(title = "log2 (segratio)")
-      ), complex_args))
+      suppressMessages(
+        do.call(ComplexHeatmap::Heatmap, c(list(
+          matrix = log2(seg_data_ordered + 1e-3),
+          heatmap_legend_param = list(title = "log2 (segratio)")
+        ), complex_args))
+      )
 
     } else {
       # if assay is integer
@@ -413,7 +429,7 @@ plotHeatmap <- function(scCNA,
         dplyr::pull(!!cons_attr)
 
       metadata_anno_df <-
-        metadata_anno_df[names(consensus(scCNA)), , drop = FALSE]
+        metadata_anno_df[rownames(seg_data_ordered), , drop = FALSE]
 
     }
 

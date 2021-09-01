@@ -6,6 +6,8 @@
 #' @param assay String with the name of the assay to pull data from to run the
 #' segmentation.
 #' @param method A character with the segmentation method of choice.
+#' @param alpha A numeric with the. significance levels for the test to accept
+#' change-points for CBS segmentation. See \code{\link[DNAcopy]{segment}}.
 #' @param seed Numeric. Set seed for CBS segmentation permutation reproducibility
 #' @param undo.splits A character string specifying how change-points are to be
 #' undone, if at all. Default is "none". Other choices are "prune", which uses
@@ -41,6 +43,7 @@
 runSegmentation <- function(scCNA,
                             method = c("CBS", "WBS"),
                             seed = 17,
+                            alpha = 1e-5,
                             undo.splits = 'prune',
                             name = 'segment_ratios',
                             BPPARAM = bpparam()) {
@@ -174,7 +177,7 @@ runSegmentation <- function(scCNA,
             .quiet(
               DNAcopy::segment(
                 CNA_object,
-                alpha = 0.01,
+                alpha = alpha,
                 min.width = 5,
                 undo.splits = undo.splits
               )
@@ -222,9 +225,9 @@ runSegmentation <- function(scCNA,
     smoothed_cell_ct <- smooth_counts_df[,i]
     seg_means_cell <- seg_df[,i]
     seg_means_ml <- aCGH::mergeLevels(log2(smoothed_cell_ct+1e-3),
-                                 log2(seg_means_cell+1e-3),
-                                 verbose = 0,
-                                 pv.thres = 1e-10)$vecMerged
+                                      log2(seg_means_cell+1e-3),
+                                      verbose = 0,
+                                      pv.thres = 1e-10)$vecMerged
     seg_means_ml <- 2^seg_means_ml
 
   })

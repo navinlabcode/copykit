@@ -67,10 +67,10 @@ findSuggestedK <- function(scCNA,
 
     n_cells <- ncol(segment_ratios(scCNA))
     max_range <- round(sqrt(n_cells))
-    min_range <- 7
+    min_range <- 5
 
     if (min_range > max_range) {
-      k_range <- 5:15
+      k_range <- 5:20
     } else {
       k_range <- min_range:max_range
     }
