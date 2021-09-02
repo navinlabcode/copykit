@@ -457,13 +457,17 @@ plotHeatmap <- function(scCNA,
         label_colors
       )
 
+      default_labels <- c("superclones", "subclones", "filtered", "is_normal")
+
       for (i in 1:length(label)) {
         if (any(str_detect(
           label[i],
-          c("superclones", "subclones", "filtered", "is_normal")
+          default_labels
         ))) {
-          # if label is one of the four above, uses the default specifed colors above
-          next
+          # if label is one of the four above, uses the default specified colors above
+          label_colors[i] <- label_colors[default_labels[stringr::str_detect(label[i],
+                                                                default_labels)]]
+          names(label_colors)[i] <- label[i]
 
         } else if (is.numeric(dplyr::pull(metadata_anno_df, label[i])))  {
           # if current i metadata element is a numeric vector
