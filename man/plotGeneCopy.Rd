@@ -38,6 +38,10 @@ with the genes from the assemblies of either hg19 or hg38. The genomic ranges
 from hg19 comes from package \code{TxDb.Hsapiens.UCSC.hg19.knownGene} whereas
 for hg38 package \code{TxDb.Hsapiens.UCSC.hg38.knownGene}.
 
+The argument genes can be provided with the string 'hvg'. If that option is
+provided copykit will plot the resulting genes obtained with
+\code{\link{findVariableGenes}}.
+
 If the argument geom is set to 'barplot' plotGeneCopy calculates the gene-wise
  frequencies of each copy number state for the selected genes across all of
  the cells. For this reason, geom 'barplot' can only be used with the argument
