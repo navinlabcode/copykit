@@ -4,22 +4,23 @@
 \alias{plotVariableGenes}
 \title{plotVariableGenes}
 \usage{
-plotVariableGenes(scCNA, genes, assay = "segment_ratios", top_n = NULL)
+plotVariableGenes(scCNA, n = 30)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{genes}{A vector of strings containing the HUGO Symbol for the gene
-of interest.}
-
-\item{assay}{String with the name of the assay to pull data from to calculate
-integers.}
-
-\item{top_n}{A numeric that if provided returns the top N variable genes.}
+\item{n}{A numeric defining how many variable genes will be plotted.}
 }
 \value{
 
 }
 \description{
-Uses PCA to detect the most variable genes.
+Visualization for the most variable genes found with \code{findVariableGenes}.
+}
+\details{
+\code{plotVariableGenes} plots the list of genes that was found
+using \code{findVariableGenes}.
+}
+\seealso{
+\code{\link{findVariableGenes}}
 }
