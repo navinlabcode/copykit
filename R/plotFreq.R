@@ -10,6 +10,8 @@
 #' @param label A string with the name of the columns from
 #' \code{\link[SummarizedExperiment]{colData}} to separate each frequency plot.
 #' @param geom A character with the desired geom
+#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
+#' should be parallelized.
 #'
 #' @details \code{plotFreq} retrieves the data from the desired assay and creates
 #' an event matrix based on the high and low thresholds arguments. Values above
@@ -48,7 +50,8 @@ plotFreq <- function(scCNA,
                      low_threshold = 0.7,
                      assay = "segment_ratios",
                      label = NULL,
-                     geom = c('area', 'line')) {
+                     geom = c('area', 'line'),
+                     BPPARAM = bpparam()) {
 
   geom <- match.arg(geom)
 
@@ -164,7 +167,7 @@ plotFreq <- function(scCNA,
   }
 
   # calculating frequency table
-  freq_table <- lapply(dat_split, function(x) {
+  freq_table <- BiocParallel::bplapply(dat_split, function(x) {
 
     colnames(x) <- chr_ranges$abspos
 
@@ -178,7 +181,7 @@ plotFreq <- function(scCNA,
       dplyr::ungroup() %>%
       tidyr::complete(abspos, value, fill = list(freq = 0, n = 0))
 
-  })
+  }, BPPARAM = BPPARAM)
 
   freq_df <- dplyr::bind_rows(freq_table, .id = 'label')
 
