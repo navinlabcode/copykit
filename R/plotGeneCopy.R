@@ -232,10 +232,13 @@ plotGeneCopy <- function(scCNA,
       p <- p +
         ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
                                                     each = length(df$gene))),
-                                     shape = 21)
+                                     shape = 21,
+                                     size = 2.2,
+                                     stroke = 0.2)
 
       color_lab <-
-        list(ggplot2::scale_fill_manual(values = superclones_pal()))
+        list(ggplot2::scale_fill_manual(values = superclones_pal(),
+                                        limits = force))
 
       p <- p + color_lab
 
@@ -248,10 +251,13 @@ plotGeneCopy <- function(scCNA,
           lab,
           each = length(df$gene)
         ))),
-        shape = 21)
+        shape = 21,
+        size = 2.2,
+        stroke = 0.2)
 
       color_lab <-
-        list(ggplot2::scale_fill_manual(values = subclones_pal()))
+        list(ggplot2::scale_fill_manual(values = subclones_pal(),
+                                        limits = force))
 
       p <- p + color_lab
 
@@ -261,7 +267,9 @@ plotGeneCopy <- function(scCNA,
       p <- p +
         ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
                                                     each = length(df$gene))),
-                                     shape = 21)
+                                     shape = 21,
+                                     size = 2.2,
+                                     stroke = 0.2)
 
       color_lab <- list(ggplot2::scale_color_viridis_c())
 
@@ -274,9 +282,11 @@ plotGeneCopy <- function(scCNA,
       p <- p +
         ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
                                                     each = length(df$gene))),
-                                     shape = 21)
+                                     shape = 21,
+                                     size = 2.2,
+                                     stroke = 0.2)
 
-      color_lab <- list(ggplot2::scale_color_viridis_d())
+      color_lab <- list(ggplot2::scale_fill_viridis_d(limits = force))
 
       p <- p + color_lab
 
