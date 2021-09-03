@@ -22,7 +22,7 @@ of jaccard similarity from the tested k range on \code{\link{findSugggestedK}}.
 \details{
 \code{\link{plotSuggestedK}} access the \code{\link[S4Vectors]{metadata}}
 element suggestedK_df that is saved to the scDNA object after running
-\code{\link{findSugggestedK}}. The dataframe is used for plotting either a
+\code{\link{findSuggestedK}}. The dataframe is used for plotting either a
 heatmap, when the argument geom = 'tile', or a dotplot when argument geom =
 'dotplot' or a boxplot when geom = 'boxplot'.
 
