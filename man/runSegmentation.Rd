@@ -8,6 +8,7 @@ runSegmentation(
   scCNA,
   method = c("CBS", "WBS"),
   seed = 17,
+  alpha = 0.001,
   undo.splits = "prune",
   name = "segment_ratios",
   BPPARAM = bpparam()
@@ -19,6 +20,9 @@ runSegmentation(
 \item{method}{A character with the segmentation method of choice.}
 
 \item{seed}{Numeric. Set seed for CBS segmentation permutation reproducibility}
+
+\item{alpha}{A numeric with the. significance levels for the test to accept
+change-points for CBS segmentation. See \code{\link[DNAcopy]{segment}}.}
 
 \item{undo.splits}{A character string specifying how change-points are to be
 undone, if at all. Default is "none". Other choices are "prune", which uses
