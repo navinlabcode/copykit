@@ -41,7 +41,7 @@
 #'
 #' @examples
 runSegmentation <- function(scCNA,
-                            method = c("CBS", "WBS"),
+                            method = c("CBS", "WBS", "multipcf"),
                             seed = 17,
                             alpha = 0.001,
                             undo.splits = 'prune',
@@ -192,6 +192,26 @@ runSegmentation <- function(scCNA,
 
     seg_df <- dplyr::bind_cols(seg_list) %>%
       as.data.frame()
+
+  }
+
+
+
+  if (method == "multipcf") {
+
+    smooth_multipcf <- cbind(as.numeric(str_remove(ref_chrarm$chr, 'chr')),
+                             ref_chrarm$start,
+                             smooth_counts_df)
+
+    mpcf <- copynumber::multipcf(smooth_multipcf,
+                         arms = str_extract(ref_chrarm$chrarm,"[pq]"))
+
+    seg_df <- apply(mpcf[,6:ncol(mpcf)], 2, function(x) {
+      rep.int(x, mpcf$n.probes)
+    })
+
+    seg_df <- as.data.frame(seg_df)
+
 
   }
 

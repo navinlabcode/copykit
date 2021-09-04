@@ -68,7 +68,8 @@ Imports:
     miniUI,
     pals,
     aCGH,
-    Rsamtools
+    Rsamtools,
+    copynumber
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Depends: 
