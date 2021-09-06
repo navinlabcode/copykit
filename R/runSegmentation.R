@@ -8,6 +8,8 @@
 #' @param method A character with the segmentation method of choice.
 #' @param alpha A numeric with the. significance levels for the test to accept
 #' change-points for CBS segmentation. See \code{\link[DNAcopy]{segment}}.
+#' @param gamma A numeric passed on to 'multipcf' segmentation. Penalty for each
+#'  discontinuity in the curve, default is 40. See \code{\link[copynumber]{multipcf}}.
 #' @param seed Numeric. Set seed for CBS segmentation permutation reproducibility
 #' @param undo.splits A character string specifying how change-points are to be
 #' undone, if at all. Default is "none". Other choices are "prune", which uses
@@ -18,15 +20,25 @@
 #' should be parallelized.
 #'
 #' @details
-#' \code{runSegmentation} Fits a piece-wise constant function to the transformed
-#' the smoothed bin counts. Bin counts are smoothed with \code{\link[DNAcopy]{smooth.CNA}}
-#' using the Circular Binary Segmentation (CBS) algorithm from
-#' \code{\link[DNAcopy]{segment}} with default it applies undo.prune with value of 0.05.
-#' Or with Wild Binary Segmentation (WBS) from \code{\link[wbs]{wbs}}.
+#'
+#' \itemize{
+#'
+#'    \item{CBS:} #' \code{runSegmentation} Fits a piece-wise constant function
+#'    to the transformed the smoothed bin counts. Bin counts are smoothed with
+#'    \code{\link[DNAcopy]{smooth.CNA}} using the Circular Binary Segmentation
+#'    (CBS) algorithm from \code{\link[DNAcopy]{segment}} with default it applies
+#'    undo.prune with value of 0.05.
+#'
+#'    \item{multipcf:} Performs the joint segmentation from the \code{copynumber}
+#'    package using the \code{\link[copynumber]{multipcf}} function. By fitting
+#'    piecewise constant curves with common breakpoints for all samples.
+#'
+#'
+#' }
+#'
 #'
 #' The resulting segment means are further refined with MergeLevels to join
 #' adjacent segments with non-significant differences in segmented means.
-
 #'
 #' @return The segment profile for all cells inside the scCNA object.
 #' @importFrom DNAcopy CNA smooth.CNA segment
@@ -41,9 +53,10 @@
 #'
 #' @examples
 runSegmentation <- function(scCNA,
-                            method = c("CBS", "WBS"),
+                            method = c("CBS", "multipcf"),
                             seed = 17,
                             alpha = 0.001,
+                            gamma = 40,
                             undo.splits = 'prune',
                             name = 'segment_ratios',
                             BPPARAM = bpparam()) {
@@ -196,21 +209,22 @@ runSegmentation <- function(scCNA,
   }
 
 
-  if (method == 'WBS') {
-    counts_chrarm <- split(smooth_counts_df, ref_chrarm$chrarm)
 
-    WBS_seg <- lapply(counts_chrarm, function(z) {
-      BiocParallel::bplapply(z, function(i) {
-        seg <- wbs::wbs(i)
-        seg_means <- wbs::means.between.cpt(seg$x,
-                                            wbs::changepoints(seg,
-                                                              penalty = "ssic.penalty")$cpt.ic[["ssic.penalty"]])
+  if (method == "multipcf") {
 
-      }, BPPARAM = BPPARAM)
+    smooth_multipcf <- cbind(as.numeric(str_remove(ref_chrarm$chr, 'chr')),
+                             ref_chrarm$start,
+                             smooth_counts_df)
+
+    mpcf <- copynumber::multipcf(smooth_multipcf,
+                         arms = str_extract(ref_chrarm$chrarm,"[pq]"))
+
+    seg_df <- apply(mpcf[,6:ncol(mpcf)], 2, function(x) {
+      rep.int(x, mpcf$n.probes)
     })
 
-    seg_df <- dplyr::bind_rows(WBS_seg) %>%
-      as.data.frame()
+    seg_df <- as.data.frame(seg_df)
+
 
   }
 

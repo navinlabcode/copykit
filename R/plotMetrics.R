@@ -109,10 +109,13 @@ plotMetrics <- function(scCNA,
     ggbeeswarm::geom_quasirandom() +
     ggplot2::facet_wrap(vars(metric),
                         scales = 'free',
-                        ncol = ncol) +
+                        ncol = ncol,
+                        strip.position = 'left') +
     ggplot2::theme_classic() +
-    ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) +
+    ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
     xlab("") +
+    ylab("") +
+    theme(strip.placement = "outside") +
     my_theme
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 14:26:06 2021
@@ -123,12 +126,17 @@ plotMetrics <- function(scCNA,
   if (!is.null(label)) {
 
     p <- p +
-      ggbeeswarm::geom_quasirandom(aes(fill = label_value), shape = 21)
+      ggbeeswarm::geom_quasirandom(aes(fill = label_value),
+                                   shape = 21,
+                                   stroke = 0.2,
+                                   size = 2.2)
 
     if (label == "superclones") {
-      color_lab <- list(ggplot2::scale_fill_manual(values = superclones_pal()))
+      color_lab <- list(ggplot2::scale_fill_manual(values = superclones_pal(),
+                                                   limits = force))
     } else if (label == "subclones") {
-      color_lab <- list(ggplot2::scale_fill_manual(values = subclones_pal()))
+      color_lab <- list(ggplot2::scale_fill_manual(values = subclones_pal(),
+                                                   limits = force))
     } else if (is.numeric(df_merge$label_value)) {
       color_lab <- list(ggplot2::scale_fill_viridis_c())
     } else  {

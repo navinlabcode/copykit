@@ -4,7 +4,15 @@
 \alias{runUmap}
 \title{Creates UMAP embedding}
 \usage{
-runUmap(scCNA, assay = "logr", seed = 17, name = "umap", ...)
+runUmap(
+  scCNA,
+  assay = "logr",
+  seed = 17,
+  min_dist = 0,
+  n_neighbors = 30,
+  name = "umap",
+  ...
+)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
@@ -13,10 +21,23 @@ runUmap(scCNA, assay = "logr", seed = 17, name = "umap", ...)
 
 \item{seed}{Sets a seed for the pseudorandom number generator.}
 
+\item{min_dist}{The effective minimum distance between embedded points.
+Smaller values will result in a more clustered/clumped embedding where nearby
+points on the manifold are drawn closer together, while larger values will
+result on a more even dispersal of points. The value should be set relative
+to the spread value, which determines the scale at which embedded points
+will be spread out. See \code{\link[uwot]{umap}}.}
+
+\item{n_neighbors}{The size of local neighborhood (in terms of number of
+neighboring sample points) used for manifold approximation.
+Larger values result in more global views of the manifold,
+while smaller values result in more local data being preserved.
+In general values should be in the range 2 to 100. See \code{\link[uwot]{umap}}.}
+
 \item{name}{String specifying the name to be used to store the result in the
 reducedDims of the output.}
 
-\item{...}{Additional parameters passed to \code{uwot::umap}.}
+\item{...}{Additional parameters passed to \code{\link[uwot]{umap}}.}
 }
 \value{
 A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)}

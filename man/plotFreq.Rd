@@ -10,7 +10,8 @@ plotFreq(
   low_threshold = 0.7,
   assay = "segment_ratios",
   label = NULL,
-  geom = c("area", "line")
+  geom = c("area", "line"),
+  BPPARAM = bpparam()
 )
 }
 \arguments{
@@ -29,6 +30,9 @@ the frequency plot.}
 \code{\link[SummarizedExperiment]{colData}} to separate each frequency plot.}
 
 \item{geom}{A character with the desired geom}
+
+\item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
+should be parallelized.}
 }
 \value{
 A ggplot object with a frequency plot

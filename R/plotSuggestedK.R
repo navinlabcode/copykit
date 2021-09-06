@@ -8,7 +8,7 @@
 #'
 #' @details \code{\link{plotSuggestedK}} access the \code{\link[S4Vectors]{metadata}}
 #' element suggestedK_df that is saved to the scDNA object after running
-#' \code{\link{findSugggestedK}}. The dataframe is used for plotting either a
+#' \code{\link{findSuggestedK}}. The dataframe is used for plotting either a
 #' heatmap, when the argument geom = 'tile', or a dotplot when argument geom =
 #' 'dotplot' or a boxplot when geom = 'boxplot'.
 #'
@@ -49,6 +49,7 @@ plotSuggestedK <- function(scCNA,
   geom = match.arg(geom)
 
   df <- S4Vectors::metadata(scCNA)$suggestedK_df
+  sug_k <- S4Vectors::metadata(scCNA)$suggestedK
 
   df <- dplyr::mutate(df, k = as.character(k))
 
@@ -89,17 +90,24 @@ plotSuggestedK <- function(scCNA,
       dplyr::group_by(k) %>%
       dplyr::summarise(mean_jac = mean(bootmean))
 
+    # adding color for chosen k
+    df <- dplyr::mutate(df, chosen = ifelse(df$k == as.character(sug_k),
+                                        TRUE,
+                                        FALSE))
+
     p <- ggplot() +
-      geom_boxplot(data = df, aes(k, bootmean),
-                   fill = 'grey80') +
+      geom_boxplot(data = df, aes(k, bootmean, fill = chosen),
+                   alpha = 1) +
       geom_point(data = mean_per_k, aes(k, mean_jac),
                  fill = 'red',
                  shape = 21,
                  size = 3) +
+      scale_fill_manual(values = c("TRUE" = 'khaki', "FALSE" = "grey90")) +
       scale_x_discrete(limits = gtools::mixedsort(unique(df$k))) +
       theme_classic() +
       theme(axis.line.y = element_blank(),
-            axis.line.x = element_blank()) +
+            axis.line.x = element_blank(),
+            legend.position = 'none') +
       labs(y = 'jaccard similarity')
 
   }
