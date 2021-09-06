@@ -18,10 +18,6 @@
 #' from hg19 comes from package \code{TxDb.Hsapiens.UCSC.hg19.knownGene} whereas
 #' for hg38 package \code{TxDb.Hsapiens.UCSC.hg38.knownGene}.
 #'
-#' The argument genes can be provided with the string 'hvg'. If that option is
-#' provided copykit will plot the resulting genes obtained with
-#' \code{\link{findVariableGenes}}.
-#'
 #' If the argument geom is set to 'barplot' plotGeneCopy calculates the gene-wise
 #'  frequencies of each copy number state for the selected genes across all of
 #'  the cells. For this reason, geom 'barplot' can only be used with the argument
@@ -64,12 +60,6 @@ plotGeneCopy <- function(scCNA,
   if (geom == 'barplot' && assay != 'integer') {
     stop("Argument geom 'barplot' can only be used with assay == 'integer'")
   }
-
-  # hvg gene argument
-  if (genes == 'hvg' && !is.null(S4Vectors::metadata(scCNA)$hvg)) {
-    genes <- S4Vectors::metadata(scCNA)$hvg
-  } else stop("Argument genes can only be set to 'hvg' after running findVariableGenes()")
-
 
   # genome assembly
   if (S4Vectors::metadata(scCNA)$genome == "hg19") {
