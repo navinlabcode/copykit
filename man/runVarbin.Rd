@@ -9,10 +9,12 @@ runVarbin(
   genome = c("hg38", "hg19"),
   bin_size = "200kb",
   remove_Y = FALSE,
-  method = c("CBS", "WBS"),
+  method = c("CBS", "multipcf"),
   vst = c("ft", "log"),
   seed = 17,
   min_bincount = 10,
+  alpha = 0.001,
+  gamma = 40,
   name = "segment_ratios",
   BPPARAM = bpparam()
 )
@@ -38,6 +40,12 @@ reproducibility.}
 
 \item{min_bincount}{A numerical indicating the minimum mean bin counts a
 cell should have to remain in the dataset.}
+
+\item{alpha}{A numeric with the. significance levels for the test to accept
+change-points for CBS segmentation. See \code{\link[DNAcopy]{segment}}.}
+
+\item{gamma}{A numeric passed on to 'multipcf' segmentation. Penalty for each
+discontinuity in the curve, default is 40. See \code{\link[copynumber]{multipcf}}.}
 
 \item{name}{A character with the name for the slot returned by \code{runVarbin}}
 
@@ -75,10 +83,24 @@ or a logarithmic transformation with the option 'log'. Using a 'log' transformat
 may result in long segmentation times for a few cells with large breakpoint counts.
 
 \code{runSegmentation} Fits a piece-wise constant function to the transformed
-the smoothed bin counts. Bin counts are smoothed with \code{\link[DNAcopy]{smooth.CNA}}
-using the Circular Binary Segmentation (CBS) algorithm from
-\code{\link[DNAcopy]{segment}} with default it applies undo.prune with value of 0.05.
-Or with Wild Binary Segmentation (WBS) from \code{\link[wbs]{wbs}}.
+the smoothed bin counts. Bin counts are smoothed with
+\code{\link[DNAcopy]{smooth.CNA}}. Segmentation can be chosen to one of the
+following:
+
+\itemize{
+
+   \item{CBS:} #' \code{runSegmentation} Fits a piece-wise constant function
+   to the transformed the smoothed bin counts. Bin counts are smoothed with
+   \code{\link[DNAcopy]{smooth.CNA}} using the Circular Binary Segmentation
+   (CBS) algorithm from \code{\link[DNAcopy]{segment}} with default it applies
+   undo.prune with value of 0.05.
+
+   \item{multipcf:} Performs the joint segmentation from the \code{copynumber}
+   package using the \code{\link[copynumber]{multipcf}} function. By fitting
+   piecewise constant curves with common breakpoints for all samples.
+
+
+}
 
 The resulting segment means are further refined with MergeLevels to join
 adjacent segments with non-significant differences in segmented means.
@@ -106,6 +128,11 @@ and the square root", The Annals of Mathematical Statistics,
 Fryzlewicz, P. (2014). WILD BINARY SEGMENTATION FOR MULTIPLE CHANGE-POINT
 DETECTION. The Annals of Statistics, 42(6), 2243-2281. Retrieved July 30,
 2021, from http://www.jstor.org/stable/43556493
+
+Nilsen G, Liestol K, Van Loo P, Vollan H, Eide M, Rueda O, Chin S, Russell R,
+Baumbusch L, Caldas C, Borresen-Dale A, Lingjaerde O (2012). “Copynumber:
+Efficient algorithms for single- and multi-track copy number segmentation.”
+BMC Genomics, 13(1), 591.
 }
 \author{
 Darlan Conterno Minussi
