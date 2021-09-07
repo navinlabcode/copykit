@@ -418,9 +418,21 @@ plotHeatmap <- function(scCNA,
       dplyr::select(dplyr::all_of(label))
 
     if (consensus == TRUE) {
+
       # Uses the hidden consensus_by attribute from the calcConsensus function
       # to guarantee the same order
       cons_attr <- attr(consensus(scCNA), "consensus_by")
+
+      # Checks to guarantee that only the same element of consensus is being
+      # used for annotation.
+      if (length(label) > 1) {
+        stop("Label must be of length 1 for consensus heatmap annotation.")
+      }
+
+      if (cons_attr != label) {
+        stop("Consensus heatmap can only be annotated with the same metadata element
+             used for generating the consensus matrix.")
+      }
 
       metadata_anno_df <- metadata_anno_df[label] %>%
         dplyr::distinct()
