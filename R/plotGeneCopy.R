@@ -11,6 +11,9 @@
 #' @param geom A string with the geom for plotting.
 #' @param label A string with the name of the column from
 #' \code{\link[SummarizedExperiment]{colData}} to color the points
+#' @param facet A string with the name of the column from
+#' \code{\link[SummarizedExperiment]{colData}} to separate the plot into facets.
+#' @param dodge.width A numeric that adds dodge between the label categories.
 #'
 #' @details plotGeneCopy finds overlaps of the varbin scaffolds genomic ranges
 #' which can be accessed with \code{\link[SummarizedExperiment]{rowRanges}}
@@ -41,6 +44,8 @@ plotGeneCopy <- function(scCNA,
                          genes,
                          geom = c("swarm", "barplot", "violin"),
                          label = NULL,
+                         facet = NULL,
+                         dodge.width = 0,
                          assay = "segment_ratios") {
 
   geom <- match.arg(geom)
@@ -166,6 +171,23 @@ plotGeneCopy <- function(scCNA,
   seg_long <- tidyr::gather(seg_data_genes,
                             key = "sample",
                             value = "segratio", -gene)
+
+  #adding metadata if provided
+  if (!is.null(label)) {
+    metadata_info <- metadata[c("sample", label)]
+    names(metadata_info) <- c("sample", "plot_label")
+    seg_long <- merge(seg_long, metadata_info)
+
+  }
+
+  # adding facet if provided
+  if (!is.null(facet)) {
+    metadata_info_facet <- metadata[c("sample", facet)]
+    names(metadata_info_facet) <- c("sample", "plot_facet")
+    seg_long <- merge(seg_long, metadata_info_facet)
+
+  }
+
   #plotting
 
   p <-
@@ -223,17 +245,13 @@ plotGeneCopy <- function(scCNA,
   } else if (geom == "swarm" & !is.null(label)) {
     # retrieving data
 
-    lab <- dplyr::pull(metadata,
-                       var = label)
-
-
     if (label == "superclones") {
       # coloring for discrete variable label
       p <- p +
-        ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
-                                                    each = length(df$gene))),
+        ggbeeswarm::geom_quasirandom(aes(fill = plot_label),
                                      shape = 21,
                                      size = 2.2,
+                                     dodge.width = dodge.width,
                                      stroke = 0.2)
 
       color_lab <-
@@ -242,17 +260,13 @@ plotGeneCopy <- function(scCNA,
 
       p <- p + color_lab
 
-      print(p)
-
     } else if (label == "subclones") {
       # coloring for discrete variable label
       p <- p +
-        ggbeeswarm::geom_quasirandom(aes(fill = as.character(rep(
-          lab,
-          each = length(df$gene)
-        ))),
+        ggbeeswarm::geom_quasirandom(aes(fill = plot_label),
         shape = 21,
         size = 2.2,
+        dodge.width = dodge.width,
         stroke = 0.2)
 
       color_lab <-
@@ -261,12 +275,9 @@ plotGeneCopy <- function(scCNA,
 
       p <- p + color_lab
 
-      print(p)
-
-    } else if (is.numeric(lab))  {
+    } else if (is.numeric(metadata[[label]]))  {
       p <- p +
-        ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
-                                                    each = length(df$gene))),
+        ggbeeswarm::geom_quasirandom(aes(fill = plot_label),
                                      shape = 21,
                                      size = 2.2,
                                      stroke = 0.2)
@@ -275,15 +286,13 @@ plotGeneCopy <- function(scCNA,
 
       p <- p + color_lab
 
-      print(p)
-
     } else {
       # coloring for discrete variable label
       p <- p +
-        ggbeeswarm::geom_quasirandom(aes(fill = rep(lab,
-                                                    each = length(df$gene))),
+        ggbeeswarm::geom_quasirandom(aes(fill = plot_label),
                                      shape = 21,
                                      size = 2.2,
+                                     dodge.width = dodge.width,
                                      stroke = 0.2)
 
       color_lab <- list(ggplot2::scale_fill_viridis_d(limits = force))
@@ -293,6 +302,15 @@ plotGeneCopy <- function(scCNA,
       print(p)
 
     }
+
+    # adding facets if provided
+    if (!is.null(facet)) {
+
+      p <- p + facet_wrap(vars(plot_facet))
+
+    }
+
+  print(p)
 
   }
 
