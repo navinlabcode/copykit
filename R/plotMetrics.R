@@ -128,7 +128,7 @@ plotMetrics <- function(scCNA,
     p <- p +
       ggbeeswarm::geom_quasirandom(aes(fill = label_value),
                                    shape = 21,
-                                   stroke = 0.2,
+                                   stroke = 0.1,
                                    size = 2.2)
 
     if (label == "superclones") {
