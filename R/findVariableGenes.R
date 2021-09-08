@@ -9,6 +9,9 @@
 #' number states for each gene.
 #' @param top_n A numeric defining how many variable genes will be returned.
 #'
+#' @return A string vector with the HUGO genes in decreasing order of importance
+#' stored to the \code{\link[S4Vectors]{metadata}}.
+#'
 #' @details \code{findVariableGenes} Runs \code{\link[stats]{prcomp}} to the
 #' copy number states of the genes from the provided gene list and returns
 #' the one that have the largest absolute variance as assesed by the
@@ -17,6 +20,7 @@
 #' The resulting list of genes is stored within the metadata of the scCNA
 #' object and can be accessed with \code{\link[S4Vectors]{metadata}}.
 #'
+#'
 #' @importFrom SummarizedExperiment rowRanges
 #' @importFrom BiocGenerics subset
 #' @importFrom S4Vectors metadata subjectHits queryHits
@@ -24,7 +28,6 @@
 #' @importFrom rlang is_empty
 #' @importFrom GenomicRanges findOverlaps
 #'
-#' @return
 #' @export
 #'
 #' @examples
