@@ -10,7 +10,7 @@
 #'
 #' @return A ggplot object containing an alluvial plot from ggalluvial
 #'
-#' @importFrom ggalluvial geom_flow geom_stratum to_lodes_from
+#' @importFrom ggalluvial geom_flow geom_stratum to_lodes_form
 #' @importFrom SummarizedExperiment colData
 #' @importFrom dplyr all_of across group_by count filter
 #' @import ggplot2
