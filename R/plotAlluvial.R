@@ -5,12 +5,14 @@
 #' @param scCNA
 #' @param label A string with two or more  elements from \code{\link[SummarizedExperiment]{colData}}.
 #' @param label_colors An optional named vector with the colors of each element from label.
+#' @param min_cells An optional numeric to filter stratum that do not reach
+#' the minimum amount of cells.
 #'
 #' @return A ggplot object containing an alluvial plot from ggalluvial
 #'
 #' @importFrom ggalluvial geom_flow geom_stratum to_lodes_from
 #' @importFrom SummarizedExperiment colData
-#' @importFrom dplyr all_of across group_by count
+#' @importFrom dplyr all_of across group_by count filter
 #' @import ggplot2
 #'
 #' @export
@@ -18,7 +20,8 @@
 #' @examples
 plotAlluvial <- function(scCNA,
                          label,
-                         label_colors = NULL) {
+                         label_colors = NULL,
+                         min_cells = NULL) {
   meta <- as.data.frame(colData(scCNA))
 
   # check
@@ -36,6 +39,11 @@ plotAlluvial <- function(scCNA,
       id = 'cohort',
       axes = 1:length(label)
     )
+
+  if (!is.null(min_cells)) {
+   alluvial_dat <- alluvial_dat %>%
+     dplyr::filter(n > min_cells)
+  }
 
   # managing colors
   if (is.null(label_colors)) {

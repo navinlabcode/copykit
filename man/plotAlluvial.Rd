@@ -4,12 +4,15 @@
 \alias{plotAlluvial}
 \title{plotAlluvial}
 \usage{
-plotAlluvial(scCNA, label, label_colors = NULL)
+plotAlluvial(scCNA, label, label_colors = NULL, min_cells = NULL)
 }
 \arguments{
 \item{label}{A string with two or more  elements from \code{\link[SummarizedExperiment]{colData}}.}
 
 \item{label_colors}{An optional named vector with the colors of each element from label.}
+
+\item{min_cells}{An optional numeric to filter stratum that do not reach
+the minimum amount of cells.}
 }
 \value{
 A ggplot object containing an alluvial plot from ggalluvial
