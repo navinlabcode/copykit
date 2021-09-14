@@ -82,6 +82,7 @@
 #' @importFrom SummarizedExperiment assay
 #' @importFrom dplyr select pull all_of
 #' @importFrom viridis viridis
+#' @importFrom scales hue_pal
 #' @examples
 #'
 
@@ -446,9 +447,10 @@ plotHeatmap <- function(scCNA,
     }
 
     if (is.null(label_colors)) {
-      # j and l controls the value being picked from the color wheel and the brightness
-      j <- 15
-      l <- 35
+      # h and l controls the value being picked from the color wheel
+      # and the brightness
+      h <- 15
+      l <- 65
 
       # cont controls the value for the continuous scale from viridis package
       cont_options <- c("D", "A", "E", "C", "B")
@@ -506,8 +508,7 @@ plotHeatmap <- function(scCNA,
             sort()
 
           n <- length(elements)
-          hues <- seq(j, 375, length = n + 1)
-          hex <- hcl(h = hues, l = l, c = 100)[1:n]
+          hex <- scales::hue_pal(h = c(0, 360) + h, l = 65)(n)
 
           col <- structure(hex,
                            names = elements)
@@ -517,8 +518,8 @@ plotHeatmap <- function(scCNA,
 
           # adding an increment to color on the color wheel and hue 'brightness'
           # so colors of the next element of the metadata are not the same as the previous
-          j <- j + 15
-          l <- l + 5
+          l <- l - 10
+          h <- h + 15
 
         }
 

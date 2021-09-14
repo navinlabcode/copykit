@@ -13,6 +13,7 @@
 #' @importFrom ggalluvial geom_flow geom_stratum to_lodes_form
 #' @importFrom SummarizedExperiment colData
 #' @importFrom dplyr all_of across group_by count filter
+#' @importFrom scales hue_pal
 #' @import ggplot2
 #'
 #' @export
@@ -66,16 +67,20 @@ plotAlluvial <- function(scCNA,
     non_default_colors <- vector(mode = 'list')
 
     for (i in seq_along(non_default)) {
-      # luminescence increase
-      l <- 0
+      # luminescence and brightness
+      l <- 65
+      h <- 15
+
       groups_label <- unique(meta[[non_default[i]]])
 
       non_default_colors[[i]] <-
-        structure(scales::hue_pal()(length(groups_label)),
+        structure(scales::hue_pal(h = c(0, 360) + h,
+                                  l = l)(length(groups_label)),
                   names = groups_label)
       names(non_default_colors)[i] <- non_default[i]
 
-      l <- l + 15
+      l <- l - 10
+      h <- h + 15
 
     }
 

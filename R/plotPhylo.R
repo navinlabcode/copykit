@@ -12,10 +12,12 @@
 #' @param consensus A boolean indicating if the consensus phylogenetic tree
 #' should be plotted.
 #'
-#' @return A phylogenetic tree visualization.
+#' @return A ggplot object with aphylogenetic tree visualization.
 #' @export
 #'
 #' @import ggtree
+#' @importFrom scales hue_pal
+#'
 #' @examples
 #'
 
@@ -128,7 +130,7 @@ plotPhylo <- function(scCNA,
 
           n <- length(elements)
           hues <- seq(15, 375, length = n + 1)
-          hex <- hcl(h = hues, l = 35, c = 100)[1:n]
+          hex <- scales::hue_pal()(n)
 
           col <- structure(hex,
                            names = elements)
