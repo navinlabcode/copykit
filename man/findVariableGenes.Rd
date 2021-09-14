@@ -18,7 +18,8 @@ number states for each gene.}
 \item{top_n}{A numeric defining how many variable genes will be returned.}
 }
 \value{
-
+A string vector with the HUGO genes in decreasing order of importance
+stored to the \code{\link[S4Vectors]{metadata}}.
 }
 \description{
 Find the most variable genes in the dataset.
