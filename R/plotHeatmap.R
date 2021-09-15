@@ -82,6 +82,7 @@
 #' @importFrom SummarizedExperiment assay
 #' @importFrom dplyr select pull all_of
 #' @importFrom viridis viridis
+#' @importFrom scales hue_pal
 #' @examples
 #'
 
@@ -418,9 +419,21 @@ plotHeatmap <- function(scCNA,
       dplyr::select(dplyr::all_of(label))
 
     if (consensus == TRUE) {
+
       # Uses the hidden consensus_by attribute from the calcConsensus function
       # to guarantee the same order
       cons_attr <- attr(consensus(scCNA), "consensus_by")
+
+      # Checks to guarantee that only the same element of consensus is being
+      # used for annotation.
+      if (length(label) > 1) {
+        stop("Label must be of length 1 for consensus heatmap annotation.")
+      }
+
+      if (cons_attr != label) {
+        stop("Consensus heatmap can only be annotated with the same metadata element
+             used for generating the consensus matrix.")
+      }
 
       metadata_anno_df <- metadata_anno_df[label] %>%
         dplyr::distinct()
@@ -434,9 +447,10 @@ plotHeatmap <- function(scCNA,
     }
 
     if (is.null(label_colors)) {
-      # j and l controls the value being picked from the color wheel and the brightness
-      j <- 15
-      l <- 35
+      # h and l controls the value being picked from the color wheel
+      # and the brightness
+      h <- 15
+      l <- 65
 
       # cont controls the value for the continuous scale from viridis package
       cont_options <- c("D", "A", "E", "C", "B")
@@ -494,8 +508,7 @@ plotHeatmap <- function(scCNA,
             sort()
 
           n <- length(elements)
-          hues <- seq(j, 375, length = n + 1)
-          hex <- hcl(h = hues, l = l, c = 100)[1:n]
+          hex <- scales::hue_pal(h = c(0, 360) + h, l = 65)(n)
 
           col <- structure(hex,
                            names = elements)
@@ -505,8 +518,8 @@ plotHeatmap <- function(scCNA,
 
           # adding an increment to color on the color wheel and hue 'brightness'
           # so colors of the next element of the metadata are not the same as the previous
-          j <- j + 15
-          l <- l + 5
+          l <- l - 10
+          h <- h + 15
 
         }
 

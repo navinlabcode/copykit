@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 inst/doc
+data-raw
 test_delete_folder
 .DS_Store
 ._.DS_Store

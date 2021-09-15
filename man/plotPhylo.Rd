@@ -19,7 +19,7 @@ Must match label length}
 should be plotted.}
 }
 \value{
-A phylogenetic tree visualization.
+A ggplot object with aphylogenetic tree visualization.
 }
 \description{
 Plots a phylogenetic tree.

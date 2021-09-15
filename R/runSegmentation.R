@@ -63,6 +63,11 @@ runSegmentation <- function(scCNA,
   # Args
   method <- match.arg(method)
 
+  #checks
+  if (!is.numeric(alpha)) stop("Argument alpha must be numeric.")
+  if (!is.numeric(gamma)) stop("Argument gamma must be numeric.")
+  if (!is.numeric(seed)) stop("Argument seed must be numeric.")
+
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Genome Assembly
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
