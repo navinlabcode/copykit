@@ -238,22 +238,31 @@ runSegmentation <- function(scCNA,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   message("Merging levels.")
+
+  if (S4Vectors::metadata(scCNA)$vst == 'ft') {
+    smooth_counts_df[smooth_counts_df == 0] <- 1e-3
+    seg_df[seg_df == 0] <- 1e-3
+    smooth_counts_df <- log2(smooth_counts_df)
+    seg_df <- log2(seg_df)
+  }
+
   seg_ml_list <- BiocParallel::bplapply(seq_along(seg_df), function(i) {
 
     cell_name <- names(seg_df)[i]
     smoothed_cell_ct <- smooth_counts_df[,i]
     seg_means_cell <- seg_df[,i]
-    seg_means_ml <- aCGH::mergeLevels(log2(smoothed_cell_ct+1e-3),
-                                      log2(seg_means_cell+1e-3),
+    seg_means_ml <- aCGH::mergeLevels(smoothed_cell_ct,
+                                      seg_means_cell,
                                       verbose = 0,
                                       pv.thres = 1e-10)$vecMerged
-    seg_means_ml <- 2^seg_means_ml
-
   })
 
   names(seg_ml_list) <- names(seg_df)
-
   seg_ml_df <- dplyr::bind_cols(seg_ml_list)
+
+  if (S4Vectors::metadata(scCNA)$vst == 'ft') {
+    seg_ml_df <- 2^seg_ml_df
+  }
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # reverting the transformation back to ratios
@@ -272,14 +281,9 @@ runSegmentation <- function(scCNA,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   #saving as segment ratios
-  SummarizedExperiment::assay(scCNA, name) <-
-    apply(seg_ratio_df, 2, function(x)
-      x / mean(x)) %>%
-    as.data.frame()
+  seg_ratios <- as.data.frame(apply(seg_ratio_df, 2, function(x) x / mean(x)))
+  SummarizedExperiment::assay(scCNA, name) <- seg_ratios
 
-  #saving logr
-  SummarizedExperiment::assay(scCNA, 'logr') <-
-    log2(SummarizedExperiment::assay(scCNA, name)+1e-3)
 
   # calculating ratios from the bincounts, used for ratio plots
   scCNA <- calcRatios(scCNA, assay = 'bin_counts')

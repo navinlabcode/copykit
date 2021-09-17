@@ -139,6 +139,9 @@ runVarbin <- function(dir,
                                     method = method,
                                     BPPARAM = BPPARAM)
 
+  copykit_object <- logNorm(copykit_object,
+                            transform = 'log')
+
   return(copykit_object)
 
 }
