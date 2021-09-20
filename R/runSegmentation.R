@@ -55,7 +55,7 @@
 runSegmentation <- function(scCNA,
                             method = c("CBS", "multipcf"),
                             seed = 17,
-                            alpha = 0.001,
+                            alpha = 0.0001,
                             gamma = 40,
                             undo.splits = 'prune',
                             name = 'segment_ratios',
@@ -164,9 +164,6 @@ runSegmentation <- function(scCNA,
   smooth_counts_df <- dplyr::bind_cols(smooth_counts) %>%
     as.data.frame()
 
-  SummarizedExperiment::assay(scCNA, 'smoothed_bincounts') <-
-    smooth_counts_df
-
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Segmentation methods
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,10 +237,10 @@ runSegmentation <- function(scCNA,
   message("Merging levels.")
 
   if (S4Vectors::metadata(scCNA)$vst == 'ft') {
-    smooth_counts_df[smooth_counts_df == 0] <- 1e-3
-    seg_df[seg_df == 0] <- 1e-3
-    smooth_counts_df <- log2(smooth_counts_df)
-    seg_df <- log2(seg_df)
+    smooth_counts_df[smooth_counts_df == 0] <- 1e-4
+    seg_df[seg_df == 0] <- 1e-4
+    smooth_counts_df <- log(smooth_counts_df)
+    seg_df <- log(seg_df)
   }
 
   seg_ml_list <- BiocParallel::bplapply(seq_along(seg_df), function(i) {
@@ -269,10 +266,18 @@ runSegmentation <- function(scCNA,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   if (S4Vectors::metadata(scCNA)$vst == 'ft') {
+
+    SummarizedExperiment::assay(scCNA, 'smoothed_bincounts') <-
+      .invft(2^smooth_counts_df)
+
     seg_ratio_df <- .invft(seg_ml_df)
   }
 
   if (S4Vectors::metadata(scCNA)$vst == 'log') {
+
+    SummarizedExperiment::assay(scCNA, 'smoothed_bincounts') <-
+      2^smooth_counts_df
+
     seg_ratio_df <- 2 ^ seg_ml_df
   }
 
@@ -281,12 +286,12 @@ runSegmentation <- function(scCNA,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   #saving as segment ratios
-  seg_ratios <- as.data.frame(apply(seg_ratio_df, 2, function(x) x / mean(x)))
+  seg_ratios <- sweep(seg_ratio_df, 2, apply(seg_ratio_df, 2, mean), '/')
   SummarizedExperiment::assay(scCNA, name) <- seg_ratios
 
 
   # calculating ratios from the bincounts, used for ratio plots
-  scCNA <- calcRatios(scCNA, assay = 'bin_counts')
+  scCNA <- calcRatios(scCNA, assay = 'smoothed_bincounts')
 
   message("Done.")
 

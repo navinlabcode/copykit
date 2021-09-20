@@ -37,8 +37,8 @@ runVst <- function(scCNA,
   }
 
   if (transformation == 'log') {
-    varbin_counts_df[varbin_counts_df == 0] <- 1e-3
-    counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) log2(x))
+    varbin_counts_df[varbin_counts_df == 0] <- 1e-4
+    counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) log(x))
   }
 
   counts_df_ft <- as.data.frame(counts_df_ft)
