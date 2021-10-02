@@ -9,6 +9,7 @@
 #' should be plotted.
 #' @param label A character indicating which element of the \code{colData()} to
 #' color the plots.
+#' @param dodge.width A numeric that adds dodge between the label categories.
 #' @param ncol A Integer specifying the number of columns to be used for the panels of a multi-facet plot.
 #'
 #'
@@ -23,6 +24,7 @@
 plotMetrics <- function(scCNA,
                         metric,
                         label = NULL,
+                        dodge.width = 0,
                         ncol = 2) {
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 14:16:37 2021
@@ -106,7 +108,6 @@ plotMetrics <- function(scCNA,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 14:22:43 2021
 
   p <- ggplot2::ggplot(df_merge, aes(metric, value)) +
-    ggbeeswarm::geom_quasirandom() +
     ggplot2::facet_wrap(vars(metric),
                         scales = 'free',
                         ncol = ncol,
@@ -129,6 +130,7 @@ plotMetrics <- function(scCNA,
       ggbeeswarm::geom_quasirandom(aes(fill = label_value),
                                    shape = 21,
                                    stroke = 0.1,
+                                   dodge.width = dodge.width,
                                    size = 2.2)
 
     if (label == "superclones") {
@@ -150,6 +152,9 @@ plotMetrics <- function(scCNA,
 
   } else {
     # else just print the normal without colors
+    p <- p +
+      ggbeeswarm::geom_quasirandom()
+
     print(p)
   }
 

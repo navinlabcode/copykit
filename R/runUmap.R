@@ -45,6 +45,8 @@ runUmap <- function(scCNA,
   set.seed(seed)
 
   dat_umap <- uwot::umap(seg_data,
+                         min_dist = min_dist,
+                         n_neighbors = n_neighbors,
                          ...)
 
   SingleCellExperiment::reducedDim(scCNA, type = name) <- dat_umap
