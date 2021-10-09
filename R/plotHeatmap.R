@@ -83,6 +83,7 @@
 #' @importFrom dplyr select pull all_of
 #' @importFrom viridis viridis
 #' @importFrom scales hue_pal
+#' @importFrom ape Ntip
 #' @examples
 #'
 
