@@ -4,6 +4,9 @@
 #'
 #' @param scCNA The scCNA object.
 #' @param root A string indicating how to root the consensus tree.
+#' @param root_user A numeric with the vector to be used as root of the tree if
+#' \code{root} is set to 'user'. Must have the same length as the number of bins
+#' of the genome scaffold.
 #'
 #' @importFrom ape fastme.bal Ntip root.phylo drop.tip
 #'
@@ -12,7 +15,8 @@
 #'
 #' @examples
 runConsensusPhylo <- function(scCNA,
-                              root = c('mrca', 'neutral')) {
+                              root = c('mrca', 'neutral', 'user'),
+                              root_user = NULL) {
 
   root <- match.arg(root)
 
@@ -28,7 +32,6 @@ runConsensusPhylo <- function(scCNA,
     consensus_df[nrow(consensus_df) + 1, ] <- 1
     consensus_df[nrow(consensus_df) + 1, ] <- 1
 
-
   }
 
   if (root == 'mrca') {
@@ -36,6 +39,19 @@ runConsensusPhylo <- function(scCNA,
     anc_profile <- apply(consensus_df,
                          2,
                          function(x) x[which.min(abs(x-1))] )
+
+    consensus_df[nrow(consensus_df)+1,] <- anc_profile
+    consensus_df[nrow(consensus_df)+1,] <- anc_profile
+
+  }
+
+  if (root == 'user') {
+
+    if (length(root_user) != ncol(consensus_df)) {
+      stop("Length of root_user argument must be the same as nrow(scCNA).")
+    }
+
+    anc_profile <- root_user
 
     consensus_df[nrow(consensus_df)+1,] <- anc_profile
     consensus_df[nrow(consensus_df)+1,] <- anc_profile
