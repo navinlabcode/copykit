@@ -44,7 +44,8 @@ calcConsensus <- function(scCNA,
 
   consensus_info <-
     as.data.frame(SummarizedExperiment::colData(scCNA)) %>%
-    dplyr::select(!!consensus_by)
+    dplyr::select(!!consensus_by) %>%
+    droplevels()
 
   seg_data <- as.data.frame(t(SummarizedExperiment::assay(scCNA, assay)))
 
