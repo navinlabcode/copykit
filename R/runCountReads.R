@@ -194,7 +194,7 @@ runCountReads <- function(dir,
     },
     BPPARAM = BPPARAM)
 
-  varbin_counts_df <- dplyr::bind_cols(varbin_counts_list_gccor)
+  varbin_counts_df <- round(dplyr::bind_cols(varbin_counts_list_gccor),2)
 
   # filtering low read counts where the sum of bins does not reach min_reads
   varbin_counts_df <-

@@ -41,7 +41,7 @@ logNorm <- function(scCNA,
     seg_ratios_logr <- log10(seg_ratios)
   }
 
-  SummarizedExperiment::assay(scCNA, name) <- seg_ratios_logr
+  SummarizedExperiment::assay(scCNA, name) <- round(seg_ratios_logr, 2)
 
   return(scCNA)
 

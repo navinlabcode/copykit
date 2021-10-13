@@ -27,7 +27,7 @@ calcRatios <- function(scCNA,
 
   ratios_df <- sweep(counts, 2, apply(counts, 2, fun), '/')
 
-  SummarizedExperiment::assay(scCNA, "ratios") <- ratios_df
+  SummarizedExperiment::assay(scCNA, "ratios") <- round(ratios_df, 2)
 
   return(scCNA)
 
