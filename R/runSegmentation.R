@@ -55,7 +55,7 @@
 runSegmentation <- function(scCNA,
                             method = c("CBS", "multipcf"),
                             seed = 17,
-                            alpha = 1e-6,
+                            alpha = 1e-9,
                             gamma = 40,
                             undo.splits = 'prune',
                             name = 'segment_ratios',
@@ -253,7 +253,7 @@ runSegmentation <- function(scCNA,
     seg_means_ml <- aCGH::mergeLevels(smoothed_cell_ct,
                                       seg_means_cell,
                                       verbose = 0,
-                                      pv.thres = 1e-12)$vecMerged
+                                      pv.thres = 1e-10)$vecMerged
   })
 
   names(seg_ml_list) <- names(seg_df)
