@@ -34,7 +34,7 @@ runUmap <- function(scCNA,
                     assay = "logr",
                     seed = 17,
                     min_dist = 0,
-                    n_neighbors = 30,
+                    n_neighbors = 50,
                     name = "umap",
                     ...) {
   seg_data <- t(SummarizedExperiment::assay(scCNA, assay)) %>%
@@ -45,6 +45,8 @@ runUmap <- function(scCNA,
   set.seed(seed)
 
   dat_umap <- uwot::umap(seg_data,
+                         min_dist = min_dist,
+                         n_neighbors = n_neighbors,
                          ...)
 
   SingleCellExperiment::reducedDim(scCNA, type = name) <- dat_umap

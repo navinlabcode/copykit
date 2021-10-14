@@ -4,18 +4,12 @@
 \alias{runConsensusPhylo}
 \title{runConsensusPhylo}
 \usage{
-runConsensusPhylo(scCNA)
+runConsensusPhylo(scCNA, root = c("mrca", "neutral"))
 }
 \arguments{
-\item{consensus_df}{The consensus data frame from the segmented dataset}
+\item{scCNA}{The scCNA object.}
 
-\item{clusters}{The results from clustering}
-
-\item{ploidy_VAL}{The inferred ploidy value. Will be used to scale the data}
-
-\item{rotate_nodes}{Nodes to be rotated}
-
-\item{plot}{Boolean. Prints the plot if true}
+\item{root}{A string indicating how to root the consensus tree.}
 }
 \value{
 

@@ -112,7 +112,7 @@ runVarbin <- function(dir,
                       vst = c("ft", "log"),
                       seed = 17,
                       min_bincount = 10,
-                      alpha = 0.001,
+                      alpha = 1e-9,
                       gamma = 40,
                       name = 'segment_ratios',
                       BPPARAM = bpparam()) {
@@ -138,6 +138,9 @@ runVarbin <- function(dir,
                                     gamma = gamma,
                                     method = method,
                                     BPPARAM = BPPARAM)
+
+  copykit_object <- logNorm(copykit_object,
+                            transform = 'log')
 
   return(copykit_object)
 

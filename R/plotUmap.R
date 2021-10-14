@@ -81,7 +81,7 @@ plotUmap <- function(scCNA,
       geom_point(aes(fill = as.factor(
         SummarizedExperiment::colData(scCNA)$subclones
       )),
-      size = 2.2,
+      size = 2.5,
       shape = 21,
       stroke = 0.1) +
       scale_fill_manual(values = subclones_pal(),
@@ -96,7 +96,7 @@ plotUmap <- function(scCNA,
       geom_point(aes(fill = as.factor(
         SummarizedExperiment::colData(scCNA)$superclones
       )),
-      size = 2.2,
+      size = 2.5,
       shape = 21) +
       scale_fill_manual(values = superclones_pal(),
                         name = "superclones",
@@ -126,7 +126,7 @@ plotUmap <- function(scCNA,
         y = V2,
         fill = as.factor(SummarizedExperiment::colData(scCNA)$subclones)
       ),
-      size = 2.2,
+      size = 2.5,
       shape = 21,
       stroke = 0.1) +
       scale_fill_manual(values = subclones_pal(),
@@ -148,7 +148,7 @@ plotUmap <- function(scCNA,
 
     p <- p +
       geom_point(aes(fill = lab),
-                 size = 2.2,
+                 size = 2.5,
                  shape = 21,
                  stroke = 0.1) +
       theme_classic() +
@@ -160,7 +160,7 @@ plotUmap <- function(scCNA,
 
       p <- p +
         geom_point(aes(fill = lab),
-                   size = 2.2,
+                   size = 2.5,
                    shape = 21,
                    stroke = 0.1) +
         ggplot2::scale_fill_viridis_c()

@@ -53,7 +53,7 @@ findSuggestedK <- function(scCNA,
                            embedding = 'umap',
                            k_range = NULL,
                            method = c("hdbscan", "leiden"),
-                           metric = c("mean", "median"),
+                           metric = c("median", "mean"),
                            seed = 17,
                            B = 200,
                            BPPARAM = bpparam())
@@ -67,10 +67,10 @@ findSuggestedK <- function(scCNA,
 
     n_cells <- ncol(segment_ratios(scCNA))
     max_range <- round(sqrt(n_cells))
-    min_range <- 5
+    min_range <- 10
 
     if (min_range > max_range) {
-      k_range <- 5:20
+      k_range <- 10:20
     } else {
       k_range <- min_range:max_range
     }

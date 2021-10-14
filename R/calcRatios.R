@@ -17,12 +17,8 @@
 #'
 #' @examples
 calcRatios <- function(scCNA,
-                       assay = c("ft", "bin_counts"),
+                       assay = c("ft", "bin_counts", "smoothed_bincounts"),
                        fun = c("mean", "median")) {
-
-  if (assay %!in% c("ft", "bin_counts")) {
-    stop("Assay must be either 'ft' or 'bin_counts'")
-  }
 
   assay <- match.arg(assay)
   fun <- match.arg(fun)
@@ -31,7 +27,7 @@ calcRatios <- function(scCNA,
 
   ratios_df <- sweep(counts, 2, apply(counts, 2, fun), '/')
 
-  SummarizedExperiment::assay(scCNA, "ratios") <- ratios_df
+  SummarizedExperiment::assay(scCNA, "ratios") <- round(ratios_df, 2)
 
   return(scCNA)
 

@@ -2,11 +2,11 @@
 #'
 #'  Runs a minimal evolution tree algorithm for the consensus data frame
 #'
-#' @param consensus_df The consensus data frame from the segmented dataset
-#' @param clusters The results from clustering
-#' @param ploidy_VAL The inferred ploidy value. Will be used to scale the data
-#' @param rotate_nodes Nodes to be rotated
-#' @param plot Boolean. Prints the plot if true
+#' @param scCNA The scCNA object.
+#' @param root A string indicating how to root the consensus tree.
+#' @param root_user A numeric with the vector to be used as root of the tree if
+#' \code{root} is set to 'user'. Must have the same length as the number of bins
+#' of the genome scaffold.
 #'
 #' @importFrom ape fastme.bal Ntip root.phylo drop.tip
 #'
@@ -14,7 +14,11 @@
 #' @export
 #'
 #' @examples
-runConsensusPhylo <- function(scCNA) {
+runConsensusPhylo <- function(scCNA,
+                              root = c('mrca', 'neutral', 'user'),
+                              root_user = NULL) {
+
+  root <- match.arg(root)
 
   if (nrow(consensus(scCNA)) == 0) {
     stop("Consensus slot is empty. run calcConsensus().")
@@ -22,9 +26,37 @@ runConsensusPhylo <- function(scCNA) {
 
   consensus_df <- as.data.frame(t(consensus(scCNA)))
 
-  #adding a neutral state, will use as root
-  consensus_df[nrow(consensus_df) + 1, ] <- 1
-  consensus_df[nrow(consensus_df) + 1, ] <- 1
+  if (root == 'neutral') {
+
+    #adding a neutral state, will use as root
+    consensus_df[nrow(consensus_df) + 1, ] <- 1
+    consensus_df[nrow(consensus_df) + 1, ] <- 1
+
+  }
+
+  if (root == 'mrca') {
+    #obtain number closest to the ground state for each
+    anc_profile <- apply(consensus_df,
+                         2,
+                         function(x) x[which.min(abs(x-1))] )
+
+    consensus_df[nrow(consensus_df)+1,] <- anc_profile
+    consensus_df[nrow(consensus_df)+1,] <- anc_profile
+
+  }
+
+  if (root == 'user') {
+
+    if (length(root_user) != ncol(consensus_df)) {
+      stop("Length of root_user argument must be the same as nrow(scCNA).")
+    }
+
+    anc_profile <- root_user
+
+    consensus_df[nrow(consensus_df)+1,] <- anc_profile
+    consensus_df[nrow(consensus_df)+1,] <- anc_profile
+
+  }
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Nov 20 12:24:27 2020
   # tree ME

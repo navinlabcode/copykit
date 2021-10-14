@@ -4,7 +4,7 @@
 \alias{plotMetrics}
 \title{plotMetrics}
 \usage{
-plotMetrics(scCNA, metric, label = NULL, ncol = 2)
+plotMetrics(scCNA, metric, label = NULL, dodge.width = 0, ncol = 2)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
@@ -14,6 +14,8 @@ should be plotted.}
 
 \item{label}{A character indicating which element of the \code{colData()} to
 color the plots.}
+
+\item{dodge.width}{A numeric that adds dodge between the label categories.}
 
 \item{ncol}{A Integer specifying the number of columns to be used for the panels of a multi-facet plot.}
 }

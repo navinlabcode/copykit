@@ -83,6 +83,7 @@
 #' @importFrom dplyr select pull all_of
 #' @importFrom viridis viridis
 #' @importFrom scales hue_pal
+#' @importFrom ape Ntip
 #' @examples
 #'
 
@@ -262,7 +263,6 @@ plotHeatmap <- function(scCNA,
         scCNA <- calcConsensus(scCNA)
       }
 
-      scCNA <- runConsensusPhylo(scCNA)
       # metadata info
       consensus_by <- attr(consensus(scCNA), "consensus_by")
 
@@ -270,7 +270,12 @@ plotHeatmap <- function(scCNA,
         dplyr::select(sample, !!consensus_by)
       meta_info <- as.character(dplyr::pull(meta, !!consensus_by))
 
-      tree <- consensusPhylo(scCNA)
+      if (ape::Ntip(consensusPhylo(scCNA)) == 0) {
+        stop("Build a consensus with calcConsensus and use runConsensusPhylo
+        to store the order of the consensus matrix.")
+      } else {
+        tree = consensusPhylo(scCNA)
+      }
 
       # getting order
       is_tip <- tree$edge[, 2] <= length(tree$tip.label)
@@ -286,8 +291,13 @@ plotHeatmap <- function(scCNA,
   } else {
 
     # getting order from tree
-    scCNA <- runConsensusPhylo(scCNA)
-    tree <- consensusPhylo(scCNA)
+    if (ape::Ntip(consensusPhylo(scCNA)) == 0) {
+      stop("Build a consensus with calcConsensus and use runConsensusPhylo
+        to store the order of the consensus matrix.")
+    } else {
+      tree = consensusPhylo(scCNA)
+    }
+
     # getting order
     is_tip <- tree$edge[, 2] <= length(tree$tip.label)
     ordered_tips_index <- tree$edge[is_tip, 2]

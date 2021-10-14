@@ -151,7 +151,8 @@ plotPhylo <- function(scCNA,
     tree <- ggtree::groupOTU(tree, list_samples)
     p <- ggtree::ggtree(tree, ladderize=F) +
     	geom_tippoint(aes(color=group), size=size) +
-    	scale_color_manual(values=label_colors, name=label)
+    	scale_color_manual(values=label_colors, name=label) +
+      theme(legend.position = 'none')
 
     if(consensus){
     	p <- p + geom_tiplab(aes(color=group), size=5, hjust=-0.5)
