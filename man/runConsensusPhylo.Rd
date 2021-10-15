@@ -4,12 +4,16 @@
 \alias{runConsensusPhylo}
 \title{runConsensusPhylo}
 \usage{
-runConsensusPhylo(scCNA, root = c("mrca", "neutral"))
+runConsensusPhylo(scCNA, root = c("mrca", "neutral", "user"), root_user = NULL)
 }
 \arguments{
 \item{scCNA}{The scCNA object.}
 
 \item{root}{A string indicating how to root the consensus tree.}
+
+\item{root_user}{A numeric with the vector to be used as root of the tree if
+\code{root} is set to 'user'. Must have the same length as the number of bins
+of the genome scaffold.}
 }
 \value{
 
