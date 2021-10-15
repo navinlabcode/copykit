@@ -9,7 +9,7 @@ findSuggestedK(
   embedding = "umap",
   k_range = NULL,
   method = c("hdbscan", "leiden"),
-  metric = c("mean", "median"),
+  metric = c("median", "mean"),
   seed = 17,
   B = 200,
   BPPARAM = bpparam()

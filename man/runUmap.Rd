@@ -9,7 +9,7 @@ runUmap(
   assay = "logr",
   seed = 17,
   min_dist = 0,
-  n_neighbors = 30,
+  n_neighbors = 50,
   name = "umap",
   ...
 )

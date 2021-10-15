@@ -13,7 +13,7 @@ runVarbin(
   vst = c("ft", "log"),
   seed = 17,
   min_bincount = 10,
-  alpha = 0.001,
+  alpha = 1e-09,
   gamma = 40,
   name = "segment_ratios",
   BPPARAM = bpparam()

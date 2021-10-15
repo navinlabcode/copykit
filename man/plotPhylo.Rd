@@ -2,9 +2,15 @@
 % Please edit documentation in R/plotPhylo.R
 \name{plotPhylo}
 \alias{plotPhylo}
-\title{Plot phylogenetic tree}
+\title{plotPhylo()}
 \usage{
-plotPhylo(scCNA, label = NULL, label_colors = NULL, consensus = FALSE)
+plotPhylo(
+  scCNA,
+  label = NULL,
+  label_colors = NULL,
+  consensus = FALSE,
+  group = NULL
+)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
@@ -17,9 +23,13 @@ Must match label length}
 
 \item{consensus}{A boolean indicating if the consensus phylogenetic tree
 should be plotted.}
+
+\item{group}{A string that if provided will plot the tip labels as pie charts
+with the proportions from the provided element from
+\code{\link[SummarizedExperiment]{colData}}}
 }
 \value{
-A ggplot object with aphylogenetic tree visualization.
+A ggplot object with a phylogenetic tree visualization.
 }
 \description{
 Plots a phylogenetic tree.
