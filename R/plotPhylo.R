@@ -24,6 +24,7 @@
 #' @importFrom stringr str_remove
 #' @importFrom dplyr select
 #' @importFrom tidyr gather
+#' @importFrom scales hue_pal
 #'
 #' @examples
 #'
