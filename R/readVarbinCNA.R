@@ -17,7 +17,7 @@
 #' @return Bin counts can be accessed with \code{copykit::bin_counts}.
 #' @return Genomic ranges can be accessed with \code{SummarizedExperiment::rowRanges()}
 #'
-#' @import dplyr
+#' @importFrom dplyr filter select mutate rename
 #' @importFrom GenomicRanges seqnames
 #' @importFrom data.table fread
 #' @importFrom fs dir_ls
