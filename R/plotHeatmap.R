@@ -16,6 +16,8 @@
 #' \code{\link[SummarizedExperiment]{colData}} to split the heatmap.
 #' @param rounding_error A boolean indicating if the rounding error matrix
 #' should be plotted.
+#' @param genes A character vector with the HUGO symbol for genes to be annotated
+#' on the heatmap.
 #' @param consensus A boolean indicating if the consensus heatmap should be plotted.
 #' @param n_threads A numeric scalar passed on to \code{\link[amap]{Dist}} for
 #' parallel calculation of the distance matrix needed for 'hclust'.
@@ -94,6 +96,7 @@ plotHeatmap <- function(scCNA,
                         label_colors = NULL,
                         consensus = FALSE,
                         rounding_error = FALSE,
+                        genes = NULL,
                         row_split = NULL) {
 
   order_cells <- match.arg(order_cells)
@@ -341,7 +344,31 @@ plotHeatmap <- function(scCNA,
 
   }
 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # genes annotation
+  #   find_scaffold_genes in internals.R
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+  if (!is.null(genes)) {
+
+    df <- find_scaffold_genes(scCNA,
+                              genes)
+
+    mk <-
+      ComplexHeatmap::columnAnnotation(
+        foo = anno_mark(
+          at = df$pos,
+          labels = df$gene,
+          side = "bottom",
+          labels_gp = grid::gpar(fontsize = 12)
+        ),
+        show_annotation_name = FALSE,
+        show_legend = FALSE
+      )
+
+  } else {
+    mk <- NULL
+  }
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:20 2021
   # Complex heatmap plotting
@@ -349,9 +376,10 @@ plotHeatmap <- function(scCNA,
 
   message("Plotting Heatmap.")
 
-  #plotting
+  # list with arguments for complexheatmap
   complex_args <- list(
     use_raster = TRUE,
+    bottom_annotation = mk,
     column_title = "genomic coordinates",
     column_title_gp = grid::gpar(fontsize = 18),
     column_title_side = "bottom",
@@ -372,8 +400,6 @@ plotHeatmap <- function(scCNA,
     # There are two main conditions: if argument label is provided or if
     # the assay contains integer values.
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:13:10 2021
-
-
 
   # plotting
   if (is.null(label)) {
