@@ -66,15 +66,6 @@ plotGeneCopy <- function(scCNA,
     stop("Argument geom 'barplot' can only be used with assay == 'integer'")
   }
 
-  # genome assembly
-  if (S4Vectors::metadata(scCNA)$genome == "hg19") {
-    genes_assembly <- hg19_genes
-  }
-
-  if (S4Vectors::metadata(scCNA)$genome == "hg38") {
-    genes_assembly <- hg38_genes
-  }
-
   # theme setup
   my_theme <- list(
     ggplot2::theme(
@@ -96,63 +87,10 @@ plotGeneCopy <- function(scCNA,
     ylab("segment ratio")
   )
 
-  # getting ranges from scCNA object
-  ranges <- SummarizedExperiment::rowRanges(scCNA)
-
-  # subsetting to only the desired genes
-  genes_features <- BiocGenerics:::subset(genes_assembly,
-                                          symbol %in% genes)
-
-  # Checking genes that could not be found and returned an error message
-  `%!in%` <- base::Negate(`%in%`)
-
-  all_genes <- genes_assembly$symbol %>%
-    unlist() %>%
-    unname()
-
-  missing_genes <- genes[genes %!in% all_genes]
-
-  if (!rlang::is_empty(missing_genes)) {
-    warning(
-      base::paste(
-        "Genes:",
-        paste(missing_genes,
-              collapse = ", "),
-        ",could not be found. Maybe you need to use a different gene alias?"
-      )
-    )
-  }
-
-  #finding overlaps
-  olaps <-
-    suppressWarnings(GenomicRanges::findOverlaps(genes_features,
-                                                 ranges,
-                                                 ignore.strand = TRUE))
-
-  # creating a data frame that will contain the genes and positions (index) in the
-  # pipeline ranges.
-  # some genes might overlap more than one range (more than one bin), in this case
-  # only one will be kept
-  df <-
-    tibble::tibble(gene = as.character(genes_features$symbol[S4Vectors::queryHits(olaps)]),
-                   pos = S4Vectors::subjectHits(olaps)) %>%
-    dplyr::distinct(gene, .keep_all = TRUE)
-
-  # checking for genes that might have been blacklisted from the varbin pipeline
-  blk_list <- genes[genes %!in% missing_genes]
-  blk_list <- blk_list[blk_list %!in% df$gene]
-
-  if (!rlang::is_empty(blk_list)) {
-    warning(
-      base::paste(
-        "Genes:",
-        paste(blk_list,
-              collapse = ", "),
-        "are in blacklisted regions of the Varbin pipeline and can't be plotted."
-      )
-    )
-  }
-
+  #obtaining df with genes positions
+  # find_scaffold_genes in internals.R
+  df <- find_scaffold_genes(scCNA,
+                            genes = genes)
 
   # obtaining seg ratios and sbsetting for the genes
 

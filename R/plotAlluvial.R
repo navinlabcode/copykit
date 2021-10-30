@@ -11,10 +11,11 @@
 #' @return A ggplot object containing an alluvial plot from ggalluvial
 #'
 #' @import ggalluvial
+#' @import ggplot2
+#' @importFrom ggalluvial stat_stratum geom_stratum
 #' @importFrom SummarizedExperiment colData
 #' @importFrom dplyr all_of across group_by count filter
 #' @importFrom scales hue_pal
-#' @import ggplot2
 #'
 #' @export
 #'

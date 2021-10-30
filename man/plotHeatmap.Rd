@@ -12,6 +12,7 @@ plotHeatmap(
   label_colors = NULL,
   consensus = FALSE,
   rounding_error = FALSE,
+  genes = NULL,
   row_split = NULL
 )
 }
@@ -32,6 +33,9 @@ Must match label length and have the same names as label}
 
 \item{rounding_error}{A boolean indicating if the rounding error matrix
 should be plotted.}
+
+\item{genes}{A character vector with the HUGO symbol for genes to be annotated
+on the heatmap.}
 
 \item{row_split}{A string with the names of the columns from
 \code{\link[SummarizedExperiment]{colData}} to split the heatmap.}

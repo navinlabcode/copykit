@@ -25,6 +25,7 @@
 #' @importFrom dplyr select
 #' @importFrom tidyr gather
 #' @importFrom scales hue_pal
+#' @importFrom ape Ntip
 #'
 #' @examples
 #'
@@ -112,7 +113,7 @@ plotPhylo <- function(scCNA,
         metadata_gr_list <- split(metadata_gr, group_split)
 
         # colors for groups
-        elements_groups <- unique(metadata_gr$group_value)
+        elements_groups <- sort(unique(as.character(metadata_gr$group_value)))
         n_groups <- length(elements_groups)
         hex <- scales::hue_pal()(n_groups)
 
@@ -129,10 +130,10 @@ plotPhylo <- function(scCNA,
                    x = ""
                  )) +
             geom_bar(stat = 'identity') +
+            scale_fill_manual(values = group_colors) +
             coord_polar(theta = 'y', start = 0) +
             theme_void() +
-            theme(legend.position = "none") +
-            scale_fill_manual(values = group_colors)
+            theme(legend.position = "none")
 
         })
 
@@ -170,17 +171,13 @@ plotPhylo <- function(scCNA,
         label,
         c("superclones", "subclones", "filtered", "is_normal")
       ))) {
-        # if label is one of the four above, uses the default specifed colors above
+        # if label is one of the four above, uses the default specified colors above
         label_colors <- label_colors[[label]]
 
       } else {
-        # if label is not numeric
 
         elements <- metadata_anno_df %>%
           dplyr::pull(label) %>%
-          unique() %>%
-          as.character() %>%
-          sort()
 
         n <- length(elements)
         hues <- seq(15, 375, length = n + 1)
@@ -205,23 +202,22 @@ plotPhylo <- function(scCNA,
     p <- ggtree::ggtree(tree, ladderize = F) +
       geom_tippoint(aes(color = group), size = size) +
       scale_color_manual(values = label_colors, name = label) +
-      theme(legend.position = 'none')
+      theme(legend.position = 'none') +
+      geom_treescale(x = 10)
 
     if (consensus) {
       p <- p + geom_tiplab(aes(color = group), size = 5, hjust = -0.5)
 
       if (!is.null(group)) {
-        # getting tree order
-        ord <- p[['data']][['label']]
-        #ordering plots by tree order
-        names(pies) <- match(names(pies), ord[!is.na(ord)])
-        # removing strings to be compatible with inset func
-        p <-
-          ggtree::inset(p,
-                        pies,
-                        width = 0.08,
-                        height = 0.08,
-                        hjust = 0)
+        # order of insets must be named by node
+        names(pies) <- tree$edge[,2][which(tree$edge[,2] <= ape::Ntip(tree))]
+
+          p <- ggtree::inset(p,
+            pies,
+            width = 0.06,
+            height = 0.06,
+            hjust = 0
+          )
 
       }
 
