@@ -33,7 +33,7 @@
 #' @examples
 findVariableGenes <- function(scCNA,
                               genes,
-                              assay = "segment_ratios",
+                              assay = "logr",
                               top_n = 50) {
   # checks
   if (top_n > length(genes)) {
