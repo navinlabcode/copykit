@@ -31,7 +31,7 @@
 #' due to low read count that will be poorly segmented.
 #'
 #' @return A matrix of bin counts within the scCNA object that can be accessed
-#' with \code{bin_counts}
+#' with \code{bincounts}
 #'
 #'#' @references
 #' Navin, N., Kendall, J., Troge, J. et al. Tumour evolution inferred by single-cell
@@ -208,16 +208,7 @@ runCountReads <- function(dir,
                                                    keep.extra.columns = TRUE)
 
 
-  cna_obj <-  scCNA(
-    segment_ratios = as.data.frame(matrix(
-      nrow = nrow(varbin_counts_df),
-      ncol = ncol(varbin_counts_df)
-    )),
-    ratios = as.data.frame(matrix(
-      nrow = nrow(varbin_counts_df),
-      ncol = ncol(varbin_counts_df)
-    )),
-    bin_counts = as.data.frame(varbin_counts_df),
+  cna_obj <-  CopyKit(assays = list(bincounts = varbin_counts_df),
     rowRanges = rg_gr
   )
 

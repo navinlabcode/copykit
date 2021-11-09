@@ -17,7 +17,8 @@ color the plots.}
 
 \item{dodge.width}{A numeric that adds dodge between the label categories.}
 
-\item{ncol}{A Integer specifying the number of columns to be used for the panels of a multi-facet plot.}
+\item{ncol}{A Integer specifying the number of columns to be used for the
+panels of a multi-facet plot.}
 }
 \value{
 A ggplot object with swarm plots of the selected metrics.

@@ -10,8 +10,8 @@ setGeneric("ratios", function(x, ...)
   standardGeneric("ratios"))
 
 #' @export
-setGeneric("bin_counts", function(x, ...)
-  standardGeneric("bin_counts"))
+setGeneric("bincounts", function(x, ...)
+  standardGeneric("bincounts"))
 
 #' @export
 setGeneric("consensus", function(x, ...)

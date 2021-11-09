@@ -23,41 +23,36 @@ setOldClass("igraph")
 
 
 #' @export
+#' @import methods
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
-.scCNA <- setClass("scCNA",
-                   slots = representation(
-                     phylo = "phylo",
-                     consensusPhylo = "phylo",
-                     distMat = "dist",
-                     graph = "igraph",
-                     consensus = "data.frame"
-                   ),
-                   contains = "SingleCellExperiment")
+.CopyKit <- setClass(
+  "CopyKit",
+  slots = representation(
+    phylo = "phylo",
+    consensusPhylo = "phylo",
+    distMat = "dist",
+    graph = "igraph",
+    consensus = "data.frame"
+  ),
+  contains = "SingleCellExperiment"
+)
 
 #' @export
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
-scCNA <- function(segment_ratios,
-                  ratios,
-                  bin_counts,
-                  consensus = data.frame(),
-                  phylo = structure(list(), class = "phylo"),
-                  consensusPhylo = structure(list(), class = "phylo"),
-                  distMat = dist(matrix(0,0,0)),
-                  graph = igraph::graph.empty(),
-                  ...) {
+CopyKit <- function(consensus = data.frame(),
+                    phylo = structure(list(), class = "phylo"),
+                    consensusPhylo = structure(list(), class = "phylo"),
+                    distMat = dist(matrix(0, 0, 0)),
+                    graph = igraph::graph.empty(),
+                    ...) {
   cna <-
-    SingleCellExperiment::SingleCellExperiment(list(segment_ratios = segment_ratios,
-                                                    ratios = ratios,
-                                                    bin_counts = bin_counts),
-                                               ...)
-  .scCNA(cna,
-         phylo = phylo,
-         consensusPhylo = consensusPhylo,
-         distMat = distMat,
-         graph = graph,
-         consensus = consensus)
+    SingleCellExperiment::SingleCellExperiment(...)
+  .CopyKit(
+    cna,
+    phylo = phylo,
+    consensusPhylo = consensusPhylo,
+    distMat = distMat,
+    graph = graph,
+    consensus = consensus
+  )
 }
-
-
-
-
