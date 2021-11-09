@@ -31,7 +31,7 @@ should be parallelized.}
 }
 \value{
 A matrix of bin counts within the scCNA object that can be accessed
-with \code{bin_counts}
+with \code{bincounts}
 
 #' @references
 Navin, N., Kendall, J., Troge, J. et al. Tumour evolution inferred by single-cell

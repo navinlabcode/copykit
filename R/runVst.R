@@ -30,7 +30,7 @@ runVst <- function(scCNA,
 
   transformation <- match.arg(transformation)
 
-  varbin_counts_df <- copykit::bin_counts(scCNA)
+  varbin_counts_df <- bincounts(scCNA)
 
   if (transformation == 'ft') {
     counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) sqrt(x) + sqrt(x+1))

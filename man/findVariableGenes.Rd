@@ -4,7 +4,7 @@
 \alias{findVariableGenes}
 \title{findVariableGenes}
 \usage{
-findVariableGenes(scCNA, genes, assay = "segment_ratios", top_n = 50)
+findVariableGenes(scCNA, genes, assay = "logr", top_n = 50)
 }
 \arguments{
 \item{scCNA}{scCNA object.}

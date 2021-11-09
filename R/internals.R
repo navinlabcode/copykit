@@ -2,92 +2,92 @@
 #' Internal CopyKit functions
 #'
 #' @description
-#' Methods to get or set internal fields from the scCNA class
+#' Methods to get or set internal fields from the CopyKit class
 
 #' @export
-setMethod("segment_ratios", "scCNA", function(x, withDimnames = TRUE) {
+setMethod("segment_ratios", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the segment_ratios data within the assay slot
   SummarizedExperiment::assay(x, "segment_ratios")
 })
 
 
 #' @export
-setMethod("ratios", "scCNA", function(x, withDimnames = TRUE) {
+setMethod("ratios", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the ratios data slot
   SummarizedExperiment::assay(x, "ratios")
 })
 
 #' @export
-setMethod("bin_counts", "scCNA", function(x, withDimnames = TRUE) {
-  # accessor for the bin_counts data slot
-  SummarizedExperiment::assay(x, "bin_counts")
+setMethod("bincounts", "CopyKit", function(x, withDimnames = TRUE) {
+  # accessor for the bincounts data slot
+  SummarizedExperiment::assay(x, "bincounts")
 })
 
 #' @export
-setMethod("consensus", "scCNA", function(x, withDimnames = TRUE) {
+setMethod("consensus", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the consensus data slot
   out <- x@consensus
   out
 })
 
 #' @export
-setReplaceMethod("consensus", "scCNA", function(x, value) {
+setReplaceMethod("consensus", "CopyKit", function(x, value) {
   # setter method for phylo slot
   x@consensus <- value
   x
 })
 
 #' @export
-setMethod("phylo", "scCNA", function(x) {
+setMethod("phylo", "CopyKit", function(x) {
   # accessor for the phylo slot
   out <- x@phylo
   out
 })
 
 #' @export
-setReplaceMethod("phylo", "scCNA", function(x, value) {
+setReplaceMethod("phylo", "CopyKit", function(x, value) {
   # setter method for phylo slot
   x@phylo <- value
   x
 })
 
 #' @export
-setMethod("consensusPhylo", "scCNA", function(x) {
+setMethod("consensusPhylo", "CopyKit", function(x) {
   # accessor for the consensusPhylo slot
   out <- x@consensusPhylo
   out
 })
 
 #' @export
-setReplaceMethod("consensusPhylo", "scCNA", function(x, value) {
+setReplaceMethod("consensusPhylo", "CopyKit", function(x, value) {
   # setter method for consensusPhylo slot
   x@consensusPhylo <- value
   x
 })
 
 #' @export
-setMethod("distMat", "scCNA", function(x) {
+setMethod("distMat", "CopyKit", function(x) {
   # accessor for the distMat slot
   out <- x@distMat
   out
 })
 
 #' @export
-setReplaceMethod("distMat", "scCNA", function(x, value) {
+setReplaceMethod("distMat", "CopyKit", function(x, value) {
   # setter method for distMat slot
   x@distMat <- value
   x
 })
 
 #' @export
-setMethod("graph", "scCNA", function(x) {
+setMethod("graph", "CopyKit", function(x) {
   # accessor for the getGraph slot
   out <- x@graph
   out
 })
 
 #' @export
-setReplaceMethod("graph", "scCNA", function(x, value) {
+setReplaceMethod("graph", "CopyKit", function(x, value) {
   # setter method for getGraph slot
   x@graph <- value
   x
@@ -96,7 +96,7 @@ setReplaceMethod("graph", "scCNA", function(x, value) {
 #' @export
 #' @importFrom ape Ntip Nnode
 #' @importMethodsFrom SingleCellExperiment show
-setMethod("show", "scCNA", function(object) {
+setMethod("show", "CopyKit", function(object) {
   callNextMethod()
   cat(
     "rowRanges has: ",

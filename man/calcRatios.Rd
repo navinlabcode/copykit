@@ -6,7 +6,7 @@
 \usage{
 calcRatios(
   scCNA,
-  assay = c("ft", "bin_counts", "smoothed_bincounts"),
+  assay = c("ft", "bincounts", "smoothed_bincounts"),
   fun = c("mean", "median")
 )
 }

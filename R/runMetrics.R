@@ -29,7 +29,7 @@ runMetrics <- function(scCNA,
 
   dat_seg <- segment_ratios(scCNA)
   dat_rat <- ratios(scCNA)
-  dat_bin <- bin_counts(scCNA)
+  dat_bin <- bincounts(scCNA)
   rg <- SummarizedExperiment::rowRanges(scCNA)
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:01 2021
