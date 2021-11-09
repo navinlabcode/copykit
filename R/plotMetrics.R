@@ -10,7 +10,8 @@
 #' @param label A character indicating which element of the \code{colData()} to
 #' color the plots.
 #' @param dodge.width A numeric that adds dodge between the label categories.
-#' @param ncol A Integer specifying the number of columns to be used for the panels of a multi-facet plot.
+#' @param ncol A Integer specifying the number of columns to be used for the
+#' panels of a multi-facet plot.
 #'
 #'
 #' @return A ggplot object with swarm plots of the selected metrics.
@@ -113,7 +114,7 @@ plotMetrics <- function(scCNA,
                         ncol = ncol,
                         strip.position = 'left') +
     ggplot2::theme_classic() +
-    ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+    ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 8)) +
     xlab("") +
     ylab("") +
     theme(strip.placement = "outside") +
@@ -129,9 +130,9 @@ plotMetrics <- function(scCNA,
     p <- p +
       ggbeeswarm::geom_quasirandom(aes(fill = label_value),
                                    shape = 21,
-                                   stroke = 0.1,
+                                   stroke = 0.05,
                                    dodge.width = dodge.width,
-                                   size = 2.2)
+                                   size = 2.3)
 
     if (label == "superclones") {
       color_lab <- list(ggplot2::scale_fill_manual(values = superclones_pal(),
@@ -142,7 +143,8 @@ plotMetrics <- function(scCNA,
     } else if (is.numeric(df_merge$label_value)) {
       color_lab <- list(ggplot2::scale_fill_viridis_c())
     } else  {
-      color_lab <- list(ggplot2::scale_fill_viridis_d())
+      color_lab <- list(ggplot2::scale_fill_viridis_d(begin = 0.2,
+                                                      end = 0.8))
     }
 
     p <- p + color_lab +

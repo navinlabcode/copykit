@@ -226,6 +226,10 @@ plotHeatmap <- function(scCNA,
         stop("No phylogeny detected in scCNA object. Use runPhylo")
       }
 
+      if (ape::Ntip(consensusPhylo(scCNA)) == 0) {
+        stop("No consensus phylogeny detected in scCNA object. Use runConsensusPhylo")
+      }
+
       tree <- phylo(scCNA)
 
       # getting order
