@@ -12,6 +12,9 @@
 #' \code{\link[SummarizedExperiment]{colData}} for heatmap annotation.
 #' @param label_colors A named list with colors for the label annotation.
 #'  Must match label length and have the same names as label
+#' @param group with the names of the columns from
+#' \code{\link[SummarizedExperiment]{colData}} to add a barplot with frequency
+#' of the groups to a consensus heatmap.
 #' @param row_split A string with the names of the columns from
 #' \code{\link[SummarizedExperiment]{colData}} to split the heatmap.
 #' @param rounding_error A boolean indicating if the rounding error matrix
@@ -82,10 +85,11 @@
 #' @importFrom pals ocean.balance
 #' @importFrom S4Vectors metadata
 #' @importFrom SummarizedExperiment assay
-#' @importFrom dplyr select pull all_of
+#' @importFrom dplyr select pull all_of mutate group_by
 #' @importFrom viridis viridis
 #' @importFrom scales hue_pal
 #' @importFrom ape Ntip
+#' @importFrom tidyr pivot_wider
 #' @examples
 #'
 
@@ -94,11 +98,11 @@ plotHeatmap <- function(scCNA,
                         order_cells = c("consensus_tree", "hclust", "phylogeny"),
                         label = NULL,
                         label_colors = NULL,
+                        group = NULL,
                         consensus = FALSE,
                         rounding_error = FALSE,
                         genes = NULL,
                         row_split = NULL) {
-
   order_cells <- match.arg(order_cells)
 
   # check annotation colors
@@ -120,7 +124,8 @@ plotHeatmap <- function(scCNA,
     stop("Label must be a character vector.")
   }
 
-  if (is.null(SummarizedExperiment::colData(scCNA)$subclones) && order_cells != 'phylogeny') {
+  if (is.null(SummarizedExperiment::colData(scCNA)$subclones) &&
+      order_cells != 'phylogeny') {
     message("Ordering by consensus requires cluster information.\nSwitching to hclust")
     order_cells <- "hclust"
   }
@@ -139,19 +144,19 @@ plotHeatmap <- function(scCNA,
   }
 
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 11:57:50 2021
-# setup and colors for assay = integer
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 11:58:01 2021
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 11:57:50 2021
+  # setup and colors for assay = integer
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 11:58:01 2021
 
   if (assay == 'integer') {
-
     # truncate ploidy colors to 2* the mean ploidy
     mean_ploidy <- mean(SummarizedExperiment::colData(scCNA)$ploidy)
-    ploidy_trunc <- 2*round(mean_ploidy)
+    ploidy_trunc <- 2 * round(mean_ploidy)
 
     # colors
-    color_heat <- structure(pals::ocean.balance(length(0:ploidy_trunc)),
-                            names = 0:ploidy_trunc)
+    color_heat <-
+      structure(pals::ocean.balance(length(0:ploidy_trunc)),
+                names = 0:ploidy_trunc)
 
     # special ploidy colors if ground state rounds to 2
     if (round(mean_ploidy) == 2) {
@@ -210,7 +215,7 @@ plotHeatmap <- function(scCNA,
     ComplexHeatmap::HeatmapAnnotation(
       chr_text = ComplexHeatmap::anno_text(v[1:ncol(seg_data)],
                                            gp = grid::gpar(fontsize = 14)),
-      df = as.character(chr[1:nrow(chr), ]),
+      df = as.character(chr[1:nrow(chr),]),
       show_legend = FALSE,
       show_annotation_name = FALSE,
       which = "column",
@@ -221,7 +226,6 @@ plotHeatmap <- function(scCNA,
   if (consensus == FALSE) {
     # ordering cells
     if (order_cells == "phylogeny") {
-
       if (ape::Ntip(phylo(scCNA)) == 0) {
         stop("No phylogeny detected in scCNA object. Use runPhylo")
       }
@@ -239,7 +243,7 @@ plotHeatmap <- function(scCNA,
         tree$tip.label[ordered_tips_index] %>% rev()
 
       # ordering data
-      seg_data_ordered <- seg_data[tree_tips_order,]
+      seg_data_ordered <- seg_data[tree_tips_order, ]
 
     }
 
@@ -261,7 +265,7 @@ plotHeatmap <- function(scCNA,
       hc <- fastcluster::hclust(distMat(scCNA),
                                 method = "ward.D2")
 
-      seg_data_ordered <- seg_data[hc$order,]
+      seg_data_ordered <- seg_data[hc$order, ]
 
     }
 
@@ -274,12 +278,14 @@ plotHeatmap <- function(scCNA,
       consensus_by <- attr(consensus(scCNA), "consensus_by")
 
       meta <- as.data.frame(colData(scCNA)) %>%
-        dplyr::select(sample, !!consensus_by)
-      meta_info <- as.character(dplyr::pull(meta, !!consensus_by))
+        dplyr::select(sample,!!consensus_by)
+      meta_info <- as.character(dplyr::pull(meta,!!consensus_by))
 
       if (ape::Ntip(consensusPhylo(scCNA)) == 0) {
-        stop("Build a consensus with calcConsensus and use runConsensusPhylo
-        to store the order of the consensus matrix.")
+        stop(
+          "Build a consensus with calcConsensus and use runConsensusPhylo
+        to store the order of the consensus matrix."
+        )
       } else {
         tree = consensusPhylo(scCNA)
       }
@@ -290,17 +296,18 @@ plotHeatmap <- function(scCNA,
       tree_tips_order <-
         tree$tip.label[ordered_tips_index] %>% rev()
 
-      meta_o <- meta[order(match(meta_info, tree_tips_order)), ]
-      seg_data_ordered <- seg_data[meta_o$sample,]
+      meta_o <- meta[order(match(meta_info, tree_tips_order)),]
+      seg_data_ordered <- seg_data[meta_o$sample, ]
 
     }
 
   } else {
-
     # getting order from tree
     if (ape::Ntip(consensusPhylo(scCNA)) == 0) {
-      stop("Build a consensus with calcConsensus and use runConsensusPhylo
-        to store the order of the consensus matrix.")
+      stop(
+        "Build a consensus with calcConsensus and use runConsensusPhylo
+        to store the order of the consensus matrix."
+      )
     } else {
       tree = consensusPhylo(scCNA)
     }
@@ -315,7 +322,7 @@ plotHeatmap <- function(scCNA,
     seg_data <- as.matrix(t(consensus(scCNA)))
 
     #ordering data
-    seg_data_ordered <- seg_data[tree_tips_order,]
+    seg_data_ordered <- seg_data[tree_tips_order, ]
   }
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:11:34 2021
@@ -332,11 +339,13 @@ plotHeatmap <- function(scCNA,
 
     if (rounding_error == TRUE) {
       # calculate the integer matrix without rounding
-      int_nr <- as.matrix(SummarizedExperiment::assay(scCNA, 'segment_ratios')) %*%
+      int_nr <-
+        as.matrix(SummarizedExperiment::assay(scCNA, 'segment_ratios')) %*%
         diag(SummarizedExperiment::colData(scCNA)$ploidy)
 
       # restoring sample names
-      names(int_nr) <- names(SummarizedExperiment::assay(scCNA, 'segment_ratios'))
+      names(int_nr) <-
+        names(SummarizedExperiment::assay(scCNA, 'segment_ratios'))
 
       # calculating absolute error and plotting
       err <- abs(int_nr - assay(scCNA, 'integer'))
@@ -354,7 +363,6 @@ plotHeatmap <- function(scCNA,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   if (!is.null(genes)) {
-
     df <- find_scaffold_genes(scCNA,
                               genes)
 
@@ -374,6 +382,73 @@ plotHeatmap <- function(scCNA,
     mk <- NULL
   }
 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # group bar plot logic for consensus
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  if (consensus == TRUE) {
+    metadata <- as.data.frame(colData(scCNA))
+
+    # Uses the hidden consensus_by attribute from the calcConsensus function
+    # to guarantee the same order
+    cons_attr <- attr(consensus(scCNA), "consensus_by")
+
+    if (!is.null(group)) {
+      # check if group exists
+      if (!is.null(group) && !(group %in% colnames(metadata))) {
+        stop(paste0("Group ", group, " is not a column of colData(scCNA)."))
+      }
+
+      # data for groups
+      metadata_gr <- metadata %>%
+        droplevels() %>%
+        dplyr::select(!!cons_attr, !!group) %>%
+        tidyr::gather(key = 'group_key',
+                      value = 'group_value', -!!cons_attr)
+
+      names(metadata_gr)[1] <- "cons_attr"
+
+      # getting counts for barplot
+      metadata_counts <- metadata_gr %>%
+        dplyr::group_by(cons_attr) %>%
+        dplyr::count(group_value) %>%
+        dplyr::mutate(n = n / sum(n)) %>%
+        tidyr::pivot_wider(
+          names_from = group_value,
+          values_from = n,
+          id_cols = cons_attr,
+          values_fill = 0
+        ) %>%
+        as.data.frame()
+
+      rownames(metadata_counts) <- metadata_counts[, 1]
+      metadata_counts <- metadata_counts[, -1]
+
+      elements_groups <-
+        sort(unique(as.character(metadata_gr$group_value)))
+
+      #ordering
+      metadata_counts <- metadata_counts[tree_tips_order, elements_groups]
+
+      # colors for groups
+      n_groups <- length(elements_groups)
+      hex <- scales::hue_pal()(n_groups)
+
+      col <- structure(hex,
+                       names = elements_groups)
+
+      ha_barplot <-
+        rowAnnotation(foo = anno_barplot(metadata_counts,
+                                         gp = grid::gpar(fill = col)),
+                      show_annotation_name = FALSE)
+
+
+    } else {
+      ha_barplot <- NULL
+    }
+
+  }
+
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:20 2021
   # Complex heatmap plotting
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:32 2021
@@ -384,6 +459,7 @@ plotHeatmap <- function(scCNA,
   complex_args <- list(
     use_raster = TRUE,
     bottom_annotation = mk,
+    right_annotation = ha_barplot,
     column_title = "genomic coordinates",
     column_title_gp = grid::gpar(fontsize = 18),
     column_title_side = "bottom",
@@ -398,45 +474,49 @@ plotHeatmap <- function(scCNA,
     show_heatmap_legend = TRUE
   )
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:55 2021
-    # Setup for label colData annotation and integer
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:55 2021
+  # Setup for label colData annotation and integer
 
-    # There are two main conditions: if argument label is provided or if
-    # the assay contains integer values.
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:13:10 2021
+  # There are two main conditions: if argument label is provided or if
+  # the assay contains integer values.
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:13:10 2021
 
   # plotting
   if (is.null(label)) {
     # plotting without clusters
 
     if (assay != 'integer') {
-
-      suppressMessages(
-        do.call(ComplexHeatmap::Heatmap, c(list(
+      suppressMessages(do.call(ComplexHeatmap::Heatmap, c(
+        list(
           matrix = log2(seg_data_ordered + 1e-3),
           heatmap_legend_param = list(title = "log2 (segratio)")
-        ), complex_args))
-      )
+        ),
+        complex_args
+      )))
 
     } else {
       # if assay is integer
 
       if (rounding_error == FALSE) {
-
-        do.call(ComplexHeatmap::Heatmap, c(list(
-          matrix = seg_data_int,
-          heatmap_legend_param = list(title = "copy number"),
-          col = color_heat
-        ), complex_args))
+        do.call(ComplexHeatmap::Heatmap, c(
+          list(
+            matrix = seg_data_int,
+            heatmap_legend_param = list(title = "copy number"),
+            col = color_heat
+          ),
+          complex_args
+        ))
 
       } else {
-
         # if rounding_error == TRUE
-        do.call(ComplexHeatmap::Heatmap, c(list(
-          matrix = t(err),
-          heatmap_legend_param = list(title = "rounding error"),
-          col = viridis::viridis(200)
-        ), complex_args))
+        do.call(ComplexHeatmap::Heatmap, c(
+          list(
+            matrix = t(err),
+            heatmap_legend_param = list(title = "rounding error"),
+            col = viridis::viridis(200)
+          ),
+          complex_args
+        ))
 
       }
 
@@ -452,14 +532,13 @@ plotHeatmap <- function(scCNA,
       as.data.frame()
 
     if (consensus == FALSE) {
-      metadata <- metadata[rownames(seg_data_ordered), ]
+      metadata <- metadata[rownames(seg_data_ordered),]
     }
 
     metadata_anno_df <- metadata %>%
       dplyr::select(dplyr::all_of(label))
 
     if (consensus == TRUE) {
-
       # Uses the hidden consensus_by attribute from the calcConsensus function
       # to guarantee the same order
       cons_attr <- attr(consensus(scCNA), "consensus_by")
@@ -471,8 +550,10 @@ plotHeatmap <- function(scCNA,
       }
 
       if (cons_attr != label) {
-        stop("Consensus heatmap can only be annotated with the same metadata element
-             used for generating the consensus matrix.")
+        stop(
+          "Consensus heatmap can only be annotated with the same metadata element
+             used for generating the consensus matrix."
+        )
       }
 
       metadata_anno_df <- metadata_anno_df[label] %>%
@@ -511,16 +592,16 @@ plotHeatmap <- function(scCNA,
         label_colors
       )
 
-      default_labels <- c("superclones", "subclones", "filtered", "is_normal")
+      default_labels <-
+        c("superclones", "subclones", "filtered", "is_normal")
 
       for (i in 1:length(label)) {
-        if (any(str_detect(
-          label[i],
-          default_labels
-        ))) {
+        if (any(str_detect(label[i],
+                           default_labels))) {
           # if label is one of the four above, uses the default specified colors above
-          label_colors[i] <- label_colors[default_labels[stringr::str_detect(label[i],
-                                                                default_labels)]]
+          label_colors[i] <-
+            label_colors[default_labels[stringr::str_detect(label[i],
+                                                            default_labels)]]
           names(label_colors)[i] <- label[i]
 
         } else if (is.numeric(dplyr::pull(metadata_anno_df, label[i])))  {
@@ -582,9 +663,7 @@ plotHeatmap <- function(scCNA,
       if (length(row_split) > 1) {
         stop("row_split length must be 1")
       } else {
-
         if (assay != 'integer') {
-
           do.call(ComplexHeatmap::Heatmap,
                   c(
                     list(
@@ -615,34 +694,41 @@ plotHeatmap <- function(scCNA,
 
       }
     } else {
-
       if (assay != 'integer') {
-        do.call(ComplexHeatmap::Heatmap, c(list(
-          matrix = log2(seg_data_ordered + 1e-3),
-          left_annotation = cluster_anno,
-          heatmap_legend_param = list(title = "log2 (segratio)")
-        ), complex_args))
+        do.call(ComplexHeatmap::Heatmap, c(
+          list(
+            matrix = log2(seg_data_ordered + 1e-3),
+            left_annotation = cluster_anno,
+            heatmap_legend_param = list(title = "log2 (segratio)")
+          ),
+          complex_args
+        ))
       } else {
         # if assay == integer and rounding_error == FALSE it will plot the integer matrix
         # otherwise it will plot the rounding error matrix
 
         if (rounding_error == FALSE) {
-
-          do.call(ComplexHeatmap::Heatmap, c(list(
-            matrix = seg_data_int,
-            left_annotation = cluster_anno,
-            heatmap_legend_param = list(title = "copy number"),
-            col = color_heat
-          ), complex_args))
+          do.call(ComplexHeatmap::Heatmap, c(
+            list(
+              matrix = seg_data_int,
+              left_annotation = cluster_anno,
+              heatmap_legend_param = list(title = "copy number"),
+              col = color_heat
+            ),
+            complex_args
+          ))
 
         } else {
           # if rounding_error == TRUE
-          do.call(ComplexHeatmap::Heatmap, c(list(
-            matrix = t(err),
-            left_annotation = cluster_anno,
-            heatmap_legend_param = list(title = "rounding error"),
-            col = viridis::viridis(200)
-          ), complex_args))
+          do.call(ComplexHeatmap::Heatmap, c(
+            list(
+              matrix = t(err),
+              left_annotation = cluster_anno,
+              heatmap_legend_param = list(title = "rounding error"),
+              col = viridis::viridis(200)
+            ),
+            complex_args
+          ))
 
         }
 
