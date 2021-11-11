@@ -57,6 +57,7 @@ plotUmap <- function(scCNA,
       axis.text.y = element_blank(),
       axis.ticks.y = element_blank(),
       axis.line = element_blank(),
+      panel.border = element_rect(color = 'black', fill = NA),
       legend.position = "right",
       legend.text = element_text(size = 14)
     ),

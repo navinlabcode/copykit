@@ -55,7 +55,7 @@
 runSegmentation <- function(scCNA,
                             method = c("CBS", "multipcf"),
                             seed = 17,
-                            alpha = 1e-9,
+                            alpha = 1e-10,
                             gamma = 40,
                             undo.splits = 'prune',
                             name = 'segment_ratios',
