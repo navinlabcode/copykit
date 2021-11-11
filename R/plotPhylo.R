@@ -210,7 +210,9 @@ plotPhylo <- function(scCNA,
 
       if (!is.null(group)) {
         # order of insets must be named by node
-        names(pies) <- tree$edge[,2][which(tree$edge[,2] <= ape::Ntip(tree))]
+        tree_tips <- tree$tip.label[tree$edge[,2][tree$edge[,2] <= length(tree$tip.label)]]
+        pies <- pies[match(tree_tips, names(pies))]
+        names(pies) <- tree$edge[,2][tree$edge[,2] <= length(tree$tip.label)]
 
           p <- ggtree::inset(p,
             pies,
