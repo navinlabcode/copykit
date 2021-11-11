@@ -27,10 +27,9 @@ Language: en-US
 biocViews:
 Imports: 
     dplyr,
-    ggplot2,
     uwot,
+    ggplot2,
     magrittr,
-    GenomicRanges,
     GenomeInfoDb,
     SummarizedExperiment,
     readr,
@@ -58,7 +57,6 @@ Imports:
     dbscan,
     mixtools,
     shiny,
-    Rsubread,
     gtools,
     forcats,
     circlize,
@@ -75,4 +73,6 @@ RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 Depends: 
     SingleCellExperiment,
-    R (>= 2.10)
+    R (>= 2.10),
+    Rsubread,
+    GenomicRanges

@@ -10,6 +10,7 @@ plotHeatmap(
   order_cells = c("consensus_tree", "hclust", "phylogeny"),
   label = NULL,
   label_colors = NULL,
+  group = NULL,
   consensus = FALSE,
   rounding_error = FALSE,
   genes = NULL,
@@ -28,6 +29,10 @@ plotHeatmap(
 
 \item{label_colors}{A named list with colors for the label annotation.
 Must match label length and have the same names as label}
+
+\item{group}{with the names of the columns from
+\code{\link[SummarizedExperiment]{colData}} to add a barplot with frequency
+of the groups to a consensus heatmap.}
 
 \item{consensus}{A boolean indicating if the consensus heatmap should be plotted.}
 
