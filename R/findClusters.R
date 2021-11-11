@@ -56,7 +56,6 @@
 #' @seealso \code{\link[dbscan]{hdbscan}} For hdbscan clustering.
 #'
 #' @export
-#' @import leidenbase
 #' @importFrom tidyr gather
 #' @importFrom dplyr filter slice_min group_by right_join ungroup
 #' @importFrom SingleCellExperiment reducedDim
@@ -66,6 +65,7 @@
 #' @importFrom tibble rownames_to_column
 #' @importFrom forcats fct_reorder
 #' @importFrom gtools mixedsort
+#' @importFrom igraph cluster_leiden membership
 #'
 #' @examples
 
@@ -129,23 +129,17 @@ findClusters <- function(scCNA,
 
     g_minor  <-
       scran::buildSNNGraph(umap_df, k = k_subclones, transposed = T)
-    g_adj <- igraph::as_adjacency_matrix(g_minor)
 
     # saving g_minor graph
     copykit::graph(scCNA) <- g_minor
 
     #minor
-    leid_obj <- try(leidenbase::leiden_find_partition(
-      g_minor,
-      partition_type = 'RBConfigurationVertexPartition',
-      resolution_parameter = 1,
-      seed = seed
-    ))
-    if (inherits(leid_obj, "try-error")) {
-      stop('Running leiden failed.')
-    } else {
-      subclones <- as.factor(paste0('c', leid_obj$membership))
-    }
+    leid_obj <- igraph::cluster_leiden(g_minor,
+                                       resolution_parameter = 0.2,
+                                       n_iterations = 100)
+    leid_obj_com <- igraph::membership(leid_obj)
+
+    subclones <- as.factor(paste0('c', leid_obj$membership))
 
     n_clones <- length(unique(subclones))
     message(paste("Found", n_clones, "subclones."))

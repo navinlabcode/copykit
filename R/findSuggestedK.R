@@ -47,6 +47,7 @@
 #' @importFrom dbscan hdbscan
 #' @importFrom S4Vectors metadata
 #' @importFrom SingleCellExperiment reducedDim
+#' @importFrom igraph cluster_leiden membership
 #'
 #' @examples
 findSuggestedK <- function(scCNA,
@@ -237,21 +238,15 @@ leidenCBI <- function(data,k,seed_leid,diss=inherits(data,"dist"),...){
     scran::buildSNNGraph(data, k = k, transposed = T)
 
   if (diss)
-    c1 <- leidenbase::leiden_find_partition(
-      g_minor,
-      partition_type = 'RBConfigurationVertexPartition',
-      resolution_parameter = 1,
-      seed = seed_leid
-    )
+    c1 <- igraph::cluster_leiden(g_minor,
+                                 resolution_parameter = 0.2,
+                                 n_iterations = 100)
   else
-    c1 <- leidenbase::leiden_find_partition(
-      g_minor,
-      partition_type = 'RBConfigurationVertexPartition',
-      resolution_parameter = 1,
-      seed = seed_leid
-    )
+    c1 <- igraph::cluster_leiden(g_minor,
+                                 resolution_parameter = 0.2,
+                                 n_iterations = 100)
 
-  partition <- c1$membership
+  partition <- igraph::membership(c1)
 
   cl <- list()
   nc <- max(partition)
