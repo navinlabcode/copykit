@@ -447,7 +447,7 @@ plotHeatmap <- function(scCNA,
       ha_barplot <- NULL
     }
 
-  }
+  } else ha_barplot <- NULL
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:20 2021
   # Complex heatmap plotting
