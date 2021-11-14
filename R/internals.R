@@ -288,7 +288,7 @@ find_scaffold_genes <- function(scCNA,
                    pos = S4Vectors::subjectHits(olaps)) %>%
     dplyr::distinct(gene, .keep_all = TRUE)
 
-  # checking for genes that might have been blacklisted from the varbin pipeline
+  # checking for genes that might have been excluded from the varbin pipeline
   blk_list <- genes[genes %!in% missing_genes]
   blk_list <- blk_list[blk_list %!in% df$gene]
 
@@ -298,7 +298,7 @@ find_scaffold_genes <- function(scCNA,
         "Genes:",
         paste(blk_list,
               collapse = ", "),
-        "are in blacklisted regions of the Varbin pipeline and can't be plotted."
+        "are in excluded regions of the Varbin pipeline and can't be plotted."
       )
     )
   }
