@@ -13,13 +13,15 @@
 #' will be classified as noise cells.
 #'
 #' @param scCNA scCNA object.
-#' @param assay String with the name of the assay to pull data from to filter cells.
-#' @param k A numeric scalar with the number k-nearest-neighbor cells to calculate the
-#' mean correlation
-#' @param resolution A numeric scalar that set's how strict the correlation cut off will be.
-#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function should be parallelized.
+#' @param assay String with the name of the assay to pull data.
+#' @param k A numeric scalar with the number k-nearest-neighbor cells to
+#' calculate the mean correlation
+#' @param resolution A numeric scalar that set's how strict the
+#' correlation cut off will be.
+#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
+#'should be parallelized.
 #'
-#' @return Adds a column named 'filtered' to \code{\link[SummarizedExperiment]{colData}}
+#' @return Adds a column 'filtered' to \code{\link[SummarizedExperiment]{colData}}
 #' Cells that pass the filtering criteria receive the label "kept",
 #' whereas cells that do not pass the filtering criteria
 #' receive the label "removed".

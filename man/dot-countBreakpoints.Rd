@@ -10,7 +10,7 @@
 \item{scCNA}{}
 }
 \value{
-The scCNA object with a column of breakpoint counts added to the colData.
+The scCNA object with a column of breakpoint counts added to colData.
 }
 \description{
 Considers changes in the segment ratios as breakpoints.

@@ -20,35 +20,36 @@ findClusters(
 
 \item{method}{A string with method used for clustering.}
 
-\item{k_superclones}{A numeric scalar k-nearest-neighbor value.
+\item{k_superclones}{A numeric k-nearest-neighbor value.
 Used to find the superclones.}
 
-\item{k_subclones}{A numeric scalar k-nearest-neighbor value.
+\item{k_subclones}{A numeric k-nearest-neighbor value.
 Used to find the subclones}
 
-\item{seed}{A numeric scalar seed passed on to pseudo-random dependent functions.}
+\item{seed}{A numeric passed on to pseudo-random dependent functions.}
 }
 \value{
 Cluster information is added to \code{\link[SummarizedExperiment]{colData}}
-in columns superclones or subclones. Superclones are prefixed by 's' whereas subclones
-are prefixed by 'c'
+in columns superclones or subclones. Superclones are prefixed by 's' whereas
+ subclones are prefixed by 'c'
 }
 \description{
 Search for clusters in the scCNA data.
 }
 \details{
 \code{findClusters} uses the reduced dimensional embedding resulting
- from \code{\link{runUmap}} to perform clustering at two levels, hereby referred
- to as superclones, and subclones. When clustering for superclones findClusters
- creates a graph representation of the dataset reduced dimension embedding
- using a shared nearest neighbor algorithm (SNN) \code{\link[scran]{buildSNNGraph}},
- from this graph the connected components are extracted and generally
- represent high-level structures that share large, lineage defining copy
- number events. At a more fine-grained resolution, CopyKit can also be
- used to detect subclones, i. e. groups of cells containing a unique
- copy number event per cluster, to do so the umap embedding is again
- used as the pre-processing step, this time to perform a density-based
- clustering with hdbscan \code{\link[dbscan]{hdbscan}}. Network clustering
+ from \code{\link{runUmap}} to perform clustering at two levels, hereby
+ referred to as superclones, and subclones. When clustering for superclones
+ findClusters creates a graph representation of the dataset reduced
+ dimension embedding using a shared nearest neighbor algorithm
+ (SNN) \code{\link[scran]{buildSNNGraph}}, from this graph the connected
+ components are extracted and generally represent high-level structures
+ that share large, lineage defining copy number events. At a more
+ fine-grained resolution, CopyKit can also be used to detect subclones,
+ i. e. groups of cells containing a unique copy number event per cluster,
+ to do so the umap embedding is again used as the pre-processing step,
+ this time to perform a density-based clustering with hdbscan
+  \code{\link[dbscan]{hdbscan}}. Network clustering
  algorithms on top of the SNN graph such as the leiden algorithm
  \code{\link[leidenbase]{leiden_find_partition}}.
 
@@ -61,9 +62,10 @@ Search for clusters in the scCNA data.
  }
 }
 \references{
-Laks, E., McPherson, A., Zahn, H., et al. (2019). Clonal Decomposition
-and DNA Replication States Defined by Scaled Single-Cell Genome Sequencing.
-Cell, 179(5), 1207–1221.e22. https://doi.org/10.1016/j.cell.2019.10.026
+Laks, E., McPherson, A., Zahn, H., et al. (2019). Clonal
+ Decomposition and DNA Replication States Defined by Scaled Single-Cell
+ Genome Sequencing. Cell, 179(5), 1207–1221.e22.
+ https://doi.org/10.1016/j.cell.2019.10.026
 
 Leland McInnes and John Healy and James Melville. UMAP: Uniform Manifold
 Approximation and Projection for Dimension Reduction. arXiv:1802.03426
@@ -73,7 +75,7 @@ analysis of single-cell RNA-seq data with Bioconductor.”
 F1000Res., 5, 2122. doi: 10.12688/f1000research.9501.2.
 }
 \seealso{
-\code{\link{findSuggestedK}} to obtain suggestions of k_subclones values.
+\code{\link{findSuggestedK}}.
 
 \code{\link[dbscan]{hdbscan}} For hdbscan clustering.
 }

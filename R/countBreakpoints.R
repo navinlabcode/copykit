@@ -5,7 +5,7 @@
 #'
 #' @param scCNA
 #'
-#' @return The scCNA object with a column of breakpoint counts added to the colData.
+#' @return The scCNA object with a column of breakpoint counts added to colData.
 #' @export
 #'
 #' @keywords internal

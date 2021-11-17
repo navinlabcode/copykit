@@ -46,7 +46,7 @@
 plotSuggestedK <- function(scCNA,
                            geom = c('boxplot', 'tile', 'dotplot', 'scatterplot')) {
 
-  geom = match.arg(geom)
+  geom <- match.arg(geom)
 
   df <- S4Vectors::metadata(scCNA)$suggestedK_df
   sug_k <- S4Vectors::metadata(scCNA)$suggestedK

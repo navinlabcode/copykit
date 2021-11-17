@@ -1,20 +1,23 @@
 #' Calculates the integer copy number profile for each single-cell
 #'
 #' @param scCNA The scCNA object.
-#' @param assay String with the name of the assay to pull data from to calculate integers.
+#' @param assay String with the name of the assay to pull data from to calculate
+#' integers.
 #' @param method Method used to scale the ratio values to integer.
-#' @param ploidy_value If method of choice is 'fixed' a ploidy value should be provided.
+#' @param ploidy_value If method of choice is 'fixed' a ploidy value should be
+#' provided.
 #' @param name String specifying the name to be used to store the result in the
 #' reducedDims of the output.
-#' @param penalty An integer passed on to scquantum::ploidy.inference() penalty argument
+#' @param penalty An integer passed on to scquantum::ploidy.inference()
+#' penalty argument
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
 #'
 #' @details
 #' \itemize{
-#' \item{fixed:} When method argument is set to 'fixed' copykit extracts the segment means
-#' from the scCNA object and multiplies those means by the value provided in the
-#' argument ploidy_value.
+#' \item{fixed:} When method argument is set to 'fixed' copykit extracts the
+#' segment means from the scCNA object and multiplies those means by the value
+#' provided in the argument ploidy_value.
 #' }
 #'
 #' @return The scCNA object with an assay slot named 'integer' that contains
@@ -81,12 +84,13 @@ calcInteger <- function(scCNA,
 
   # check to guarantee multiplication
   if (!identical(names(seg_ratios_df), colData(scCNA)$sample)) {
-    stop("Order of cells in segment_ratios slot and colData(scCNA) is not identical.")
+    stop("Order of cells in segment_ratios and colData() is not identical.")
   }
 
   # obtain the matrix of integer values by multiplying the seg ratios
   # by the diagonal of the ploidy colData vector
-  int_values <- round(as.matrix(seg_ratios_df) %*% diag(colData(scCNA)$ploidy)) %>%
+  int_values <-
+    round(as.matrix(seg_ratios_df) %*% diag(colData(scCNA)$ploidy)) %>%
     as.data.frame()
 
   # recovering names

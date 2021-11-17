@@ -15,17 +15,19 @@ filterCells(
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{assay}{String with the name of the assay to pull data from to filter cells.}
+\item{assay}{String with the name of the assay to pull data.}
 
-\item{k}{A numeric scalar with the number k-nearest-neighbor cells to calculate the
-mean correlation}
+\item{k}{A numeric scalar with the number k-nearest-neighbor cells to
+calculate the mean correlation}
 
-\item{resolution}{A numeric scalar that set's how strict the correlation cut off will be.}
+\item{resolution}{A numeric scalar that set's how strict the
+correlation cut off will be.}
 
-\item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function should be parallelized.}
+\item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
+should be parallelized.}
 }
 \value{
-Adds a column named 'filtered' to \code{\link[SummarizedExperiment]{colData}}
+Adds a column 'filtered' to \code{\link[SummarizedExperiment]{colData}}
 Cells that pass the filtering criteria receive the label "kept",
 whereas cells that do not pass the filtering criteria
 receive the label "removed".

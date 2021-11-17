@@ -27,7 +27,7 @@ calcConsensus <- function(scCNA,
 
   if (consensus_by == 'subclones' &
       is.null(SummarizedExperiment::colData(scCNA)$subclones)) {
-    stop("Calculating consensus requires cluster information. use findClusters(scCNA)")
+    stop("Calculating consensus requires clusters. use findClusters(scCNA)")
   }
 
   if (consensus_by %!in% names(SummarizedExperiment::colData(scCNA))) {
@@ -51,7 +51,7 @@ calcConsensus <- function(scCNA,
 
   #sanity check
   if (!identical(rownames(consensus_info), rownames(seg_data))) {
-    stop("Order of elements in metadata and in segment_ratios information must be identical.")
+    stop("Order of elements in metadata and in segment_ratios must be identical.")
   }
 
   ## reading list with clusters

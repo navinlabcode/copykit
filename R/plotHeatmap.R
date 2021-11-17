@@ -287,7 +287,7 @@ plotHeatmap <- function(scCNA,
         to store the order of the consensus matrix."
         )
       } else {
-        tree = consensusPhylo(scCNA)
+        tree <- consensusPhylo(scCNA)
       }
 
       # getting order
@@ -309,7 +309,7 @@ plotHeatmap <- function(scCNA,
         to store the order of the consensus matrix."
       )
     } else {
-      tree = consensusPhylo(scCNA)
+      tree <- consensusPhylo(scCNA)
     }
 
     # getting order
@@ -607,8 +607,8 @@ plotHeatmap <- function(scCNA,
         } else if (is.numeric(dplyr::pull(metadata_anno_df, label[i])))  {
           # if current i metadata element is a numeric vector
           n = 300
-          min_v = min(dplyr::pull(metadata_anno_df, label[i]))
-          max_v = max(dplyr::pull(metadata_anno_df, label[i]))
+          min_v <- min(dplyr::pull(metadata_anno_df, label[i]))
+          max_v <- max(dplyr::pull(metadata_anno_df, label[i]))
 
           label_colors[i] <-
             list(circlize::colorRamp2(
