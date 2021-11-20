@@ -116,7 +116,7 @@ findClusters <- function(scCNA,
     }
 
     g_major <-
-      scran::buildSNNGraph(umap_df, k = k_superclones, transposed = T)
+      scran::buildSNNGraph(umap_df, k = k_superclones, transposed = TRUE)
     superclones <-
       as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
     #storing info
@@ -130,7 +130,7 @@ findClusters <- function(scCNA,
   if (method == "leiden") {
 
     g_minor  <-
-      scran::buildSNNGraph(umap_df, k = k_subclones, transposed = T)
+      scran::buildSNNGraph(umap_df, k = k_subclones, transposed = TRUE)
 
     # saving g_minor graph
     copykit::graph(scCNA) <- g_minor

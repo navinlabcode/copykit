@@ -49,7 +49,7 @@ represent the frequency of gains and values below 0 represent the frequency of
 deletions.
 
 If the argument 'label' is provided the frequency plot will be calculated
-separetely for each label. Labels can be any string column from
+separately for each label. Labels can be any string column from
 \code{\link[SummarizedExperiment]{colData}}
 
 The following geoms are available:

@@ -16,8 +16,8 @@ A ggplot2 object with the plot of different tested k values and their
 jaccard similarity for each subclone
 }
 \description{
-Uses the information from \code{\link{findSugggestedK}} to plot the values
-of jaccard similarity from the tested k range on \code{\link{findSugggestedK}}.
+Uses the information from \code{\link{findSuggestedK}} to plot the values
+of jaccard similarity from the tested k range on \code{\link{findSuggestedK}}.
 }
 \details{
 \code{\link{plotSuggestedK}} access the \code{\link[S4Vectors]{metadata}}

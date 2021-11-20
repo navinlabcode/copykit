@@ -44,4 +44,6 @@ segment means.
 Hua-Jun Wu
 
 Darlan Conterno Minussi
+
+Junke Wang
 }

@@ -27,7 +27,7 @@
 #'
 #' @return Adds a table with the mean jaccard coefficient of clusters for each
 #' tested k and the suggested k value to be used for clustering to
-#' \code{\link[SummarizedExperiment]{metadata}}
+#' \code{\link[S4Vectors]{metadata}}
 #'
 #' @seealso \code{\link[fpc]{clusterboot}}
 #' @seealso \code{\link{plotSuggestedK}}
@@ -235,7 +235,7 @@ hdbscanCBI <-
 leidenCBI <- function(data,k,seed_leid,diss=inherits(data,"dist"),...){
 
   g_minor  <-
-    scran::buildSNNGraph(data, k = k, transposed = T)
+    scran::buildSNNGraph(data, k = k, transposed = TRUE)
 
   if (diss)
     c1 <- igraph::cluster_leiden(g_minor,

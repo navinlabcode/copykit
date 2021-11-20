@@ -31,6 +31,7 @@
 #' @importFrom SummarizedExperiment colData
 #' @importFrom dplyr filter bind_rows case_when
 #' @importFrom mixtools normalmixEM
+#' @importFrom stats rnorm
 #'
 #' @examples
 findNormalCells <- function(scCNA,

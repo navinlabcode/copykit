@@ -7,13 +7,13 @@
 #' @param scCNA scCNA object.
 #' @param genes A vector of strings containing the HUGO Symbol for the gene
 #' of interest.
-#' @param genome A string with the chosen genome assembly.
 #' @param geom A string with the geom for plotting.
 #' @param label A string with the name of the column from
 #' \code{\link[SummarizedExperiment]{colData}} to color the points
 #' @param facet A string with the name of the column from
 #' \code{\link[SummarizedExperiment]{colData}} to separate the plot into facets.
 #' @param dodge.width A numeric that adds dodge between the label categories.
+#' @param assay String with the name of the assay for plotting.
 #'
 #' @details plotGeneCopy finds overlaps of the varbin scaffolds genomic ranges
 #' which can be accessed with \code{\link[SummarizedExperiment]{rowRanges}}

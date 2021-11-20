@@ -37,9 +37,6 @@ undone, if at all. Default is "none". Other choices are "prune", which uses
 
 \item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
 should be parallelized.}
-
-\item{assay}{String with the name of the assay to pull data from to run the
-segmentation.}
 }
 \value{
 The segment profile for all cells inside the scCNA object.

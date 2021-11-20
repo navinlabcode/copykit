@@ -1,7 +1,7 @@
 #' plotSuggestedK
 #'
-#' Uses the information from \code{\link{findSugggestedK}} to plot the values
-#' of jaccard similarity from the tested k range on \code{\link{findSugggestedK}}.
+#' Uses the information from \code{\link{findSuggestedK}} to plot the values
+#' of jaccard similarity from the tested k range on \code{\link{findSuggestedK}}.
 #'
 #' @param scCNA The scCNA object.
 #' @param geom A character with the geom to be used for plotting.

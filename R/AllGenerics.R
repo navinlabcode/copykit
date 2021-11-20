@@ -6,10 +6,12 @@ setGeneric("segment_ratios", function(x, ...)
   standardGeneric("segment_ratios"))
 
 #' @export
+#' @rdname CopyKit-class
 setGeneric("ratios", function(x, ...)
   standardGeneric("ratios"))
 
 #' @export
+#' @rdname CopyKit-class
 setGeneric("bincounts", function(x, ...)
   standardGeneric("bincounts"))
 

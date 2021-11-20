@@ -17,7 +17,9 @@ runDistMat(scCNA, metric = "euclidean", n_threads = parallel::detectCores()/4)
 A distance matrix in the slot \code{distMat} from scCNA object. Access the distance matrix with: \code{copykit::distMat(scCNA, withDimnames = TRUE)}
 }
 \description{
-Performs distance matrix calculations that can be downstream used for hierarchical clustering or phylogenetic analysis. Uses \code{amap::Dist()} in order to parallelize distance calculations.
+Performs distance matrix calculations that can be downstream used for
+hierarchical clustering or phylogenetic analysis. Uses \code{amap::Dist()}
+in order to parallelize distance calculations.
 }
 \author{
 Darlan Conterno Minussi

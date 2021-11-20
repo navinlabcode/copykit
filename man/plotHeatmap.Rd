@@ -44,9 +44,6 @@ on the heatmap.}
 
 \item{row_split}{A string with the names of the columns from
 \code{\link[SummarizedExperiment]{colData}} to split the heatmap.}
-
-\item{n_threads}{A numeric scalar passed on to \code{\link[amap]{Dist}} for
-parallel calculation of the distance matrix needed for 'hclust'.}
 }
 \value{
 A \code{ComplexHeatmap} object with a heatmap of copy number data
@@ -67,7 +64,7 @@ Each row is a cell and colums represent genomic positions.
      'n_threads' if you have more threads available to use. If order_cells
      is set to 'phylogeny' \code{\link{plotHeatmap}} will use the tree stored
      in the \code{\link{phylo}} slot of the scCNA object to order the cells.
-     If the \code{\link{phylo}} is empty \code{\link{plotHeatmap}} wil run
+     If the \code{\link{phylo}} is empty \code{\link{plotHeatmap}} will run
      \code{\link{runPhylo}} to generate the tree.
 
    \item{label}: A vector with the string names of the columns from

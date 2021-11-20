@@ -5,6 +5,7 @@
 #'
 #' @author Hua-Jun Wu
 #' @author Darlan Conterno Minussi
+#' @author Junke Wang
 #'
 #' @detail \code{filterCells} Calculates a correlation matrix across the segment
 #' means among all cells and takes the mean of its k-nearest neighbors correlation.
@@ -25,6 +26,8 @@
 #' Cells that pass the filtering criteria receive the label "kept",
 #' whereas cells that do not pass the filtering criteria
 #' receive the label "removed".
+#'
+#' @importFrom stats cor
 #'
 #' @export
 #'

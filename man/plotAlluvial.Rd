@@ -7,6 +7,8 @@
 plotAlluvial(scCNA, label, label_colors = NULL, min_cells = NULL)
 }
 \arguments{
+\item{scCNA}{The CopyKit object.}
+
 \item{label}{A string with two or more  elements from \code{\link[SummarizedExperiment]{colData}}.}
 
 \item{label_colors}{An optional named vector with the colors of each element from label.}

@@ -30,7 +30,7 @@ of interest.}
 
 \item{dodge.width}{A numeric that adds dodge between the label categories.}
 
-\item{genome}{A string with the chosen genome assembly.}
+\item{assay}{String with the name of the assay for plotting.}
 }
 \value{
 A ggplot object with a plot of the gene-wise copy number states.

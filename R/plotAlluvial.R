@@ -2,7 +2,7 @@
 #'
 #' Produces an alluvial plot from character elements of the metadata
 #'
-#' @param scCNA
+#' @param scCNA The CopyKit object.
 #' @param label A string with two or more  elements from \code{\link[SummarizedExperiment]{colData}}.
 #' @param label_colors An optional named vector with the colors of each element from label.
 #' @param min_cells An optional numeric to filter stratum that do not reach

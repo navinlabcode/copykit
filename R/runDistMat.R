@@ -1,6 +1,8 @@
 #' Run distance matrix calculations
 #'
-#' Performs distance matrix calculations that can be downstream used for hierarchical clustering or phylogenetic analysis. Uses \code{amap::Dist()} in order to parallelize distance calculations.
+#' Performs distance matrix calculations that can be downstream used for
+#' hierarchical clustering or phylogenetic analysis. Uses \code{amap::Dist()}
+#' in order to parallelize distance calculations.
 #'
 #' @author Darlan Conterno Minussi
 #'

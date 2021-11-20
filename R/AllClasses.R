@@ -21,7 +21,16 @@ setOldClass("igraph")
 #'  @importClassesFrom SummarizedExperiment RangedSummarizedExperiment SingleCellExperiment
 #'  @importClassesFrom S4Vectors DataFrame SimpleList
 
-
+#' A S4 class to store copy number assays with CopyKit.
+#' Inherits from SingleCellExperiment
+#'
+#' @slot phylo Stores the single cell phylogenetic information with ape class
+#' phylo
+#' @slot consensusPhylo Stores the consensus phylogenetic information with
+#' ape class phylo
+#' @slot distMat Stores a distance matrix object used for graphs and heatmaps
+#' @slot graph Stores an igraph object for network based clustering
+#' @slot consensus stores a consensus data frame from \link{calcConsensus}
 #' @export
 #' @import methods
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment

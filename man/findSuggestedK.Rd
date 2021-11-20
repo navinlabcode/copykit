@@ -40,7 +40,7 @@ should be parallelized.}
 \value{
 Adds a table with the mean jaccard coefficient of clusters for each
 tested k and the suggested k value to be used for clustering to
-\code{\link[SummarizedExperiment]{metadata}}
+\code{\link[S4Vectors]{metadata}}
 }
 \description{
 Performs a grid search over a range of k values to assess cluster stability.

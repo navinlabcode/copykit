@@ -22,8 +22,6 @@
 #' @param genes A character vector with the HUGO symbol for genes to be annotated
 #' on the heatmap.
 #' @param consensus A boolean indicating if the consensus heatmap should be plotted.
-#' @param n_threads A numeric scalar passed on to \code{\link[amap]{Dist}} for
-#' parallel calculation of the distance matrix needed for 'hclust'.
 #'
 #' @return A \code{ComplexHeatmap} object with a heatmap of copy number data
 #' where the columns are the genomic positions and each row is a cell.
@@ -39,7 +37,7 @@
 #'      'n_threads' if you have more threads available to use. If order_cells
 #'      is set to 'phylogeny' \code{\link{plotHeatmap}} will use the tree stored
 #'      in the \code{\link{phylo}} slot of the scCNA object to order the cells.
-#'      If the \code{\link{phylo}} is empty \code{\link{plotHeatmap}} wil run
+#'      If the \code{\link{phylo}} is empty \code{\link{plotHeatmap}} will run
 #'      \code{\link{runPhylo}} to generate the tree.
 #'
 #'    \item{label}: A vector with the string names of the columns from
@@ -84,6 +82,7 @@
 #' @importFrom circlize colorRamp2
 #' @importFrom pals ocean.balance
 #' @importFrom S4Vectors metadata
+#' @importFrom grDevices colors
 #' @importFrom SummarizedExperiment assay
 #' @importFrom dplyr select pull all_of mutate group_by
 #' @importFrom viridis viridis

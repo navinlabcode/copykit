@@ -130,7 +130,7 @@ plotPhylo <- function(scCNA,
                    x = ""
                  )) +
             geom_bar(stat = 'identity') +
-            scale_fill_manual(values = group_colors) +
+            scale_fill_manual(values = group_colors, limits = force) +
             coord_polar(theta = 'y', start = 0) +
             theme_void() +
             theme(legend.position = "none")
@@ -201,7 +201,7 @@ plotPhylo <- function(scCNA,
     tree <- ggtree::groupOTU(tree, list_samples)
     p <- ggtree::ggtree(tree, ladderize = F) +
       geom_tippoint(aes(color = group), size = size) +
-      scale_color_manual(values = label_colors, name = label) +
+      scale_color_manual(values = label_colors, name = label, limits = force) +
       theme(legend.position = 'none') +
       geom_treescale(x = 10)
 
