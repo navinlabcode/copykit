@@ -16,4 +16,9 @@ The scCNA object with a column of breakpoint counts added to colData.
 Considers changes in the segment ratios as breakpoints.
 Counts the breakpoints for each chromosome arm separately.
 }
+\examples{
+copykit_obj <- copykit_example()
+copykit_obj <- .countBreakpoints(copykit_obj)
+
+}
 \keyword{internal}

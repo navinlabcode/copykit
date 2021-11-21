@@ -32,8 +32,10 @@
 #' @export
 #'
 #' @examples
-#'
-#'
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- findNormalCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+#' copykit_obj <- filterCells(copykit_obj)
 
 filterCells <- function(scCNA,
                         assay = 'segment_ratios',

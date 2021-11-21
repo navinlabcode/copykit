@@ -37,8 +37,10 @@ Uses a nearest neighbor approach to find noise copy number profiles within the
 segment means.
 }
 \examples{
-
-
+copykit_obj <- copykit_example()
+copykit_obj <- findNormalCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+copykit_obj <- filterCells(copykit_obj)
 }
 \author{
 Hua-Jun Wu

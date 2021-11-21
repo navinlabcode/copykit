@@ -30,3 +30,8 @@ A data frame with log transformed counts inside the
 \description{
 Computes a log transformation of the selected assay
 }
+\examples{
+copykit_obj <- copykit_example()
+copykit_obj <- logNorm(copykit_obj)
+
+}

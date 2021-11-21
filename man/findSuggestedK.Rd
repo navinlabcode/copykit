@@ -55,6 +55,16 @@ The default tested range is from 7 to the square root of the number of cells
 in the scCNA object. If sqrt(n_cells) is smaller than 7 a range of 5 to 15
 is tested.
 }
+\examples{
+copykit_obj <- copykit_example()
+copykit_obj <- findNormalCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+copykit_obj <- filterCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+copykit_obj <- runUmap(copykit_obj)
+copykit_obj <- findSuggestedK(copykit_obj)
+
+}
 \references{
 Hennig, C. (2007) Cluster-wise assessment of cluster stability.
 Computational Statistics and Data Analysis, 52, 258-271.

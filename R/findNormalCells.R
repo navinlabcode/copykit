@@ -34,6 +34,9 @@
 #' @importFrom stats rnorm
 #'
 #' @examples
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- findNormalCells(copykit_obj)
+#'
 findNormalCells <- function(scCNA,
                             assay = 'segment_ratios',
                             resolution = "auto",

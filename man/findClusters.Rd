@@ -61,6 +61,16 @@ Search for clusters in the scCNA data.
   according to Euclidean distance.
  }
 }
+\examples{
+copykit_obj <- copykit_example()
+copykit_obj <- findNormalCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+copykit_obj <- filterCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+copykit_obj <- runUmap(copykit_obj)
+copykit_obj <- findSuggestedK(copykit_obj)
+copykit_obj <- findClusters(copykit_obj)
+}
 \references{
 Laks, E., McPherson, A., Zahn, H., et al. (2019). Clonal
  Decomposition and DNA Replication States Defined by Scaled Single-Cell

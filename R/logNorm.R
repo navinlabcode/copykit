@@ -18,6 +18,9 @@
 #' @export
 #'
 #' @examples
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- logNorm(copykit_obj)
+#'
 logNorm <- function(scCNA,
                     transform = c("log", "log2", "log10", "log1p"),
                     assay = 'segment_ratios',

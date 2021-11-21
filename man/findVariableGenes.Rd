@@ -33,3 +33,12 @@ loadings of the first principal component.
 The resulting list of genes is stored within the metadata of the scCNA
 object and can be accessed with \code{\link[S4Vectors]{metadata}}.
 }
+\examples{
+copykit_obj <- copykit_example()
+copykit_obj <- findNormalCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+copykit_obj <- filterCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+copykit_obj <- findVariableGenes(copykit_obj)
+
+}

@@ -15,6 +15,9 @@
 #' @importFrom SummarizedExperiment rowRanges
 #'
 #' @examples
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- .countBreakpoints(copykit_obj)
+#'
 .countBreakpoints <- function(scCNA) {
 
   rg_chr <- SummarizedExperiment::rowRanges(scCNA) %>%

@@ -403,3 +403,26 @@ parCor <- function(x, BPPARAM=BiocParallel::bpparam())
   rownames(res_parcor_reserve) <- colnames(x)
   return(res_parcor_reserve)
 }
+
+#' @author Darlan Conterno Minussi
+#' @export
+#' @internal
+copykit_example <- function() {
+  #ranges
+  hg38_rg_edit <- hg38_rg[, -c(4:5)]
+  hg38_rg_editnoY <- dplyr::filter(hg38_rg_edit, chr != "chrY")
+  rg_hg38 <- GenomicRanges::makeGRangesFromDataFrame(hg38_rg_editnoY,
+                                          ignore.strand = TRUE,
+                                          keep.extra.columns = TRUE)
+
+  data("copykit_obj_rle")
+  copykit_data_proc <- as.data.frame(do.call(cbind,
+                                             lapply(copykit_obj_rle,
+                                                    inverse.rle)))
+  copykit_obj <- CopyKit(assays = list(segment_ratios = copykit_data_proc),
+                         rowRanges = rg_hg38)
+  copykit_obj <- logNorm(copykit_obj)
+  metadata(copykit_obj)$genome <- "hg38"
+  colData(copykit_obj)$sample <- names(copykit_data_proc)
+  return(copykit_obj)
+}

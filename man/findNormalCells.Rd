@@ -45,3 +45,8 @@ performs a sample-wise calculation of the segment means coefficient
  if they have a coefficient of variance smaller than the mean plus five times
  the standard deviation of the normal cell distribution.
 }
+\examples{
+copykit_obj <- copykit_example()
+copykit_obj <- findNormalCells(copykit_obj)
+
+}

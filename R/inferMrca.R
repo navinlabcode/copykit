@@ -16,6 +16,17 @@
 #' @export
 #'
 #' @examples
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- findNormalCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+#' copykit_obj <- filterCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+#' copykit_obj <- runUmap(copykit_obj)
+#' copykit_obj <- findSuggestedK(copykit_obj)
+#' copykit_obj <- findClusters(copykit_obj)
+#' copykit_obj <- calcConsensus(copykit_obj)
+#' copykit_obj <- inferMrca(copykit_obj)
+#'
 inferMrca <- function(scCNA,
                       value = 1) {
 
