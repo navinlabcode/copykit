@@ -31,21 +31,17 @@ Suggests:
     knitr,
     rmarkdown
 Language: en-US
-biocViews: Software
+biocViews: Software, SingleCell, DNASeq, Sequencing, Visualization
 Imports: 
     dplyr,
     uwot,
     ggplot2,
     magrittr,
-    GenomeInfoDb,
     SummarizedExperiment,
-    readr,
     ComplexHeatmap,
     fastcluster,
     amap,
-    janitor,
     scran,
-    leiden,
     ape,
     S4Vectors,
     parallel,
@@ -54,7 +50,6 @@ Imports:
     tibble,
     igraph,
     BiocGenerics,
-    data.table,
     grid,
     stringr,
     Metrics,

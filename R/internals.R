@@ -406,6 +406,8 @@ parCor <- function(x, BPPARAM=BiocParallel::bpparam())
 
 #' @author Darlan Conterno Minussi
 #' @export
+#' @importFrom  S4Vectors metadata
+#' @importFrom rlang chr
 #' @internal
 copykit_example <- function() {
   #ranges

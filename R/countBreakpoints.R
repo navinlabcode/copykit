@@ -12,7 +12,7 @@
 #'
 #' @importFrom dplyr pull bind_rows mutate select
 #' @importFrom purrr map_dfc
-#' @importFrom SummarizedExperiment rowRanges
+#' @importFrom SummarizedExperiment rowRanges seqnames
 #'
 #' @examples
 #' copykit_obj <- copykit_example()

@@ -27,7 +27,7 @@
 #' whereas cells that do not pass the filtering criteria
 #' receive the label "removed".
 #'
-#' @importFrom stats cor
+#' @importFrom stats cor sd
 #'
 #' @export
 #'

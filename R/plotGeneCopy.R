@@ -38,7 +38,19 @@
 #' @export
 #'
 #' @examples
-#'
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- findNormalCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+#' copykit_obj <- filterCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+#' copykit_obj <- runUmap(copykit_obj)
+#' copykit_obj <- findSuggestedK(copykit_obj)
+#' copykit_obj <- findClusters(copykit_obj)
+#' plotGeneCopy(copykit_obj, genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"))
+#' plotGeneCopy(copykit_obj, genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"),
+#' label = 'subclones')
+#' plotGeneCopy(copykit_obj, genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"),
+#' label = 'subclones', dodge.width = 0.8)
 
 plotGeneCopy <- function(scCNA,
                          genes,

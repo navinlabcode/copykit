@@ -15,6 +15,8 @@
 #' of the scCNA object named `inferred_mrca`
 #' @export
 #'
+#' @importFrom SummarizedExperiment seqnames
+#'
 #' @examples
 #' copykit_obj <- copykit_example()
 #' copykit_obj <- findNormalCells(copykit_obj)
