@@ -16,7 +16,8 @@ runConsensusPhylo(scCNA, root = c("mrca", "neutral", "user"), root_user = NULL)
 of the genome scaffold.}
 }
 \value{
-
+A phylo object with a consensus tree stored in the consensusPhylo slot
+of the CopyKit object.
 }
 \description{
 Runs a minimal evolution tree algorithm for the consensus data frame

@@ -13,7 +13,7 @@
 #'  of the ith segment mean of all single cells assigned to the same element of
 #'  \link{colData},
 #'
-#' @return
+#' @return A consensus matrix stored in the consensus slot of the CopyKit object.
 #' @export
 #'
 #' @examples

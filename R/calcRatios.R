@@ -16,6 +16,10 @@
 #' @importFrom SummarizedExperiment assay
 #'
 #' @examples
+#' \dontrun{
+#' copykit_obj <- calcRatios(copykit_obj)
+#' }
+#'
 calcRatios <- function(scCNA,
                        assay = c("ft", "bincounts", "smoothed_bincounts"),
                        fun = c("mean", "median")) {

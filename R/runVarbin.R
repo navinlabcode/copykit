@@ -101,7 +101,9 @@
 #' @export
 #'
 #' @examples
-#'
+#' \dontrun{
+#' copykit_obj <- runVarbin("~/path/to/bam/files/", remove_Y = TRUE)
+#' }
 #'
 
 runVarbin <- function(dir,

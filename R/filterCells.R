@@ -7,7 +7,7 @@
 #' @author Darlan Conterno Minussi
 #' @author Junke Wang
 #'
-#' @detail \code{filterCells} Calculates a correlation matrix across the segment
+#' @details \code{filterCells} Calculates a correlation matrix across the segment
 #' means among all cells and takes the mean of its k-nearest neighbors correlation.
 #' A threshold (argument resolution) is used for the minimum acceptable mean
 #' correlation among the cell and its neighbors. Values below the set resolution

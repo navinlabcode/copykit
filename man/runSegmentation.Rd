@@ -64,3 +64,9 @@ Runs a segmentation algorithm using the ratio data.
 The resulting segment means are further refined with MergeLevels to join
 adjacent segments with non-significant differences in segmented means.
 }
+\examples{
+\dontrun{
+copykit_obj <- runSegmentation(copykit_obj)
+}
+
+}

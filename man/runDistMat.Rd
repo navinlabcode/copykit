@@ -11,15 +11,21 @@ runDistMat(scCNA, metric = "euclidean", n_threads = parallel::detectCores()/4)
 
 \item{metric}{distance metric passed to calculate the distance matrix (Defaults to "euclidean").}
 
-\item{n_threads}{Number of threads used to calculate the distance matrix. Passed to `amap::Dist`. As default it uses 1/4 of the detected cores available.}
+\item{n_threads}{Number of threads used to calculate the distance matrix.
+Passed to `amap::Dist`. As default it uses 1/4 of the detected cores available.}
 }
 \value{
-A distance matrix in the slot \code{distMat} from scCNA object. Access the distance matrix with: \code{copykit::distMat(scCNA, withDimnames = TRUE)}
+A distance matrix in the slot \code{distMat} from scCNA object.
+Access the distance matrix with: \code{copykit::distMat(scCNA, withDimnames = TRUE)}
 }
 \description{
 Performs distance matrix calculations that can be downstream used for
 hierarchical clustering or phylogenetic analysis. Uses \code{amap::Dist()}
 in order to parallelize distance calculations.
+}
+\examples{
+copykit_obj <- copykit_example()
+copykit_obj <- runDistMat(copykit_obj)
 }
 \author{
 Darlan Conterno Minussi

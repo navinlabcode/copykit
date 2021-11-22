@@ -212,7 +212,7 @@ findSuggestedK <- function(scCNA,
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # custom hdbscan function to pass to fpc::clusterboot
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#' @internal
+#' @keywords internal
 #' @export
 hdbscanCBI <-
   function(data, minPts, diss = inherits(data, "dist"), ...) {
@@ -238,7 +238,7 @@ hdbscanCBI <-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # custom leiden function to pass to fpc::clusterboot
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#' @internal
+#' @keywords internal
 #' @export
 leidenCBI <- function(data,k,seed_leid,diss=inherits(data,"dist"),...){
 

@@ -236,7 +236,7 @@ subclones_pal <- function() {
 
 #' @author Darlan Conterno Minussi
 #' @export
-#' @internal
+#' @keywords internal
 find_scaffold_genes <- function(scCNA,
                                 genes) {
 
@@ -408,7 +408,7 @@ parCor <- function(x, BPPARAM=BiocParallel::bpparam())
 #' @export
 #' @importFrom  S4Vectors metadata
 #' @importFrom rlang chr
-#' @internal
+#' @keywords internal
 copykit_example <- function() {
   #ranges
   hg38_rg_edit <- hg38_rg[, -c(4:5)]

@@ -12,7 +12,7 @@ plotVariableGenes(scCNA, n = 30)
 \item{n}{A numeric defining how many variable genes will be plotted.}
 }
 \value{
-
+A ggplot object with a plot of the variable genes detected.
 }
 \description{
 Visualization for the most variable genes found with \code{findVariableGenes}.

@@ -27,7 +27,7 @@ to isolate the cells by factor and calculate the consensus.}
 should be parallelized.}
 }
 \value{
-
+A consensus matrix stored in the consensus slot of the CopyKit object.
 }
 \description{
 Calculate a consensus matrix of segment means based on \code{colData}

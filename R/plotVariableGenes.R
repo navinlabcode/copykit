@@ -14,7 +14,7 @@
 #' @importFrom S4Vectors metadata subjectHits queryHits
 #' @import ggplot2
 #'
-#' @return
+#' @return A ggplot object with a plot of the variable genes detected.
 #' @export
 #'
 #' @examples

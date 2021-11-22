@@ -10,7 +10,8 @@
 #'
 #' @importFrom ape fastme.bal Ntip root.phylo drop.tip
 #'
-#' @return
+#' @return A phylo object with a consensus tree stored in the consensusPhylo slot
+#' of the CopyKit object.
 #' @export
 #'
 #' @examples

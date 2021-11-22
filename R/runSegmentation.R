@@ -51,6 +51,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' copykit_obj <- runSegmentation(copykit_obj)
+#' }
+#'
 runSegmentation <- function(scCNA,
                             method = c("CBS", "multipcf"),
                             seed = 17,

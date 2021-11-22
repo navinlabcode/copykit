@@ -106,7 +106,9 @@ The resulting segment means are further refined with MergeLevels to join
 adjacent segments with non-significant differences in segmented means.
 }
 \examples{
-
+\dontrun{
+copykit_obj <- runVarbin("~/path/to/bam/files/", remove_Y = TRUE)
+}
 
 }
 \references{
