@@ -7,14 +7,21 @@ Authors@R: c(
     person(given = "Darlan",
            family = "Conterno Minussi",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID")),
+           email = "dcminussi@mdanderson.org",
+           comment = c(ORCID = "0000-0001-8856-4625")),
+               person(given = "Junke",
+           family = "Wang",
+           role = c("ctb"),
+           email = "JWang48@mdanderson.org",
+           comment = c(ORCID = "0000-0002-3733-5192")),
     person(given = "Yun",
            family = "Yan",
            role = c("ctb"),
            email = "yun.yan@uth.tmc.edu",
            comment = c(ORCID = "0000-0002-3701-9608")) )
-Description: Toolkit for single-cell copy number analysis.
+Description: A suite of tools for single cell copy number analysis 
+        focusing on read binning, segmentation, normalization, 
+        filtering, analysis, and visualization
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -24,23 +31,17 @@ Suggests:
     knitr,
     rmarkdown
 Language: en-US
-biocViews:
+biocViews: Software, SingleCell, DNASeq, Sequencing, Visualization
 Imports: 
     dplyr,
-    ggplot2,
     uwot,
+    ggplot2,
     magrittr,
-    GenomicRanges,
-    GenomeInfoDb,
     SummarizedExperiment,
-    readr,
-    fs,
     ComplexHeatmap,
     fastcluster,
     amap,
-    janitor,
     scran,
-    leiden,
     ape,
     S4Vectors,
     parallel,
@@ -49,16 +50,13 @@ Imports:
     tibble,
     igraph,
     BiocGenerics,
-    data.table,
     grid,
     stringr,
     Metrics,
     ggbeeswarm,
-    leidenbase,
     dbscan,
     mixtools,
     shiny,
-    Rsubread,
     gtools,
     forcats,
     circlize,
@@ -70,9 +68,17 @@ Imports:
     aCGH,
     Rsamtools,
     copynumber,
-    ggalluvial
+    ggalluvial,
+    viridis,
+    purrr,
+    ggtree,
+    rlang,
+    methods
 RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 Depends: 
     SingleCellExperiment,
-    R (>= 2.10)
+    R (>= 4.1.0),
+    Rsubread,
+    GenomicRanges,
+    DNAcopy

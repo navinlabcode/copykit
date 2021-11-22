@@ -5,30 +5,37 @@
 #'
 #' @author Hua-Jun Wu
 #' @author Darlan Conterno Minussi
+#' @author Junke Wang
 #'
-#' @detail \code{filterCells} Calculates a correlation matrix across the segment
+#' @details \code{filterCells} Calculates a correlation matrix across the segment
 #' means among all cells and takes the mean of its k-nearest neighbors correlation.
 #' A threshold (argument resolution) is used for the minimum acceptable mean
 #' correlation among the cell and its neighbors. Values below the set resolution
 #' will be classified as noise cells.
 #'
 #' @param scCNA scCNA object.
-#' @param assay String with the name of the assay to pull data from to filter cells.
-#' @param k A numeric scalar with the number k-nearest-neighbor cells to calculate the
-#' mean correlation
-#' @param resolution A numeric scalar that set's how strict the correlation cut off will be.
-#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function should be parallelized.
+#' @param assay String with the name of the assay to pull data.
+#' @param k A numeric scalar with the number k-nearest-neighbor cells to
+#' calculate the mean correlation
+#' @param resolution A numeric scalar that set's how strict the
+#' correlation cut off will be.
+#' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
+#'should be parallelized.
 #'
-#' @return Adds a column named 'filtered' to \code{\link[SummarizedExperiment]{colData}}
+#' @return Adds a column 'filtered' to \code{\link[SummarizedExperiment]{colData}}
 #' Cells that pass the filtering criteria receive the label "kept",
 #' whereas cells that do not pass the filtering criteria
 #' receive the label "removed".
 #'
+#' @importFrom stats cor sd
+#'
 #' @export
 #'
 #' @examples
-#'
-#'
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- findNormalCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+#' copykit_obj <- filterCells(copykit_obj)
 
 filterCells <- function(scCNA,
                         assay = 'segment_ratios',

@@ -16,8 +16,8 @@ A ggplot2 object with the plot of different tested k values and their
 jaccard similarity for each subclone
 }
 \description{
-Uses the information from \code{\link{findSugggestedK}} to plot the values
-of jaccard similarity from the tested k range on \code{\link{findSugggestedK}}.
+Uses the information from \code{\link{findSuggestedK}} to plot the values
+of jaccard similarity from the tested k range on \code{\link{findSuggestedK}}.
 }
 \details{
 \code{\link{plotSuggestedK}} access the \code{\link[S4Vectors]{metadata}}
@@ -44,4 +44,15 @@ explained by the number of cells. Points are colored by subclone and lines
 represent a linear regression across the points.
 
 }
+}
+\examples{
+copykit_obj <- copykit_example()
+copykit_obj <- findNormalCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+copykit_obj <- filterCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+copykit_obj <- runUmap(copykit_obj)
+copykit_obj <- findSuggestedK(copykit_obj)
+plotSuggestedK(copykit_obj)
+
 }

@@ -26,6 +26,12 @@ allowing either the Freeman-Tukey transformation by using the option 'ft' (recom
 or a logarithmic transformation with the option 'log'. Using a 'log' transformation
 may result in long segmentation times for a few cells with large breakpoint counts.
 }
+\examples{
+\dontrun{
+copykit_obj <- runVst(copykit_obj)
+}
+
+}
 \references{
 Freeman, M. F.; Tukey, J. W. (1950), "Transformations related to the angular
 and the square root", The Annals of Mathematical Statistics,

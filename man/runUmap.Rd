@@ -45,6 +45,15 @@ A reduced dimension representation with UMAP in the slot \code{reducedDim} from 
 \description{
 Creates a umap embedding using the package uwot from the segment ratios values
 }
+\examples{
+copykit_obj <- copykit_example()
+copykit_obj <- findNormalCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+copykit_obj <- filterCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+copykit_obj <- runUmap(copykit_obj)
+
+}
 \author{
 Darlan Conterno Minussi
 }

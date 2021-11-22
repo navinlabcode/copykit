@@ -27,7 +27,7 @@
 #'
 #' @return Adds a table with the mean jaccard coefficient of clusters for each
 #' tested k and the suggested k value to be used for clustering to
-#' \code{\link[SummarizedExperiment]{metadata}}
+#' \code{\link[S4Vectors]{metadata}}
 #'
 #' @seealso \code{\link[fpc]{clusterboot}}
 #' @seealso \code{\link{plotSuggestedK}}
@@ -50,6 +50,14 @@
 #' @importFrom igraph cluster_leiden membership
 #'
 #' @examples
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- findNormalCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+#' copykit_obj <- filterCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+#' copykit_obj <- runUmap(copykit_obj)
+#' copykit_obj <- findSuggestedK(copykit_obj)
+#'
 findSuggestedK <- function(scCNA,
                            embedding = 'umap',
                            k_range = NULL,
@@ -204,7 +212,7 @@ findSuggestedK <- function(scCNA,
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # custom hdbscan function to pass to fpc::clusterboot
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#' @internal
+#' @keywords internal
 #' @export
 hdbscanCBI <-
   function(data, minPts, diss = inherits(data, "dist"), ...) {
@@ -230,12 +238,12 @@ hdbscanCBI <-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # custom leiden function to pass to fpc::clusterboot
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#' @internal
+#' @keywords internal
 #' @export
 leidenCBI <- function(data,k,seed_leid,diss=inherits(data,"dist"),...){
 
   g_minor  <-
-    scran::buildSNNGraph(data, k = k, transposed = T)
+    scran::buildSNNGraph(data, k = k, transposed = TRUE)
 
   if (diss)
     c1 <- igraph::cluster_leiden(g_minor,

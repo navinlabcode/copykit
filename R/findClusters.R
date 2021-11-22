@@ -7,24 +7,25 @@
 #' @param scCNA scCNA object.
 #' @param embedding String with the name of the reducedDim to pull data from.
 #' @param method A string with method used for clustering.
-#' @param k_superclones A numeric scalar k-nearest-neighbor value.
+#' @param k_superclones A numeric k-nearest-neighbor value.
 #' Used to find the superclones.
-#' @param k_subclones A numeric scalar k-nearest-neighbor value.
+#' @param k_subclones A numeric k-nearest-neighbor value.
 #' Used to find the subclones
-#' @param seed A numeric scalar seed passed on to pseudo-random dependent functions.
+#' @param seed A numeric passed on to pseudo-random dependent functions.
 #'
 #' @details \code{findClusters} uses the reduced dimensional embedding resulting
-#'  from \code{\link{runUmap}} to perform clustering at two levels, hereby referred
-#'  to as superclones, and subclones. When clustering for superclones findClusters
-#'  creates a graph representation of the dataset reduced dimension embedding
-#'  using a shared nearest neighbor algorithm (SNN) \code{\link[scran]{buildSNNGraph}},
-#'  from this graph the connected components are extracted and generally
-#'  represent high-level structures that share large, lineage defining copy
-#'  number events. At a more fine-grained resolution, CopyKit can also be
-#'  used to detect subclones, i. e. groups of cells containing a unique
-#'  copy number event per cluster, to do so the umap embedding is again
-#'  used as the pre-processing step, this time to perform a density-based
-#'  clustering with hdbscan \code{\link[dbscan]{hdbscan}}. Network clustering
+#'  from \code{\link{runUmap}} to perform clustering at two levels, hereby
+#'  referred to as superclones, and subclones. When clustering for superclones
+#'  findClusters creates a graph representation of the dataset reduced
+#'  dimension embedding using a shared nearest neighbor algorithm
+#'  (SNN) \code{\link[scran]{buildSNNGraph}}, from this graph the connected
+#'  components are extracted and generally represent high-level structures
+#'  that share large, lineage defining copy number events. At a more
+#'  fine-grained resolution, CopyKit can also be used to detect subclones,
+#'  i. e. groups of cells containing a unique copy number event per cluster,
+#'  to do so the umap embedding is again used as the pre-processing step,
+#'  this time to perform a density-based clustering with hdbscan
+#'   \code{\link[dbscan]{hdbscan}}. Network clustering
 #'  algorithms on top of the SNN graph such as the leiden algorithm
 #'  \code{\link[leidenbase]{leiden_find_partition}}.
 #'
@@ -37,14 +38,15 @@
 #'  }
 #'
 #' @return Cluster information is added to \code{\link[SummarizedExperiment]{colData}}
-#' in columns superclones or subclones. Superclones are prefixed by 's' whereas subclones
-#' are prefixed by 'c'
+#' in columns superclones or subclones. Superclones are prefixed by 's' whereas
+#'  subclones are prefixed by 'c'
 #'
-#' @seealso \code{\link{findSuggestedK}} to obtain suggestions of k_subclones values.
+#' @seealso \code{\link{findSuggestedK}}.
 #'
-#' @references Laks, E., McPherson, A., Zahn, H., et al. (2019). Clonal Decomposition
-#' and DNA Replication States Defined by Scaled Single-Cell Genome Sequencing.
-#' Cell, 179(5), 1207–1221.e22. https://doi.org/10.1016/j.cell.2019.10.026
+#' @references Laks, E., McPherson, A., Zahn, H., et al. (2019). Clonal
+#'  Decomposition and DNA Replication States Defined by Scaled Single-Cell
+#'  Genome Sequencing. Cell, 179(5), 1207–1221.e22.
+#'  https://doi.org/10.1016/j.cell.2019.10.026
 #'
 #' Leland McInnes and John Healy and James Melville. UMAP: Uniform Manifold
 #' Approximation and Projection for Dimension Reduction. arXiv:1802.03426
@@ -68,6 +70,14 @@
 #' @importFrom igraph cluster_leiden membership
 #'
 #' @examples
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- findNormalCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+#' copykit_obj <- filterCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+#' copykit_obj <- runUmap(copykit_obj)
+#' copykit_obj <- findSuggestedK(copykit_obj)
+#' copykit_obj <- findClusters(copykit_obj)
 
 findClusters <- function(scCNA,
                          embedding = "umap",
@@ -114,7 +124,7 @@ findClusters <- function(scCNA,
     }
 
     g_major <-
-      scran::buildSNNGraph(umap_df, k = k_superclones, transposed = T)
+      scran::buildSNNGraph(umap_df, k = k_superclones, transposed = TRUE)
     superclones <-
       as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
     #storing info
@@ -128,7 +138,7 @@ findClusters <- function(scCNA,
   if (method == "leiden") {
 
     g_minor  <-
-      scran::buildSNNGraph(umap_df, k = k_subclones, transposed = T)
+      scran::buildSNNGraph(umap_df, k = k_subclones, transposed = TRUE)
 
     # saving g_minor graph
     copykit::graph(scCNA) <- g_minor

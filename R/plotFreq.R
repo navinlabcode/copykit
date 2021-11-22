@@ -21,7 +21,7 @@
 #' deletions.
 #'
 #' If the argument 'label' is provided the frequency plot will be calculated
-#' separetely for each label. Labels can be any string column from
+#' separately for each label. Labels can be any string column from
 #' \code{\link[SummarizedExperiment]{colData}}
 #'
 #' The following geoms are available:
@@ -42,9 +42,19 @@
 #' @import ggplot2
 #' @importFrom dplyr mutate filter group_by ungroup arrange n count bind_rows
 #' @importFrom tidyr gather complete
-#' @importFrom SummarizedExperiment assay rowRanges colData
+#' @importFrom SummarizedExperiment assay rowRanges colData seqnames
 #'
 #' @examples
+#' #' copykit_obj <- copykit_example()
+#' copykit_obj <- findNormalCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+#' copykit_obj <- filterCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+#' copykit_obj <- runUmap(copykit_obj)
+#' copykit_obj <- findSuggestedK(copykit_obj)
+#' copykit_obj <- findClusters(copykit_obj)
+#' plotFreq(copykit_obj, label = 'subclones')
+#'
 plotFreq <- function(scCNA,
                      high_threshold = 1.3,
                      low_threshold = 0.7,

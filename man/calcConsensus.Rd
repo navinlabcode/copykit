@@ -27,7 +27,7 @@ to isolate the cells by factor and calculate the consensus.}
 should be parallelized.}
 }
 \value{
-
+A consensus matrix stored in the consensus slot of the CopyKit object.
 }
 \description{
 Calculate a consensus matrix of segment means based on \code{colData}
@@ -36,4 +36,16 @@ Calculate a consensus matrix of segment means based on \code{colData}
 Consensus profiles are calculated by averaging or taking the median
  of the ith segment mean of all single cells assigned to the same element of
  \link{colData},
+}
+\examples{
+copykit_obj <- copykit_example()
+copykit_obj <- findNormalCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+copykit_obj <- filterCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+copykit_obj <- runUmap(copykit_obj)
+copykit_obj <- findSuggestedK(copykit_obj)
+copykit_obj <- findClusters(copykit_obj)
+copykit_obj <- calcConsensus(copykit_obj)
+
 }

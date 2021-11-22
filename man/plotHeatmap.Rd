@@ -10,6 +10,7 @@ plotHeatmap(
   order_cells = c("consensus_tree", "hclust", "phylogeny"),
   label = NULL,
   label_colors = NULL,
+  group = NULL,
   consensus = FALSE,
   rounding_error = FALSE,
   genes = NULL,
@@ -29,6 +30,10 @@ plotHeatmap(
 \item{label_colors}{A named list with colors for the label annotation.
 Must match label length and have the same names as label}
 
+\item{group}{with the names of the columns from
+\code{\link[SummarizedExperiment]{colData}} to add a barplot with frequency
+of the groups to a consensus heatmap.}
+
 \item{consensus}{A boolean indicating if the consensus heatmap should be plotted.}
 
 \item{rounding_error}{A boolean indicating if the rounding error matrix
@@ -39,9 +44,6 @@ on the heatmap.}
 
 \item{row_split}{A string with the names of the columns from
 \code{\link[SummarizedExperiment]{colData}} to split the heatmap.}
-
-\item{n_threads}{A numeric scalar passed on to \code{\link[amap]{Dist}} for
-parallel calculation of the distance matrix needed for 'hclust'.}
 }
 \value{
 A \code{ComplexHeatmap} object with a heatmap of copy number data
@@ -62,7 +64,7 @@ Each row is a cell and colums represent genomic positions.
      'n_threads' if you have more threads available to use. If order_cells
      is set to 'phylogeny' \code{\link{plotHeatmap}} will use the tree stored
      in the \code{\link{phylo}} slot of the scCNA object to order the cells.
-     If the \code{\link{phylo}} is empty \code{\link{plotHeatmap}} wil run
+     If the \code{\link{phylo}} is empty \code{\link{plotHeatmap}} will run
      \code{\link{runPhylo}} to generate the tree.
 
    \item{label}: A vector with the string names of the columns from
@@ -95,7 +97,22 @@ Each row is a cell and colums represent genomic positions.
 }
 }
 \examples{
-
+copykit_obj <- copykit_example()
+copykit_obj <- findNormalCells(copykit_obj)
+plotHeatmap(copykit_obj, label = 'is_normal')
+copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+copykit_obj <- filterCells(copykit_obj)
+copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+plotHeatmap(copykit_obj, label = 'filtered', row_split = 'filtered')
+copykit_obj <- runUmap(copykit_obj)
+copykit_obj <- findSuggestedK(copykit_obj)
+copykit_obj <- findClusters(copykit_obj)
+copykit_obj <- calcConsensus(copykit_obj)
+copykit_obj <- runConsensusPhylo(copykit_obj)
+plotHeatmap(copykit_obj, label = 'subclones')
+colData(copykit_obj)$section <- stringr::str_extract(colData(copykit_obj)$sample,
+ "(L[0-9]+L[0-9]+|L[0-9]+)")
+plotHeatmap(copykit_obj, label = c('section', 'subclones'))
 }
 \references{
 Zuguang Gu, Roland Eils, Matthias Schlesner, Complex heatmaps

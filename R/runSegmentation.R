@@ -3,8 +3,6 @@
 #' Runs a segmentation algorithm using the ratio data.
 #'
 #' @param scCNA The scCNA object
-#' @param assay String with the name of the assay to pull data from to run the
-#' segmentation.
 #' @param method A character with the segmentation method of choice.
 #' @param alpha A numeric with the. significance levels for the test to accept
 #' change-points for CBS segmentation. See \code{\link[DNAcopy]{segment}}.
@@ -48,10 +46,15 @@
 #' @importFrom S4Vectors metadata
 #' @importFrom SummarizedExperiment assay
 #' @importFrom BiocParallel bplapply bpparam
+#' @importFrom stats median lowess approx
 #' @importMethodsFrom SummarizedExperiment assay
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' copykit_obj <- runSegmentation(copykit_obj)
+#' }
+#'
 runSegmentation <- function(scCNA,
                             method = c("CBS", "multipcf"),
                             seed = 17,

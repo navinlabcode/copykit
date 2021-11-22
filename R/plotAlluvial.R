@@ -2,7 +2,7 @@
 #'
 #' Produces an alluvial plot from character elements of the metadata
 #'
-#' @param scCNA
+#' @param scCNA The CopyKit object.
 #' @param label A string with two or more  elements from \code{\link[SummarizedExperiment]{colData}}.
 #' @param label_colors An optional named vector with the colors of each element from label.
 #' @param min_cells An optional numeric to filter stratum that do not reach
@@ -20,6 +20,18 @@
 #' @export
 #'
 #' @examples
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- findNormalCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+#' copykit_obj <- filterCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+#' copykit_obj <- runUmap(copykit_obj)
+#' copykit_obj <- findSuggestedK(copykit_obj)
+#' copykit_obj <- findClusters(copykit_obj)
+#' colData(copykit_obj)$section <- stringr::str_extract(colData(copykit_obj)$sample,
+#'  "(L[0-9]+L[0-9]+|L[0-9]+)")
+#' plotAlluvial(copykit_obj, label = c("subclones", "section"))
+
 plotAlluvial <- function(scCNA,
                          label,
                          label_colors = NULL,

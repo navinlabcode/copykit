@@ -30,3 +30,9 @@ Calculates a sample-wise normalization of the selected assay by the
 mean bin counts returns ratios where a value of 1 corresponds to the neutral
 copy number state of the sample
 }
+\examples{
+\dontrun{
+copykit_obj <- calcRatios(copykit_obj)
+}
+
+}

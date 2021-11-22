@@ -5,16 +5,19 @@
 #'
 #' @param scCNA
 #'
-#' @return The scCNA object with a column of breakpoint counts added to the colData.
+#' @return The scCNA object with a column of breakpoint counts added to colData.
 #' @export
 #'
 #' @keywords internal
 #'
 #' @importFrom dplyr pull bind_rows mutate select
 #' @importFrom purrr map_dfc
-#' @importFrom SummarizedExperiment rowRanges
+#' @importFrom SummarizedExperiment rowRanges seqnames
 #'
 #' @examples
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- .countBreakpoints(copykit_obj)
+#'
 .countBreakpoints <- function(scCNA) {
 
   rg_chr <- SummarizedExperiment::rowRanges(scCNA) %>%

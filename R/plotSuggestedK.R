@@ -1,7 +1,7 @@
 #' plotSuggestedK
 #'
-#' Uses the information from \code{\link{findSugggestedK}} to plot the values
-#' of jaccard similarity from the tested k range on \code{\link{findSugggestedK}}.
+#' Uses the information from \code{\link{findSuggestedK}} to plot the values
+#' of jaccard similarity from the tested k range on \code{\link{findSuggestedK}}.
 #'
 #' @param scCNA The scCNA object.
 #' @param geom A character with the geom to be used for plotting.
@@ -43,10 +43,19 @@
 #' @importFrom gtools mixedsort
 #'
 #' @examples
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- findNormalCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+#' copykit_obj <- filterCells(copykit_obj)
+#' copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+#' copykit_obj <- runUmap(copykit_obj)
+#' copykit_obj <- findSuggestedK(copykit_obj)
+#' plotSuggestedK(copykit_obj)
+#'
 plotSuggestedK <- function(scCNA,
                            geom = c('boxplot', 'tile', 'dotplot', 'scatterplot')) {
 
-  geom = match.arg(geom)
+  geom <- match.arg(geom)
 
   df <- S4Vectors::metadata(scCNA)$suggestedK_df
   sug_k <- S4Vectors::metadata(scCNA)$suggestedK

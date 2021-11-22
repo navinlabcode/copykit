@@ -1,17 +1,23 @@
 #' Run distance matrix calculations
 #'
-#' Performs distance matrix calculations that can be downstream used for hierarchical clustering or phylogenetic analysis. Uses \code{amap::Dist()} in order to parallelize distance calculations.
+#' Performs distance matrix calculations that can be downstream used for
+#' hierarchical clustering or phylogenetic analysis. Uses \code{amap::Dist()}
+#' in order to parallelize distance calculations.
 #'
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
 #' @param metric distance metric passed to calculate the distance matrix (Defaults to "euclidean").
-#' @param n_threads Number of threads used to calculate the distance matrix. Passed to `amap::Dist`. As default it uses 1/4 of the detected cores available.
+#' @param n_threads Number of threads used to calculate the distance matrix.
+#' Passed to `amap::Dist`. As default it uses 1/4 of the detected cores available.
 #'
-#' @return A distance matrix in the slot \code{distMat} from scCNA object. Access the distance matrix with: \code{copykit::distMat(scCNA, withDimnames = TRUE)}
+#' @return A distance matrix in the slot \code{distMat} from scCNA object.
+#' Access the distance matrix with: \code{copykit::distMat(scCNA, withDimnames = TRUE)}
 #' @export
 #'
 #' @examples
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- runDistMat(copykit_obj)
 
 runDistMat <- function(scCNA,
                        metric = "euclidean",

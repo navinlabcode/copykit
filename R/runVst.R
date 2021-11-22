@@ -25,6 +25,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' copykit_obj <- runVst(copykit_obj)
+#' }
+#'
 runVst <- function(scCNA,
                    transformation = c('ft','log')) {
 

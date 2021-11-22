@@ -10,10 +10,15 @@
 \item{scCNA}{}
 }
 \value{
-The scCNA object with a column of breakpoint counts added to the colData.
+The scCNA object with a column of breakpoint counts added to colData.
 }
 \description{
 Considers changes in the segment ratios as breakpoints.
 Counts the breakpoints for each chromosome arm separately.
+}
+\examples{
+copykit_obj <- copykit_example()
+copykit_obj <- .countBreakpoints(copykit_obj)
+
 }
 \keyword{internal}

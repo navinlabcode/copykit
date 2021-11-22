@@ -31,8 +31,12 @@
 #' @importFrom SummarizedExperiment colData
 #' @importFrom dplyr filter bind_rows case_when
 #' @importFrom mixtools normalmixEM
+#' @importFrom stats rnorm sd
 #'
 #' @examples
+#' copykit_obj <- copykit_example()
+#' copykit_obj <- findNormalCells(copykit_obj)
+#'
 findNormalCells <- function(scCNA,
                             assay = 'segment_ratios',
                             resolution = "auto",
