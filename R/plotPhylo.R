@@ -65,7 +65,7 @@ plotPhylo <- function(scCNA,
   if (is.null(label)) {
     # plotting without labels
 
-    ggtree::ggtree(tree, ladderize = F)
+    ggtree::ggtree(tree, ladderize = FALSE)
 
   } else {
     # plotting with labels
@@ -84,7 +84,7 @@ plotPhylo <- function(scCNA,
       metadata %>% dplyr::select(dplyr::all_of(label))
 
     if (consensus == FALSE) {
-      metadata_anno_df <- metadata_anno_df[tree$tip.label, , drop = F]
+      metadata_anno_df <- metadata_anno_df[tree$tip.label, , drop = FALSE]
       size <- 1
 
     }
@@ -199,7 +199,7 @@ plotPhylo <- function(scCNA,
     list_samples <-
       split(rownames(metadata_anno_df), metadata_anno_df[, label])
     tree <- ggtree::groupOTU(tree, list_samples)
-    p <- ggtree::ggtree(tree, ladderize = F) +
+    p <- ggtree::ggtree(tree, ladderize = FALSE) +
       geom_tippoint(aes(color = group), size = size) +
       scale_color_manual(values = label_colors, name = label, limits = force) +
       theme(legend.position = 'none') +

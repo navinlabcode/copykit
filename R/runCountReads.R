@@ -64,7 +64,11 @@ runCountReads <- function(dir,
 
   genome <- match.arg(genome)
 
-  files <- list.files(dir, pattern = "*.bam", full.names = T, ignore.case = T)
+  files <-
+    list.files(dir,
+               pattern = "*.bam",
+               full.names = TRUE,
+               ignore.case = TRUE)
 
   # managing .bai files
   if (any(sapply(files, function(x)
@@ -127,7 +131,7 @@ runCountReads <- function(dir,
 
   }
 
-  files_names <- list.files(dir, pattern = "*.bam", full.names = F)
+  files_names <- list.files(dir, pattern = "*.bam", full.names = FALSE)
   files_names <- stringr::str_remove(files_names, ".bam")
 
   # managing .bai files on filenames

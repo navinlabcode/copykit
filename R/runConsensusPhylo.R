@@ -79,7 +79,7 @@ runConsensusPhylo <- function(scCNA,
   tree <-
     ape::root.phylo(tree,
                outgroup = which(tree$tip.label == ape::Ntip(tree)),
-               resolve.root = T)
+               resolve.root = TRUE)
 
   tree <-
     ape::drop.tip(tree, tip = as.character(c(

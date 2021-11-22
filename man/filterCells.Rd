@@ -27,21 +27,21 @@ correlation cut off will be.}
 should be parallelized.}
 }
 \value{
-Adds a column 'filtered' to \code{\link[SummarizedExperiment]{colData}}
-Cells that pass the filtering criteria receive the label "kept",
-whereas cells that do not pass the filtering criteria
-receive the label "removed".
+Adds a column 'filtered' to
+\code{\link[SummarizedExperiment]{colData}}. Cells that pass the filtering
+criteria receive the label "kept", whereas cells that do not pass the
+filtering criteria receive the label "removed".
 }
 \description{
 Uses a nearest neighbor approach to find noise copy number profiles within the
 segment means.
 }
 \details{
-\code{filterCells} Calculates a correlation matrix across the segment
-means among all cells and takes the mean of its k-nearest neighbors correlation.
-A threshold (argument resolution) is used for the minimum acceptable mean
-correlation among the cell and its neighbors. Values below the set resolution
-will be classified as noise cells.
+\code{filterCells} Calculates a correlation matrix across
+the segment means among all cells and takes the mean of its k-nearest
+neighbors correlation. A threshold (argument resolution) is used for
+the minimum acceptable mean correlation among the cell and its neighbors.
+Values below the set resolution will be classified as noise cells.
 }
 \examples{
 copykit_obj <- copykit_example()

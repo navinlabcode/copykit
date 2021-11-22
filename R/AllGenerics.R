@@ -2,6 +2,7 @@
 # Getters/setters for scCNA
 
 #' @export
+#' @rdname CopyKit-class
 setGeneric("segment_ratios", function(x, ...)
   standardGeneric("segment_ratios"))
 

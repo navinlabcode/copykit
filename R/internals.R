@@ -1,9 +1,5 @@
-#' @title
-#' Internal CopyKit functions
+#' @rdname CopyKit-class
 #'
-#' @description
-#' Methods to get or set internal fields from the CopyKit class
-
 #' @export
 setMethod("segment_ratios", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the segment_ratios data within the assay slot

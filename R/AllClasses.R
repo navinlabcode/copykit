@@ -25,12 +25,13 @@ setOldClass("igraph")
 #' Inherits from SingleCellExperiment
 #'
 #' @slot phylo Stores the single cell phylogenetic information with ape class
-#' phylo
+#' phylo.
 #' @slot consensusPhylo Stores the consensus phylogenetic information with
-#' ape class phylo
-#' @slot distMat Stores a distance matrix object used for graphs and heatmaps
-#' @slot graph Stores an igraph object for network based clustering
-#' @slot consensus stores a consensus data frame from \link{calcConsensus}
+#' ape class phylo.
+#' @slot distMat Stores a distance matrix object used for graphs and heatmaps.
+#' @slot graph Stores an igraph object for network based clustering.
+#' @slot consensus stores a consensus data frame from \link{calcConsensus}.
+#' @return A CopyKit class object.
 #' @export
 #' @import methods
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment

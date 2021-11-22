@@ -62,9 +62,10 @@ findNormalCells <- function(scCNA,
     seg <- seg[1:nrow(rg), ]
   }
 
-  # calculating the coeficient of variation
-  cv <-  sapply(seg, function(z)
-    sd(z) / mean(z))
+  # calculating the coefficient of variation
+  cv <-  vapply(seg, function(z)
+    sd(z) / mean(z),
+    numeric(1))
 
   if (simul == TRUE) {
     set.seed(17)
