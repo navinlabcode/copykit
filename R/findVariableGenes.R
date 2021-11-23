@@ -32,13 +32,9 @@
 #' @export
 #'
 #' @examples
-#' copykit_obj <- copykit_example()
-#' copykit_obj <- findNormalCells(copykit_obj)
-#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
-#' copykit_obj <- filterCells(copykit_obj)
-#' copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
+#' copykit_obj <- copykit_example_filtered()
 #' copykit_obj <- findVariableGenes(copykit_obj,
-#' c("FHIT", "PTEN", "FOXO1", "BRCA1"))
+#'                genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"))
 #'
 findVariableGenes <- function(scCNA,
                               genes,
@@ -46,7 +42,7 @@ findVariableGenes <- function(scCNA,
                               top_n = 50) {
   # checks
   if (top_n > length(genes)) {
-    stop("top_n length must be smaller than genes argument length.")
+    top_n <- length(genes)
   }
 
   #obtaining df with genes positions

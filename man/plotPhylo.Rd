@@ -35,7 +35,10 @@ A ggplot object with a phylogenetic tree visualization.
 Plots a phylogenetic tree.
 }
 \examples{
-
+copykit_obj <- copykit_example_filtered()
+copykit_obj <- findClusters(copykit_obj)
+copykit_obj <- runPhylo(copykit_obj)
+plotPhylo(copykit_obj, label = 'subclones')
 }
 \author{
 Junke Wang

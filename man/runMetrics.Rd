@@ -25,8 +25,10 @@ Adds the metrics to the scCNA \code{\link[SummarizedExperiment]{colData}}.
  results can be visualized with \code{\link{plotMetrics}}.
 }
 \examples{
-
-
+\dontrun{
+copykit_obj <- copykit_example_filtered()
+copykit_obj <- runMetrics(copykit_obj)
+}
 }
 \author{
 Darlan Conterno Minussi

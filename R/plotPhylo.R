@@ -28,7 +28,10 @@
 #' @importFrom ape Ntip
 #'
 #' @examples
-#'
+#' copykit_obj <- copykit_example_filtered()
+#' copykit_obj <- findClusters(copykit_obj)
+#' copykit_obj <- runPhylo(copykit_obj)
+#' plotPhylo(copykit_obj, label = 'subclones')
 
 plotPhylo <- function(scCNA,
                       label = NULL,

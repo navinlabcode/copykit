@@ -14,8 +14,8 @@ be visualized}
 }
 \value{
 Opens an app for interactive visualization of the ratio plots where
-the desired cell can be selected. If a 'sample_name' is provided, returns a ggplot
-object with the ratio plot for the selected cell.
+the desired cell can be selected. If a 'sample_name' is provided,
+returns a ggplot object with the ratio plot for the selected cell.
 }
 \description{
 plotRatio allows for a visualization of the segment ratios together with the ratios.
@@ -23,12 +23,15 @@ It is helpful to observe the fit of the segmentation to the data.
 }
 \details{
 plotRatio will return a ratio plot for the selected cell. If
-\code{\link{calcInteger}} was run and an 'integer' assay exists, plotRatio will
-color the ratio dots based on the copy number integer state of the segment
-automatically.
+\code{\link{calcInteger}} was run and an 'integer' assay exists, plotRatio
+ will color the ratio dots based on the copy number integer state of the
+ segment automatically.
 }
 \examples{
-
+\dontrun{
+copykit_obj <- copykit_example_filtered()
+plotRatio(copykit_obj)
+}
 }
 \author{
 Darlan Conterno Minussi

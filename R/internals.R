@@ -249,8 +249,8 @@ find_scaffold_genes <- function(scCNA,
   ranges <- SummarizedExperiment::rowRanges(scCNA)
 
   # subsetting to only the desired genes
-  genes_features <- BiocGenerics:::subset(genes_assembly,
-                                          symbol %in% genes)
+  genes_features <- BiocGenerics::subset(genes_assembly,
+                                         symbol %in% genes)
 
   all_genes <- genes_assembly$symbol %>%
     unlist() %>%
@@ -400,7 +400,6 @@ parCor <- function(x, BPPARAM=BiocParallel::bpparam())
   return(res_parcor_reserve)
 }
 
-#' @author Darlan Conterno Minussi
 #' @export
 #' @importFrom  S4Vectors metadata
 #' @importFrom rlang chr
@@ -424,3 +423,33 @@ copykit_example <- function() {
   colData(copykit_obj)$sample <- names(copykit_data_proc)
   return(copykit_obj)
 }
+
+#' @export
+#' @importFrom  S4Vectors metadata
+#' @importFrom rlang chr
+#' @keywords internal
+copykit_example_filtered <- function() {
+  #ranges
+  hg38_rg_edit <- hg38_rg[, -c(4:5)]
+  hg38_rg_editnoY <- dplyr::filter(hg38_rg_edit, chr != "chrY")
+  rg_hg38 <- GenomicRanges::makeGRangesFromDataFrame(hg38_rg_editnoY,
+                                                     ignore.strand = TRUE,
+                                                     keep.extra.columns = TRUE)
+
+  # lazydata loaded objects
+  copykit_obj_filtered <- copykit_obj_filt_rle
+  copykit_obj_filtered_umap <- copykit_obj_filt_umap
+
+  copykit_data_proc_filt <- as.data.frame(do.call(cbind,
+                                             lapply(copykit_obj_filtered,
+                                                    inverse.rle)))
+  copykit_obj_filt <- CopyKit(assays = list(segment_ratios = copykit_data_proc_filt),
+                         rowRanges = rg_hg38)
+  copykit_obj_filt <- logNorm(copykit_obj_filt)
+  metadata(copykit_obj_filt)$genome <- "hg38"
+  metadata(copykit_obj_filt)$suggestedK <- 10
+  colData(copykit_obj_filt)$sample <- names(copykit_data_proc_filt)
+  reducedDim(copykit_obj_filt, 'umap') <- copykit_obj_filtered_umap
+  return(copykit_obj_filt)
+}
+

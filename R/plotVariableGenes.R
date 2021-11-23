@@ -18,12 +18,9 @@
 #' @export
 #'
 #' @examples
-#' copykit_obj <- copykit_example()
-#' copykit_obj <- findNormalCells(copykit_obj)
-#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
-#' copykit_obj <- filterCells(copykit_obj)
-#' copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
-#' copykit_obj <- findVariableGenes(copykit_obj)
+#' copykit_obj <- copykit_example_filtered()
+#' copykit_obj <- findVariableGenes(copykit_obj,
+#'                genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"))
 #' plotVariableGenes(copykit_obj)
 #'
 plotVariableGenes <- function(scCNA,
@@ -38,7 +35,7 @@ plotVariableGenes <- function(scCNA,
   hvg_obj <- S4Vectors::metadata(scCNA)$hvg
 
   if (n > length(hvg_obj)) {
-    stop('length of n must be smaller or equal to length of metadata(scCNA)$hvg.')
+    n = length(hvg_obj)
   }
 
   pca_df <- attr(hvg_obj, 'pca_df')

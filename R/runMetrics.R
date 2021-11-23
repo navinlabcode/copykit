@@ -19,8 +19,11 @@
 #' @import ggplot2
 #'
 #' @examples
-#'
-#'
+#' \dontrun{
+#' copykit_obj <- copykit_example_filtered()
+#' copykit_obj <- runMetrics(copykit_obj)
+#' }
+
 runMetrics <- function(scCNA,
                        BPPARAM = bpparam()) {
 

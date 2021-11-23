@@ -20,13 +20,7 @@
 #' @export
 #'
 #' @examples
-#' copykit_obj <- copykit_example()
-#' copykit_obj <- findNormalCells(copykit_obj)
-#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
-#' copykit_obj <- filterCells(copykit_obj)
-#' copykit_obj <- copykit_obj[,colData(copykit_obj)$filtered == "kept"]
-#' copykit_obj <- runUmap(copykit_obj)
-#' copykit_obj <- findSuggestedK(copykit_obj)
+#' copykit_obj <- copykit_example_filtered()
 #' copykit_obj <- findClusters(copykit_obj)
 #' colData(copykit_obj)$section <- stringr::str_extract(colData(copykit_obj)$sample,
 #'  "(L[0-9]+L[0-9]+|L[0-9]+)")
@@ -36,6 +30,11 @@ plotAlluvial <- function(scCNA,
                          label,
                          label_colors = NULL,
                          min_cells = NULL) {
+
+  # thanks for error solving from SO user twedl:
+  # https://stackoverflow.com/a/53798038
+  StatStratum <- ggalluvial::StatStratum
+
   meta <- as.data.frame(colData(scCNA))
 
   # check
@@ -118,7 +117,7 @@ plotAlluvial <- function(scCNA,
       width = 1 / 8
     ) +
     ggalluvial::geom_stratum(aes(fill = group), color = 'black', width = 1 / 8) +
-    geom_text(stat = "stratum", aes(label = group)) +
+    geom_text(stat = StatStratum, aes(label = group)) +
     theme_void() +
     theme(legend.position = 'none',
           axis.text.x = element_text(color = 'black')) +

@@ -16,7 +16,7 @@
 #' @export
 #'
 #' @examples
-#' copykit_obj <- copykit_example()
+#' copykit_obj <- copykit_example_filtered()
 #' copykit_obj <- runDistMat(copykit_obj)
 
 runDistMat <- function(scCNA,

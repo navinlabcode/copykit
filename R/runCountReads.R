@@ -52,7 +52,9 @@
 #' @export
 #'
 #' @examples
-#'
+#' \dontrun{
+#' copykit_obj <- runCountReads("/PATH/TO/BAM/FILES")
+#' }
 #'
 
 runCountReads <- function(dir,

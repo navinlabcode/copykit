@@ -62,7 +62,9 @@ be kept in the dataset. Cells with low bincounts generally present bin dropouts
 due to low read count that will be poorly segmented.
 }
 \examples{
-
+\dontrun{
+copykit_obj <- runCountReads("/PATH/TO/BAM/FILES")
+}
 
 }
 \author{

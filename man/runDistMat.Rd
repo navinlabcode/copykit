@@ -24,7 +24,7 @@ hierarchical clustering or phylogenetic analysis. Uses \code{amap::Dist()}
 in order to parallelize distance calculations.
 }
 \examples{
-copykit_obj <- copykit_example()
+copykit_obj <- copykit_example_filtered()
 copykit_obj <- runDistMat(copykit_obj)
 }
 \author{

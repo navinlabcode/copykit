@@ -19,7 +19,11 @@
 #' @import ggplot2
 #'
 #' @examples
-#'
+#' \donttest{
+#' copykit_obj <- copykit_example_filtered()
+#' copykit_obj <- runMetrics(copykit_obj)
+#' plotMetrics(copykit_obj, metric = c("overdispersion", "breakpoint_count"))
+#' }
 #'
 
 plotMetrics <- function(scCNA,

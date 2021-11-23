@@ -15,7 +15,7 @@
 #' @importFrom SummarizedExperiment rowRanges seqnames
 #'
 #' @examples
-#' copykit_obj <- copykit_example()
+#' copykit_obj <- copykit_example_filtered()
 #' copykit_obj <- .countBreakpoints(copykit_obj)
 #'
 .countBreakpoints <- function(scCNA) {
