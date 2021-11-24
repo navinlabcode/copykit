@@ -88,6 +88,7 @@
 #' @importFrom viridis viridis
 #' @importFrom scales hue_pal
 #' @importFrom ape Ntip
+#' @importFrom stats dist
 #' @importFrom tidyr pivot_wider
 #' @examples
 #' copykit_obj <- copykit_example_filtered()

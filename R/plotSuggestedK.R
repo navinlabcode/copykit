@@ -52,6 +52,9 @@ plotSuggestedK <- function(scCNA,
 
   geom <- match.arg(geom)
 
+  # bindings for NSE objects
+  k <- subclones <- bootmean <- chosen <- mean_jac <- n_cells <- NULL
+
   df <- S4Vectors::metadata(scCNA)$suggestedK_df
   sug_k <- S4Vectors::metadata(scCNA)$suggestedK
 

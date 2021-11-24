@@ -1,5 +1,29 @@
-#' @rdname CopyKit-class
+#' @title CopyKit internal functions.
+#' @name CopyKit-internals
 #'
+#' @description This document establish setters and getters to facilitate access
+#' to fields for the CopyKit class object. The functions provided here are
+#' in addition to setters and getters available from the SingleCellExperiment
+#' class
+#'
+#' @section Getters:
+#' \describe{
+#' \item{\code{segment_ratios}:}{Returns a data frame of normalized segment
+#' ratio means.}
+#' \item{\code{ratios}:}{Returns a data frame of normalized ratio means.}
+#' \item{\code{bincounts}:}{Returns a data frame of binned bincounts.}
+#' \item{\code{consensus}:}{Returns a data frame of normalized segment
+#' ratio means for the consensus matrix.}
+#' \item{\code{phylo}:}{Returns a phylo class object with a phylogenetic tree.}
+#' \item{\code{consensusPhylo}:}{Returns a phylo class object with a
+#' phylogenetic tree from the consensus matrix.}
+#' }
+#'
+#' @rdname internals
+#' @docType methods
+NULL
+
+
 #' @export
 setMethod("segment_ratios", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the segment_ratios data within the assay slot
@@ -135,7 +159,12 @@ setMethod("show", "CopyKit", function(object) {
 # color palettes
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#' @name superclones_pal
+#' @aliases superclones_pal
 #' @export
+#' @docType methods
+#' @return a named vector of default colors for CopyKit superclones.
+#' @rdname internals
 #superclones palette
 superclones_pal <- function() {
   structure(
@@ -169,7 +198,12 @@ superclones_pal <- function() {
   )
 }
 
+#' @name subclones_pal
+#' @aliases subclones_pal
 #' @export
+#' @docType methods
+#' @return a named vector of default colors for CopyKit subclones.
+#' @rdname internals
 #subclones palette
 subclones_pal <- function() {
   structure(
@@ -230,8 +264,13 @@ subclones_pal <- function() {
   )
 }
 
-#' @author Darlan Conterno Minussi
+#' @name find_scaffold_genes
+#' @aliases find_scaffold_genes
 #' @export
+#' @docType methods
+#' @return A data frame with the gene HUGO gene symbol and the position on the
+#' relevant scaffold from the varbin pipeline.
+#' @rdname internals
 #' @keywords internal
 find_scaffold_genes <- function(scCNA,
                                 genes) {
@@ -275,13 +314,13 @@ find_scaffold_genes <- function(scCNA,
                                                  ranges,
                                                  ignore.strand = TRUE))
 
-  # creating a data frame that will contain the genes and positions (index) in the
-  # pipeline ranges.
-  # some genes might overlap more than one range (more than one bin), in this case
-  # only one will be kept
+  # creating a data frame that will contain the genes and positions
+  # (index) in the pipeline ranges.
+  # some genes might overlap more than one range (more than one bin),
+  # in this case only one will be kept
   df <-
-    tibble::tibble(gene = as.character(genes_features$symbol[S4Vectors::queryHits(olaps)]),
-                   pos = S4Vectors::subjectHits(olaps)) %>%
+    data.frame(gene = as.character(genes_features$symbol[S4Vectors::queryHits(olaps)]),
+               pos = S4Vectors::subjectHits(olaps)) %>%
     dplyr::distinct(gene, .keep_all = TRUE)
 
   # checking for genes that might have been excluded from the varbin pipeline
@@ -305,7 +344,12 @@ find_scaffold_genes <- function(scCNA,
 
 
 #' @author Alexander Davis
+#' @name l2e.normal.sd
+#' @aliases l2e.normal.sd
 #' @export
+#' @docType methods
+#' @return A numeric vector with least squares sd estimation.
+#' @rdname internals
 l2e.normal.sd <- function(xs)
 {
   # Need at least two values to get a standard deviation
@@ -322,11 +366,14 @@ l2e.normal.sd <- function(xs)
   return(optim.result$minimum)
 }
 
-# A function for estimating the index of dispersion, which is used when
-# estimating standard errors for each segment mean
-
 #' @author Alexander Davis
+#' @name overdispersion
+#' @aliases overdispersion
 #' @export
+#' @docType methods
+#' @return A numerci vector with the estimation of the index of dispersion,
+#' which is used when estimating standard errors for each segment mean
+#' @rdname internals
 overdispersion <- function(v)
 {
   # 3 elements, 2 differences, can find a standard deviation
@@ -357,7 +404,12 @@ overdispersion <- function(v)
 }
 
 #' @author Junke Wang
+#' @name parCor
+#' @aliases parCor
 #' @export
+#' @docType methods
+#' @return A matrix with the pairwise correlation from the segment ratio means.
+#' @rdname internals
 parCor <- function(x, BPPARAM=BiocParallel::bpparam())
 {
   ncol <- ncol(x)
@@ -412,7 +464,7 @@ copykit_example <- function() {
                                           ignore.strand = TRUE,
                                           keep.extra.columns = TRUE)
 
-  data("copykit_obj_rle")
+  copykit_obj_rle <- copykit_obj_rle
   copykit_data_proc <- as.data.frame(do.call(cbind,
                                              lapply(copykit_obj_rle,
                                                     inverse.rle)))
@@ -425,10 +477,12 @@ copykit_example <- function() {
 }
 
 #' @export
-#' @importFrom  S4Vectors metadata
-#' @importFrom rlang chr
 #' @keywords internal
+#' @importFrom  S4Vectors metadata
 copykit_example_filtered <- function() {
+  # NSE bindings
+  chr <- NULL
+
   #ranges
   hg38_rg_edit <- hg38_rg[, -c(4:5)]
   hg38_rg_editnoY <- dplyr::filter(hg38_rg_edit, chr != "chrY")
@@ -453,3 +507,23 @@ copykit_example_filtered <- function() {
   return(copykit_obj_filt)
 }
 
+#' @export
+#' @keywords internal
+mock_bincounts <- function(n) {
+
+  hg38_rg <- hg38_rg
+
+  #ranges
+  hg38_rg_edit <- hg38_rg[, -c(4:5)]
+  hg38_rg_editnoY <- dplyr::filter(hg38_rg_edit, chr != "chrY")
+  rg_hg38 <- GenomicRanges::makeGRangesFromDataFrame(hg38_rg_editnoY,
+                                                     ignore.strand = TRUE,
+                                                     keep.extra.columns = TRUE)
+
+  mat <- as.data.frame(matrix(rpois(11268*n, 52), ncol = n))
+  copykit_obj_bincounts <- CopyKit(assays = list(bincounts = mat),
+                                   rowRanges = rg_hg38)
+  colData(copykit_obj_bincounts)$sample <- names(mat)
+  metadata(copykit_obj_bincounts)$genome <- "hg38"
+  return(copykit_obj_bincounts)
+}

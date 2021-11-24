@@ -65,8 +65,9 @@ The resulting segment means are further refined with MergeLevels to join
 adjacent segments with non-significant differences in segmented means.
 }
 \examples{
-\dontrun{
+copykit_obj <- mock_bincounts(30)
+copykit_obj <- runVst(copykit_obj)
+copykit_obj <- calcRatios(copykit_obj)
 copykit_obj <- runSegmentation(copykit_obj)
-}
 
 }

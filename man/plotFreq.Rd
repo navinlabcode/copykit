@@ -65,8 +65,9 @@ If the label argument lines are overlapped with different colors.
 }
 }
 \examples{
-copykit_obj <- copykit_example_filtered()
-copykit_obj <- findClusters(copykit_obj)
+copykit_obj <- copykit_example_filtered()[,1:100]
+copykit_obj <- runUmap(copykit_obj)
+copykit_obj <- findClusters(copykit_obj, k_subclones = 7)
 plotFreq(copykit_obj, label = 'subclones')
 
 }

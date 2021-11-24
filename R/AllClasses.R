@@ -13,16 +13,10 @@ phylo <- structure(list(), class = "phylo")
 setOldClass("igraph")
 
 ###################################################################
-# defining scCNA class
+#' The CopyKit class
 #'
-#'  @export
-#'  @importMethodsFrom SummarizedExperiment colData
-#'  @importMethodsFrom SingleCellExperiment SingleCellExperiment
-#'  @importClassesFrom SummarizedExperiment RangedSummarizedExperiment SingleCellExperiment
-#'  @importClassesFrom S4Vectors DataFrame SimpleList
-
-#' A S4 class to store copy number assays with CopyKit.
-#' Inherits from SingleCellExperiment
+#' S4 Class that extends the Bioconductor SingleCellExperiment class to hold
+#' single cell copy number datasets.
 #'
 #' @slot phylo Stores the single cell phylogenetic information with ape class
 #' phylo.
@@ -30,11 +24,19 @@ setOldClass("igraph")
 #' ape class phylo.
 #' @slot distMat Stores a distance matrix object used for graphs and heatmaps.
 #' @slot graph Stores an igraph object for network based clustering.
-#' @slot consensus stores a consensus data frame from \link{calcConsensus}.
+#' @slot consensus stores a consensus data frame from
+#' \code{\link{calcConsensus}.}
 #' @return A CopyKit class object.
-#' @export
+#' @references The Bioconductor SingleCellExperiment Class
+#' DOI: 10.18129/B9.bioc.SingleCellExperiment
 #' @import methods
+#' @name CopyKit
+#' @rdname CopyKit
+#' @importMethodsFrom SummarizedExperiment colData
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
+#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
+#' @importClassesFrom S4Vectors DataFrame SimpleList
+#' @exportClass CopyKit
 .CopyKit <- setClass(
   "CopyKit",
   slots = representation(

@@ -44,6 +44,9 @@ plotUmap <- function(scCNA,
                      embedding = 'umap',
                      label = NULL) {
 
+  #bindings for NSE objects
+  V1 <- V2 <- NULL
+
   message("Plotting Umap.")
 
   # retrieving data

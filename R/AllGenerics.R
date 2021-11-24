@@ -2,17 +2,14 @@
 # Getters/setters for scCNA
 
 #' @export
-#' @rdname CopyKit-class
 setGeneric("segment_ratios", function(x, ...)
   standardGeneric("segment_ratios"))
 
 #' @export
-#' @rdname CopyKit-class
 setGeneric("ratios", function(x, ...)
   standardGeneric("ratios"))
 
 #' @export
-#' @rdname CopyKit-class
 setGeneric("bincounts", function(x, ...)
   standardGeneric("bincounts"))
 
@@ -36,7 +33,7 @@ setGeneric("phylo<-", function(x, ..., value)
 setGeneric("consensusPhylo", function(x, ...)
   standardGeneric("consensusPhylo"))
 
-#' @export
+##' @export
 setGeneric("consensusPhylo<-", function(x, ..., value)
   standardGeneric("consensusPhylo<-"))
 

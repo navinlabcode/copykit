@@ -27,11 +27,11 @@ A ggplot object with swarm plots of the selected metrics.
 Plots swarm plots from selected elements of \code{\link[SummarizedExperiment]{colData}}.
 }
 \examples{
-\donttest{
-copykit_obj <- copykit_example_filtered()
+copykit_obj <- mock_bincounts(15)
+copykit_obj <- runVst(copykit_obj)
+copykit_obj <- calcRatios(copykit_obj)
+copykit_obj <- runSegmentation(copykit_obj)
 copykit_obj <- runMetrics(copykit_obj)
-plotMetrics(copykit_obj, metric = c("overdispersion", "breakpoint_count"))
-}
 
 }
 \author{
