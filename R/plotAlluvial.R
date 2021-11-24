@@ -31,6 +31,9 @@ plotAlluvial <- function(scCNA,
                          label_colors = NULL,
                          min_cells = NULL) {
 
+  #bindings for NSE
+  group <- cohort <- NULL
+
   # thanks for error solving from SO user twedl:
   # https://stackoverflow.com/a/53798038
   StatStratum <- ggalluvial::StatStratum

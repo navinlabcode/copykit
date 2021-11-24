@@ -26,6 +26,9 @@
 plotVariableGenes <- function(scCNA,
                               n = 30) {
 
+  #bindings for NSE
+  gene <- p1 <- NULL
+
   # checks
   if (is.null(S4Vectors::metadata(scCNA)$hvg)) {
     stop("Run findVariableGenes() first.")

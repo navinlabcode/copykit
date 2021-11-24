@@ -110,7 +110,11 @@ plotHeatmap <- function(scCNA,
                         rounding_error = FALSE,
                         genes = NULL,
                         row_split = NULL) {
+  # args
   order_cells <- match.arg(order_cells)
+
+  #bindings for NSE
+  group_value <- NULL
 
   # check annotation colors
   if (is.null(label) & !is.null(label_colors)) {

@@ -66,6 +66,9 @@ findSuggestedK <- function(scCNA,
   metric <- match.arg(metric)
   method <- match.arg(method)
 
+  # bindings for NSE
+  k <- bootmean <- NULL
+
   # defining k_range
   if (is.null(k_range)) {
 

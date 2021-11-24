@@ -67,6 +67,9 @@ runSegmentation <- function(scCNA,
   # Args
   method <- match.arg(method)
 
+  # bindings for NSE and data
+  chr <- arm <- chrarm <- NULL
+
   #checks
   if (!is.numeric(alpha)) stop("Argument alpha must be numeric.")
   if (!is.numeric(gamma)) stop("Argument gamma must be numeric.")

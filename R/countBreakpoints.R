@@ -20,6 +20,9 @@
 #'
 .countBreakpoints <- function(scCNA) {
 
+  #bindings for NSE
+  arm <- chrarm <- NULL
+
   rg_chr <- SummarizedExperiment::rowRanges(scCNA) %>%
     as.data.frame() %>%
     dplyr::mutate(chrarm = paste0(seqnames, arm)) %>%

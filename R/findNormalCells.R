@@ -42,6 +42,10 @@ findNormalCells <- function(scCNA,
                             resolution = "auto",
                             remove_XY = TRUE,
                             simul = TRUE) {
+
+  # bindings for NSE (non-standard evaluation)
+  is_normal <- NULL
+
   if (remove_XY == FALSE & simul == TRUE) {
     stop("Argument simul can't be used if remove_XY == FALSE.")
   }

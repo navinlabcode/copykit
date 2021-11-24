@@ -28,6 +28,9 @@
 #'
 plotConsensusLine <- function(scCNA) {
 
+  # bindings for NSE
+  start <- xstart <- xend <- abspos
+
   ####################
   ## checks
   ####################
@@ -181,6 +184,10 @@ plotConsensusLine <- function(scCNA) {
                                   )))
 
   server <- function(input, output, session) {
+
+    # bindings for NSE
+    group <- abspos <- segment_ratio <- NULL
+
     # Render the plot
     output$plot <- renderPlot({
       df_plot <- con_l %>%

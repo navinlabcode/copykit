@@ -46,9 +46,7 @@
 #'
 #' @examples
 #' copykit_obj <- copykit_example_filtered()[,1:100]
-#' copykit_obj <- runUmap(copykit_obj)
-#' copykit_obj <- findClusters(copykit_obj, k_subclones = 7)
-#' plotFreq(copykit_obj, label = 'subclones')
+#' plotFreq(copykit_obj)
 #'
 plotFreq <- function(scCNA,
                      high_threshold = 1.3,
@@ -59,6 +57,9 @@ plotFreq <- function(scCNA,
                      BPPARAM = bpparam()) {
 
   geom <- match.arg(geom)
+
+  # bindings for NSE
+  start <- xstart <- xend <- abspos <- value <- freq <- NULL
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## aesthetic setup

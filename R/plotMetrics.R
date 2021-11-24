@@ -32,9 +32,17 @@ plotMetrics <- function(scCNA,
                         dodge.width = 0,
                         ncol = 2) {
 
+  # bindings for NSE
+  value <- NULL
+
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 14:16:37 2021
   # checks
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 14:16:44 2021
+
+  # check if metric was supplied
+  if (is.null(metric)) {
+    stop("Please provide elements of colData as argument to metric.")
+  }
 
   # check if any metric exists
   if (!any(metric %in% names(SummarizedExperiment::colData(scCNA))))

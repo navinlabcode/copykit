@@ -25,6 +25,10 @@ NULL
 
 
 #' @export
+#' @rdname internals
+#' @name segment_ratios
+#' @aliases segment_ratios
+#' @param x CopyKit object.
 setMethod("segment_ratios", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the segment_ratios data within the assay slot
   SummarizedExperiment::assay(x, "segment_ratios")
@@ -32,25 +36,40 @@ setMethod("segment_ratios", "CopyKit", function(x, withDimnames = TRUE) {
 
 
 #' @export
+#' @rdname internals
+#' @name ratios
+#' @aliases ratios,CopyKit
+#' @param x CopyKit object.
 setMethod("ratios", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the ratios data slot
   SummarizedExperiment::assay(x, "ratios")
 })
 
 #' @export
+#' @rdname methods
+#' @aliases bincounts,CopyKit
+#' @param x CopyKit object.
 setMethod("bincounts", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the bincounts data slot
   SummarizedExperiment::assay(x, "bincounts")
 })
 
 #' @export
+#' @rdname methods
+#' @aliases consensus,CopyKit
+#' @param x CopyKit object.
 setMethod("consensus", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the consensus data slot
   out <- x@consensus
   out
 })
 
+
 #' @export
+#' @rdname methods
+#' @aliases consensus,CopyKit
+#' @param x CopyKit object.
+#' @param value replacement value
 setReplaceMethod("consensus", "CopyKit", function(x, value) {
   # setter method for phylo slot
   x@consensus <- value
@@ -275,6 +294,9 @@ subclones_pal <- function() {
 find_scaffold_genes <- function(scCNA,
                                 genes) {
 
+  # lazydata bindings and NSE
+  symbol <- gene <- NULL
+
   # genome assembly
   if (S4Vectors::metadata(scCNA)$genome == "hg19") {
     genes_assembly <- hg19_genes
@@ -453,10 +475,14 @@ parCor <- function(x, BPPARAM=BiocParallel::bpparam())
 }
 
 #' @export
-#' @importFrom  S4Vectors metadata
-#' @importFrom rlang chr
+#' @importFrom S4Vectors metadata<-
+#' @importFrom SummarizedExperiment colData<-
 #' @keywords internal
 copykit_example <- function() {
+
+  #bindings for NSE
+  chr <- NULL
+
   #ranges
   hg38_rg_edit <- hg38_rg[, -c(4:5)]
   hg38_rg_editnoY <- dplyr::filter(hg38_rg_edit, chr != "chrY")
@@ -478,7 +504,8 @@ copykit_example <- function() {
 
 #' @export
 #' @keywords internal
-#' @importFrom  S4Vectors metadata
+#' @importFrom S4Vectors metadata
+#' @importFrom SingleCellExperiment reducedDim<-
 copykit_example_filtered <- function() {
   # NSE bindings
   chr <- NULL
@@ -509,9 +536,11 @@ copykit_example_filtered <- function() {
 
 #' @export
 #' @keywords internal
+#' @importFrom stats rpois
 mock_bincounts <- function(n) {
 
-  hg38_rg <- hg38_rg
+  # bindings for NSE and data
+  chr <- NULL
 
   #ranges
   hg38_rg_edit <- hg38_rg[, -c(4:5)]

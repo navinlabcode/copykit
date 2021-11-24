@@ -20,8 +20,10 @@ Authors@R: c(
            email = "yun.yan@uth.tmc.edu",
            comment = c(ORCID = "0000-0002-3701-9608")) )
 Description: A suite of tools for single cell copy number analysis 
-        focusing on read binning, segmentation, normalization, 
-        filtering, analysis, and visualization
+        focusing on reads binning, segmentation, normalization, 
+        filtering, analysis, and visualization. CopyKit can perform
+        pre-processing, QC, copy number inference,
+        and subclone clustering to delineate the clonal diversity of tumors.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -31,7 +33,8 @@ Suggests:
     knitr,
     rmarkdown
 Language: en-US
-biocViews: Software, SingleCell, DNASeq, Sequencing, Visualization
+biocViews: Software, SingleCell, DNASeq, Sequencing, 
+           Visualization, Normalization
 Imports: 
     dplyr,
     uwot,

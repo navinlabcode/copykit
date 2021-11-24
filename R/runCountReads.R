@@ -66,6 +66,10 @@ runCountReads <- function(dir,
 
   genome <- match.arg(genome)
 
+  # bindings for NSE and data
+  Chr <- chr <- strand <- GeneID <- NULL
+  reads_assigned_bins <- reads_duplicates <- reads_total <- NULL
+
   files <-
     list.files(dir,
                pattern = "*.bam",

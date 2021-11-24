@@ -34,6 +34,10 @@
 
 plotRatio <- function(scCNA,
                       sample_name = NULL) {
+
+  #bindings for NSE
+  ploidy <- segment_ratio <- ratio <- start <- xstart <- xend <- NULL
+
   ####################
   ## aesthetic setup
   ####################

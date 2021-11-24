@@ -126,6 +126,8 @@ plotPhylo <- function(scCNA,
         group_colors <- col
 
         pies <- lapply(metadata_gr_list, function(x) {
+          group_value <- NULL
+
           ggplot(x,
                  aes(
                    y = cons_attr,
@@ -180,7 +182,7 @@ plotPhylo <- function(scCNA,
       } else {
 
         elements <- metadata_anno_df %>%
-          dplyr::pull(label) %>%
+          dplyr::pull(label)
 
         n <- length(elements)
         hues <- seq(15, 375, length = n + 1)

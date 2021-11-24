@@ -56,6 +56,9 @@ plotGeneCopy <- function(scCNA,
 
   geom <- match.arg(geom)
 
+  # bindings for NSE
+  gene <- segratio <- plot_label <- plot_facet <- NULL
+
   # checks
   # check if label exists
   if (!is.null(label)) {
