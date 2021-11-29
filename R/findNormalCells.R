@@ -83,8 +83,23 @@ findNormalCells <- function(scCNA,
   }
 
   if (resolution == "auto") {
-    fit <- mixtools::normalmixEM(cv)
-    resolution <- fit$mu[1] + 5 * fit$sigma[1]
+
+    fit <- tryCatch(
+      fit <- mixtools::normalmixEM(cv),
+      error = function(e) {
+        message("Could not identify aneuploid cells in the dataset.")
+        message("Marking all cells as diploid.")
+        message("Check colData(scCNA)$find_normal_cv.")
+        return("error")
+        }
+    )
+
+    # determining resolution
+    if (fit != "error") {
+      resolution <- fit$mu[1] + 5 * fit$sigma[1]
+    } else resolution <- 1
+
+
   }
 
   if (simul == TRUE) {
@@ -118,7 +133,7 @@ findNormalCells <- function(scCNA,
   SummarizedExperiment::colData(scCNA)$find_normal_cv <-
     round(info$CV, 2)
 
-  message("Done. Information was added to metadata column 'is_normal'.")
+  message("Added information to colData(CopyKit).")
 
   return(scCNA)
 
