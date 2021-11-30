@@ -51,7 +51,7 @@
 #' @export
 #'
 #' @examples
-#' copykit_obj <- mock_bincounts(30)
+#' copykit_obj <- mock_bincounts()
 #' copykit_obj <- runVst(copykit_obj)
 #' copykit_obj <- calcRatios(copykit_obj)
 #' copykit_obj <- runSegmentation(copykit_obj)
@@ -90,6 +90,22 @@ runSegmentation <- function(scCNA,
 
   # Reading hg38 VarBin ranges
   if (genome == "hg38") {
+
+    resolution <- S4Vectors::metadata(scCNA)$resolution
+
+    hg38_rg <- switch(resolution,
+                      "50kb" = hg38_grangeslist[["hg38_50kb"]],
+                      "100kb" = hg38_grangeslist[["hg38_100kb"]],
+                      "175kb" = hg38_grangeslist[["hg38_175kb"]],
+                      "200kb" = hg38_grangeslist[["hg38_200kb"]],
+                      "250kb" = hg38_grangeslist[["hg38_250kb"]],
+                      "500kb" = hg38_grangeslist[["hg38_500kb"]],
+                      "1Mb" = hg38_grangeslist[["hg38_1Mb"]],
+                      "2.5Mb" = hg38_grangeslist[["hg38_2Mb"]])
+
+    hg38_rg <- as.data.frame(hg38_rg) %>%
+      dplyr::rename(chr = "seqnames")
+
     hg38_rg_mod <- hg38_rg
     #match for chrY presence
     chr_sccna <-

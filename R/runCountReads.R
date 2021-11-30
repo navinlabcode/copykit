@@ -7,7 +7,7 @@
 #'
 #' @param dir A path for the directory containing BAM files from short-read sequencing.
 #' @param genome Name of the genome assembly. Default: 'hg38'.
-#' @param bin_size The resolution of the VarBin method. Default: '200kb'.
+#' @param resolution The resolution of the VarBin method. Default: '200kb'.
 #' @param remove_Y (default == FALSE) If set to TRUE, removes information from
 #' the chrY from the dataset.
 #' @param min_bincount A numerical indicating the minimum mean bin counts a
@@ -59,12 +59,20 @@
 
 runCountReads <- function(dir,
                           genome = c("hg38", "hg19"),
-                          bin_size = "200kb",
+                          resolution = c("200kb",
+                                         "50kb",
+                                         "100kb",
+                                         "175kb",
+                                         "250kb",
+                                         "500kb",
+                                         "1Mb",
+                                         "2.5Mb"),
                           remove_Y = FALSE,
                           min_bincount = 10,
                           BPPARAM = bpparam()) {
 
   genome <- match.arg(genome)
+  resolution <- match.arg(resolution)
 
   # bindings for NSE and data
   Chr <- chr <- strand <- GeneID <- NULL
@@ -110,15 +118,28 @@ runCountReads <- function(dir,
 
   # Reading hg38 VarBin ranges
   if (genome == "hg38") {
+
+    hg38_grangeslist <- hg38_grangeslist
+
+    hg38_rg <- switch(resolution,
+                      "50kb" = hg38_grangeslist[["hg38_50kb"]],
+                      "100kb" = hg38_grangeslist[["hg38_100kb"]],
+                      "175kb" = hg38_grangeslist[["hg38_175kb"]],
+                      "200kb" = hg38_grangeslist[["hg38_200kb"]],
+                      "250kb" = hg38_grangeslist[["hg38_250kb"]],
+                      "500kb" = hg38_grangeslist[["hg38_500kb"]],
+                      "1Mb" = hg38_grangeslist[["hg38_1Mb"]],
+                      "2.5Mb" = hg38_grangeslist[["hg38_2Mb"]])
+
+    hg38_rg <- as.data.frame(hg38_rg)
+
     rg <- hg38_rg %>%
-      dplyr::rename(Chr = "chr",
-                    Start = "start",
-                    End = "end") %>%
+      dplyr::rename(chr = "seqnames") %>%
       dplyr::mutate(GeneID = 1:nrow(hg38_rg))
 
     if (remove_Y == TRUE) {
       rg <- dplyr::filter(rg,
-                          Chr != "chrY")
+                          chr != "chrY")
 
     }
 
@@ -147,7 +168,12 @@ runCountReads <- function(dir,
       files_names[!stringr::str_detect(files_names, ".bai")]
   }
 
-  message("Counting reads.")
+  message(paste(
+    "Counting reads for genome",
+    genome,
+    "and resolution:",
+    resolution
+  ))
 
   varbin_counts_list_all_fields <-
     suppressMessages(
@@ -222,8 +248,9 @@ runCountReads <- function(dir,
     rowRanges = rg_gr
   )
 
-  # Adding genome information to metadata
+  # Adding genome and resolution information to metadata
   S4Vectors::metadata(cna_obj)$genome <- genome
+  S4Vectors::metadata(cna_obj)$resolution <- resolution
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sun Feb 14 20:55:01 2021
   # ADDING READS METRICS TO METADATA

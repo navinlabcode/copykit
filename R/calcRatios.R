@@ -16,7 +16,7 @@
 #' @importFrom SummarizedExperiment assay
 #'
 #' @examples
-#' copykit_obj <- mock_bincounts(50)
+#' copykit_obj <- mock_bincounts()
 #' copykit_obj <- runVst(copykit_obj)
 #' copykit_obj <- calcRatios(copykit_obj)
 #'

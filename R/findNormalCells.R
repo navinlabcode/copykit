@@ -85,7 +85,7 @@ findNormalCells <- function(scCNA,
   if (resolution == "auto") {
 
     fit <- tryCatch(
-      fit <- mixtools::normalmixEM(cv),
+      mixtools::normalmixEM(cv),
       error = function(e) {
         message("Could not identify aneuploid cells in the dataset.")
         message("Marking all cells as diploid.")
@@ -95,7 +95,7 @@ findNormalCells <- function(scCNA,
     )
 
     # determining resolution
-    if (fit != "error") {
+    if (length(fit) > 1) {
       resolution <- fit$mu[1] + 5 * fit$sigma[1]
     } else resolution <- 1
 
