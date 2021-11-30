@@ -25,7 +25,7 @@ Adds the metrics to the scCNA \code{\link[SummarizedExperiment]{colData}}.
  results can be visualized with \code{\link{plotMetrics}}.
 }
 \examples{
-copykit_obj <- mock_bincounts(15)
+copykit_obj <- mock_bincounts()
 copykit_obj <- runVst(copykit_obj)
 copykit_obj <- calcRatios(copykit_obj)
 copykit_obj <- runSegmentation(copykit_obj)

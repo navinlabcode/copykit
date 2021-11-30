@@ -5,9 +5,9 @@
 #'
 #' @author Darlan Conterno Minussi
 #'
-#' @param dir A path for the directory containing .BAM files from short-read sequencing.
+#' @param dir A path containing .BAM files from short-read sequencing.
 #' @param genome A character indicating the choice of genome assembly.
-#' @param bin_size A character indicating the resolution desired for the scaffold
+#' @param resolution A character indicating the resolution for the scaffold
 #'  of the VarBin method, i. e. the bin resulting bin size.
 #' @param remove_Y A boolean when set to TRUE, removes information from the chrY
 #' from the dataset.
@@ -108,7 +108,14 @@
 
 runVarbin <- function(dir,
                       genome = c("hg38", "hg19"),
-                      bin_size = "200kb",
+                      resolution = c("200kb",
+                                     "50kb",
+                                     "100kb",
+                                     "175kb",
+                                     "250kb",
+                                     "500kb",
+                                     "1Mb",
+                                     "2.5Mb"),
                       remove_Y = FALSE,
                       method = c('CBS', 'multipcf'),
                       vst = c("ft", "log"),
@@ -122,10 +129,11 @@ runVarbin <- function(dir,
   genome <- match.arg(genome)
   vst <- match.arg(vst)
   method <- match.arg(method)
+  resolution <- match.arg(resolution)
 
   copykit_object <- runCountReads(dir,
                                   genome = genome,
-                                  bin_size = bin_size,
+                                  resolution = resolution,
                                   remove_Y = remove_Y,
                                   min_bincount = min_bincount,
                                   BPPARAM = BPPARAM)

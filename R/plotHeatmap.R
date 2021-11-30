@@ -485,6 +485,13 @@ plotHeatmap <- function(scCNA,
     show_heatmap_legend = TRUE
   )
 
+  # magick raster cannot plot more than 16k columns.
+  # need to remove raster_by_magick on resolutions < 200kb
+  # https://githubmemory.com/repo/jokergoo/EnrichedHeatmap/issues/58
+  if (ncol(seg_data_ordered) > 16000) {
+    complex_args$raster_by_magick <- FALSE
+  }
+
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 18 12:12:55 2021
   # Setup for label colData annotation and integer
 

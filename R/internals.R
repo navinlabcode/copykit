@@ -20,7 +20,6 @@
 #' }
 #'
 #' @rdname internals
-#' @docType methods
 NULL
 
 
@@ -484,18 +483,15 @@ copykit_example <- function() {
   chr <- NULL
 
   #ranges
-  hg38_rg_edit <- hg38_rg[, -c(4:5)]
-  hg38_rg_editnoY <- dplyr::filter(hg38_rg_edit, chr != "chrY")
-  rg_hg38 <- GenomicRanges::makeGRangesFromDataFrame(hg38_rg_editnoY,
-                                          ignore.strand = TRUE,
-                                          keep.extra.columns = TRUE)
+  hg38_rg <- hg38_grangeslist[["hg38_200kb"]]
+  hg38_rg <- subset(hg38_rg, seqnames != "chrY")
 
   copykit_obj_rle <- copykit_obj_rle
   copykit_data_proc <- as.data.frame(do.call(cbind,
                                              lapply(copykit_obj_rle,
                                                     inverse.rle)))
   copykit_obj <- CopyKit(assays = list(segment_ratios = copykit_data_proc),
-                         rowRanges = rg_hg38)
+                         rowRanges = hg38_rg)
   copykit_obj <- logNorm(copykit_obj)
   metadata(copykit_obj)$genome <- "hg38"
   colData(copykit_obj)$sample <- names(copykit_data_proc)
@@ -511,11 +507,9 @@ copykit_example_filtered <- function() {
   chr <- NULL
 
   #ranges
-  hg38_rg_edit <- hg38_rg[, -c(4:5)]
-  hg38_rg_editnoY <- dplyr::filter(hg38_rg_edit, chr != "chrY")
-  rg_hg38 <- GenomicRanges::makeGRangesFromDataFrame(hg38_rg_editnoY,
-                                                     ignore.strand = TRUE,
-                                                     keep.extra.columns = TRUE)
+
+  hg38_rg <- hg38_grangeslist[["hg38_200kb"]]
+  hg38_rg <- subset(hg38_rg, seqnames != "chrY")
 
   # lazydata loaded objects
   copykit_obj_filtered <- copykit_obj_filt_rle
@@ -525,7 +519,7 @@ copykit_example_filtered <- function() {
                                              lapply(copykit_obj_filtered,
                                                     inverse.rle)))
   copykit_obj_filt <- CopyKit(assays = list(segment_ratios = copykit_data_proc_filt),
-                         rowRanges = rg_hg38)
+                         rowRanges = hg38_rg)
   copykit_obj_filt <- logNorm(copykit_obj_filt)
   metadata(copykit_obj_filt)$genome <- "hg38"
   metadata(copykit_obj_filt)$suggestedK <- 10
@@ -536,23 +530,61 @@ copykit_example_filtered <- function() {
 
 #' @export
 #' @keywords internal
-#' @importFrom stats rpois
-mock_bincounts <- function(n) {
+#' @importFrom stats rpois runif
+mock_bincounts <- function(ncells = 30,
+                        ncells_diploid = 5,
+                        position_gain = 4900:5493,
+                        position_del = 6523:7056,
+                        genome = "hg38",
+                        resolution = '200kb') {
 
-  # bindings for NSE and data
-  chr <- NULL
+  hg38_rg <- switch(resolution,
+                    "50kb" = hg38_grangeslist[["hg38_50kb"]],
+                    "100kb" = hg38_grangeslist[["hg38_100kb"]],
+                    "175kb" = hg38_grangeslist[["hg38_175kb"]],
+                    "200kb" = hg38_grangeslist[["hg38_200kb"]],
+                    "250kb" = hg38_grangeslist[["hg38_250kb"]],
+                    "500kb" = hg38_grangeslist[["hg38_500kb"]],
+                    "1Mb" = hg38_grangeslist[["hg38_1Mb"]],
+                    "2.5Mb" = hg38_grangeslist[["hg38_2Mb"]])
 
-  #ranges
-  hg38_rg_edit <- hg38_rg[, -c(4:5)]
-  hg38_rg_editnoY <- dplyr::filter(hg38_rg_edit, chr != "chrY")
-  rg_hg38 <- GenomicRanges::makeGRangesFromDataFrame(hg38_rg_editnoY,
-                                                     ignore.strand = TRUE,
-                                                     keep.extra.columns = TRUE)
+  hg38_rg <- subset(hg38_rg, seqnames != "chrY")
 
-  mat <- as.data.frame(matrix(rpois(11268*n, 52), ncol = n))
-  copykit_obj_bincounts <- CopyKit(assays = list(bincounts = mat),
-                                   rowRanges = rg_hg38)
-  colData(copykit_obj_bincounts)$sample <- names(mat)
-  metadata(copykit_obj_bincounts)$genome <- "hg38"
+  ncells <- ncells
+  ncells_diploid <- ncells_diploid
+  ncells_aneuploid <- ncells-ncells_diploid
+  nbins <- length(hg38_rg)
+  position_gain <- position_gain
+  nbins_gain <- length(position_gain)
+  position_del <- position_del
+  nbins_del <- length(position_del)
+
+  # creating mock diploid and aneuploid cell
+  mock_diploid <- rpois(nbins, 50)
+  mock_aneuploid <- rpois(nbins, 50)
+
+  # adding events to aneuploid cells
+  mock_aneuploid[position_gain] <-  rpois(nbins_gain, 100)
+  mock_aneuploid[position_del] <-  rpois(nbins_del, 25)
+
+  # creating the cell counts matrix
+  m <- matrix(c(mock_diploid, mock_aneuploid), ncol = 2)
+  rep_pop <- c(rep(1, ncells_diploid), rep(2, ncells_aneuploid))
+  mock_counts <- as.data.frame(m[,rep_pop])
+
+  # adding some uniform error to avoid all cells having the same variance.
+  mock_counts <- mock_counts + runif(nbins*ncells,-5,5)
+
+  # creating copykit object with mock counts
+  copykit_obj_bincounts <- CopyKit(assays = list(bincounts = mock_counts),
+                                   rowRanges = hg38_rg)
+  metadata(copykit_obj_bincounts)$genome <- genome
+  metadata(copykit_obj_bincounts)$resolution <- resolution
+  colData(copykit_obj_bincounts)$sample <- names(bincounts(copykit_obj_bincounts))
+  colData(copykit_obj_bincounts)$ground_truth <- rep(c(TRUE, FALSE),
+                                                     c(ncells_diploid,
+                                                       ncells_aneuploid))
+
   return(copykit_obj_bincounts)
+
 }

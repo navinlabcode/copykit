@@ -7,7 +7,7 @@
 runCountReads(
   dir,
   genome = c("hg38", "hg19"),
-  bin_size = "200kb",
+  resolution = c("200kb", "50kb", "100kb", "175kb", "250kb", "500kb", "1Mb", "2.5Mb"),
   remove_Y = FALSE,
   min_bincount = 10,
   BPPARAM = bpparam()
@@ -18,7 +18,7 @@ runCountReads(
 
 \item{genome}{Name of the genome assembly. Default: 'hg38'.}
 
-\item{bin_size}{The resolution of the VarBin method. Default: '200kb'.}
+\item{resolution}{The resolution of the VarBin method. Default: '200kb'.}
 
 \item{remove_Y}{(default == FALSE) If set to TRUE, removes information from
 the chrY from the dataset.}

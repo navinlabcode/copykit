@@ -25,7 +25,7 @@
 #' @export
 #'
 #' @examples
-#' copykit_obj <- mock_bincounts(50)
+#' copykit_obj <- mock_bincounts()
 #' copykit_obj <- runVst(copykit_obj)
 #'
 runVst <- function(scCNA,

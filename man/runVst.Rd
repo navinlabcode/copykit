@@ -27,7 +27,7 @@ or a logarithmic transformation with the option 'log'. Using a 'log' transformat
 may result in long segmentation times for a few cells with large breakpoint counts.
 }
 \examples{
-copykit_obj <- mock_bincounts(50)
+copykit_obj <- mock_bincounts()
 copykit_obj <- runVst(copykit_obj)
 
 }

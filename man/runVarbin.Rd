@@ -7,7 +7,7 @@
 runVarbin(
   dir,
   genome = c("hg38", "hg19"),
-  bin_size = "200kb",
+  resolution = c("200kb", "50kb", "100kb", "175kb", "250kb", "500kb", "1Mb", "2.5Mb"),
   remove_Y = FALSE,
   method = c("CBS", "multipcf"),
   vst = c("ft", "log"),
@@ -20,11 +20,11 @@ runVarbin(
 )
 }
 \arguments{
-\item{dir}{A path for the directory containing .BAM files from short-read sequencing.}
+\item{dir}{A path containing .BAM files from short-read sequencing.}
 
 \item{genome}{A character indicating the choice of genome assembly.}
 
-\item{bin_size}{A character indicating the resolution desired for the scaffold
+\item{resolution}{A character indicating the resolution for the scaffold
 of the VarBin method, i. e. the bin resulting bin size.}
 
 \item{remove_Y}{A boolean when set to TRUE, removes information from the chrY
