@@ -92,6 +92,8 @@
 #' @importFrom tidyr pivot_wider
 #' @examples
 #' copykit_obj <- copykit_example_filtered()
+#' set.seed(1000)
+#' copykit_obj <- copykit_obj[,sample(200)]
 #' copykit_obj <- findClusters(copykit_obj)
 #' copykit_obj <- calcConsensus(copykit_obj)
 #' copykit_obj <- runConsensusPhylo(copykit_obj)

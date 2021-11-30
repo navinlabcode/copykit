@@ -45,7 +45,8 @@
 #' @importFrom SummarizedExperiment assay rowRanges colData seqnames
 #'
 #' @examples
-#' copykit_obj <- copykit_example_filtered()[,1:100]
+#' set.seed(1000)
+#' copykit_obj <- copykit_example_filtered()[,sample(40)]
 #' plotFreq(copykit_obj)
 #'
 plotFreq <- function(scCNA,

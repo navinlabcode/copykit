@@ -45,18 +45,12 @@ setMethod("ratios", "CopyKit", function(x, withDimnames = TRUE) {
 })
 
 #' @export
-#' @rdname methods
-#' @aliases bincounts,CopyKit
-#' @param x CopyKit object.
 setMethod("bincounts", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the bincounts data slot
   SummarizedExperiment::assay(x, "bincounts")
 })
 
 #' @export
-#' @rdname methods
-#' @aliases consensus,CopyKit
-#' @param x CopyKit object.
 setMethod("consensus", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the consensus data slot
   out <- x@consensus
@@ -65,10 +59,6 @@ setMethod("consensus", "CopyKit", function(x, withDimnames = TRUE) {
 
 
 #' @export
-#' @rdname methods
-#' @aliases consensus,CopyKit
-#' @param x CopyKit object.
-#' @param value replacement value
 setReplaceMethod("consensus", "CopyKit", function(x, value) {
   # setter method for phylo slot
   x@consensus <- value
