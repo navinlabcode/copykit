@@ -7,7 +7,7 @@
 findClusters(
   scCNA,
   embedding = "umap",
-  method = c("hdbscan", "leiden"),
+  method = c("hdbscan", "leiden", "louvain"),
   k_superclones = NULL,
   k_subclones = NULL,
   seed = 17

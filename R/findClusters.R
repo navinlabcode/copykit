@@ -67,7 +67,7 @@
 #' @importFrom tibble rownames_to_column
 #' @importFrom forcats fct_reorder
 #' @importFrom gtools mixedsort
-#' @importFrom igraph cluster_leiden membership
+#' @importFrom igraph cluster_leiden membership cluster_louvain
 #'
 #' @examples
 #' copykit_obj <- copykit_example_filtered()
@@ -75,16 +75,14 @@
 
 findClusters <- function(scCNA,
                          embedding = "umap",
-                         method = c("hdbscan", "leiden"),
+                         method = c("hdbscan", "leiden", "louvain"),
                          k_superclones = NULL,
                          k_subclones = NULL,
                          seed = 17) {
-
   method <- match.arg(method)
 
   # obtaining data from reducedDim slot
   if (!is.null(SingleCellExperiment::reducedDim(scCNA, embedding))) {
-
     umap_df <-
       SingleCellExperiment::reducedDim(scCNA, embedding) %>%
       as.data.frame()
@@ -93,14 +91,18 @@ findClusters <- function(scCNA,
     stop("Reduced dimensions slot is NULL. Use runUmap() to create it.")
 
   # checks
-  if (is.null(k_subclones) && is.null(S4Vectors::metadata(scCNA)$suggestedK)) {
+  if (is.null(k_subclones) &&
+      is.null(S4Vectors::metadata(scCNA)$suggestedK)) {
     stop("k_subclones must have a numeric value.")
   }
 
   # if suggestedK is not null, use it as default
-  if (is.null(k_subclones) && !is.null(S4Vectors::metadata(scCNA)$suggestedK)) {
-    message(paste("Using suggested k_subclones =",
-                  S4Vectors::metadata(scCNA)$suggestedK))
+  if (is.null(k_subclones) &&
+      !is.null(S4Vectors::metadata(scCNA)$suggestedK)) {
+    message(paste(
+      "Using suggested k_subclones =",
+      S4Vectors::metadata(scCNA)$suggestedK
+    ))
 
     k_subclones <- S4Vectors::metadata(scCNA)$suggestedK
   }
@@ -111,7 +113,6 @@ findClusters <- function(scCNA,
 
   # superclones clustering
   if (!is.null(k_superclones)) {
-
     # type check
     if (!is.numeric(k_superclones)) {
       stop("k_superclones must have a numeric value.")
@@ -129,18 +130,24 @@ findClusters <- function(scCNA,
   message(paste("Finding clusters, using method:", method))
 
   # subclones using leiden
-  if (method == "leiden") {
-
+  if (method == "leiden" || method == "louvain") {
     g_minor  <-
       scran::buildSNNGraph(umap_df, k = k_subclones, transposed = TRUE)
 
     # saving g_minor graph
     copykit::graph(scCNA) <- g_minor
 
-    #minor
-    leid_obj <- igraph::cluster_leiden(g_minor,
-                                       resolution_parameter = 0.2,
-                                       n_iterations = 100)
+    # subclones
+    if (method == 'leiden') {
+      leid_obj <- igraph::cluster_leiden(g_minor,
+                                         resolution_parameter = 0.2,
+                                         n_iterations = 100)
+    }
+
+    if (method == 'louvain') {
+      leid_obj <- igraph::cluster_leiden(g_minor)
+    }
+
     leid_obj_com <- igraph::membership(leid_obj)
 
     subclones <- as.factor(paste0('c', leid_obj$membership))
@@ -167,8 +174,9 @@ findClusters <- function(scCNA,
 
     if (n_outliers > 0) {
       message(paste("Found", n_outliers, "outliers cells (group 'c0')"))
-      message(paste("Found", n_clones-1, "subclones."))
-    } else message(paste("Found", n_clones, "subclones."))
+      message(paste("Found", n_clones - 1, "subclones."))
+    } else
+      message(paste("Found", n_clones, "subclones."))
 
   }
 

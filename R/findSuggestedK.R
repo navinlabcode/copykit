@@ -47,7 +47,7 @@
 #' @importFrom dbscan hdbscan
 #' @importFrom S4Vectors metadata
 #' @importFrom SingleCellExperiment reducedDim
-#' @importFrom igraph cluster_leiden membership
+#' @importFrom igraph cluster_leiden membership cluster_louvain
 #'
 #' @examples
 #' copykit_obj <- copykit_example_filtered()
@@ -56,7 +56,7 @@
 findSuggestedK <- function(scCNA,
                            embedding = 'umap',
                            k_range = NULL,
-                           method = c("hdbscan", "leiden"),
+                           method = c("hdbscan", "leiden", "louvain"),
                            metric = c("median", "mean"),
                            seed = 17,
                            B = 200,
@@ -103,6 +103,35 @@ findSuggestedK <- function(scCNA,
             SingleCellExperiment::reducedDim(scCNA, "umap"),
             B = B,
             clustermethod = leidenCBI,
+            seed_leid = seed_val,
+            k = i
+          )
+        )
+
+      n_subclones <- 1:df_clusterboot$nc
+      n_cells_per_subclone <- as.numeric(table(df_clusterboot$partition))
+
+      df_result <- data.frame(k = i,
+                              subclones = paste0('c', n_subclones),
+                              n_cells = n_cells_per_subclone,
+                              bootmean = df_clusterboot$bootmean)
+
+    }, BPPARAM = BPPARAM)
+
+  }
+
+  if (method == 'louvain') {
+
+    # setting seed to a different variable to avoid recursive call
+    seed_val <- seed
+
+    jaccard <- BiocParallel::bplapply(k_range, function(i) {
+      df_clusterboot <-
+        .quiet(
+          fpc::clusterboot(
+            SingleCellExperiment::reducedDim(scCNA, "umap"),
+            B = B,
+            clustermethod = louvainCBI,
             seed_leid = seed_val,
             k = i
           )
@@ -212,6 +241,7 @@ findSuggestedK <- function(scCNA,
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' @keywords internal
 #' @export
+#' @rdname findSuggestedK
 hdbscanCBI <-
   function(data, minPts, diss = inherits(data, "dist"), ...) {
 
@@ -238,6 +268,7 @@ hdbscanCBI <-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' @keywords internal
 #' @export
+#' @rdname findSuggestedK
 leidenCBI <- function(data,k,seed_leid,diss=inherits(data,"dist"),...){
 
   g_minor  <-
@@ -263,4 +294,32 @@ leidenCBI <- function(data,k,seed_leid,diss=inherits(data,"dist"),...){
               clustermethod="leiden")
   out
 }
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# custom louvain function to pass to fpc::clusterboot
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#' @keywords internal
+#' @export
+louvainCBI <- function(data,k,seed_leid,diss=inherits(data,"dist"),...){
+
+  g_minor  <-
+    scran::buildSNNGraph(data, k = k, transposed = TRUE)
+
+  if (diss)
+    c1 <- igraph::cluster_louvain(g_minor)
+  else
+    c1 <- igraph::cluster_louvain(g_minor)
+
+  partition <- igraph::membership(c1)
+
+  cl <- list()
+  nc <- max(partition)
+
+  for (i in 1:nc)
+    cl[[i]] <- partition==i
+  out <- list(result=c1,nc=nc,clusterlist=cl,partition=partition,
+              clustermethod="leiden")
+  out
+}
+
 

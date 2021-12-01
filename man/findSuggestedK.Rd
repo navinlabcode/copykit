@@ -2,18 +2,24 @@
 % Please edit documentation in R/findSuggestedK.R
 \name{findSuggestedK}
 \alias{findSuggestedK}
+\alias{hdbscanCBI}
+\alias{leidenCBI}
 \title{findSuggestedK}
 \usage{
 findSuggestedK(
   scCNA,
   embedding = "umap",
   k_range = NULL,
-  method = c("hdbscan", "leiden"),
+  method = c("hdbscan", "leiden", "louvain"),
   metric = c("median", "mean"),
   seed = 17,
   B = 200,
   BPPARAM = bpparam()
 )
+
+hdbscanCBI(data, minPts, diss = inherits(data, "dist"), ...)
+
+leidenCBI(data, k, seed_leid, diss = inherits(data, "dist"), ...)
 }
 \arguments{
 \item{scCNA}{scCNA object.}
@@ -73,3 +79,4 @@ Journal of Multivariate Analysis 99, 1154-1176.
 
 \code{\link{plotSuggestedK}}
 }
+\keyword{internal}
