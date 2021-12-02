@@ -22,11 +22,10 @@
 #' @rdname internals
 NULL
 
-
 #' @export
 #' @rdname internals
 #' @name segment_ratios
-#' @aliases segment_ratios
+#' @aliases segment_ratios,CopyKit-method
 #' @param x CopyKit object.
 setMethod("segment_ratios", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the segment_ratios data within the assay slot
@@ -37,7 +36,7 @@ setMethod("segment_ratios", "CopyKit", function(x, withDimnames = TRUE) {
 #' @export
 #' @rdname internals
 #' @name ratios
-#' @aliases ratios,CopyKit
+#' @aliases ratios,CopyKit-method
 #' @param x CopyKit object.
 setMethod("ratios", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the ratios data slot
@@ -45,12 +44,20 @@ setMethod("ratios", "CopyKit", function(x, withDimnames = TRUE) {
 })
 
 #' @export
+#' @rdname internals
+#' @name bincounts
+#' @aliases bincounts,CopyKit-method
+#' @param x CopyKit object.
 setMethod("bincounts", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the bincounts data slot
   SummarizedExperiment::assay(x, "bincounts")
 })
 
 #' @export
+#' @rdname internals
+#' @name consensus
+#' @aliases consensus,CopyKit-method
+#' @param x CopyKit object.
 setMethod("consensus", "CopyKit", function(x, withDimnames = TRUE) {
   # accessor for the consensus data slot
   out <- x@consensus
@@ -59,6 +66,10 @@ setMethod("consensus", "CopyKit", function(x, withDimnames = TRUE) {
 
 
 #' @export
+#' @rdname internals
+#' @name consensus<-
+#' @aliases consensus<-,CopyKit-method
+#' @param x CopyKit object.
 setReplaceMethod("consensus", "CopyKit", function(x, value) {
   # setter method for phylo slot
   x@consensus <- value
@@ -66,6 +77,10 @@ setReplaceMethod("consensus", "CopyKit", function(x, value) {
 })
 
 #' @export
+#' @rdname internals
+#' @name phylo
+#' @aliases phylo,CopyKit-method
+#' @param x CopyKit object.
 setMethod("phylo", "CopyKit", function(x) {
   # accessor for the phylo slot
   out <- x@phylo
@@ -73,6 +88,10 @@ setMethod("phylo", "CopyKit", function(x) {
 })
 
 #' @export
+#' @rdname internals
+#' @name phylo<-
+#' @aliases phylo<-,CopyKit-method
+#' @param x CopyKit object.
 setReplaceMethod("phylo", "CopyKit", function(x, value) {
   # setter method for phylo slot
   x@phylo <- value
@@ -80,6 +99,10 @@ setReplaceMethod("phylo", "CopyKit", function(x, value) {
 })
 
 #' @export
+#' @rdname internals
+#' @name consensusPhylo
+#' @aliases consensusPhylo,CopyKit-method
+#' @param x CopyKit object.
 setMethod("consensusPhylo", "CopyKit", function(x) {
   # accessor for the consensusPhylo slot
   out <- x@consensusPhylo
@@ -87,6 +110,10 @@ setMethod("consensusPhylo", "CopyKit", function(x) {
 })
 
 #' @export
+#' @rdname internals
+#' @name consensusPhylo<-
+#' @aliases consensusPhylo<-,CopyKit-method
+#' @param x CopyKit object.
 setReplaceMethod("consensusPhylo", "CopyKit", function(x, value) {
   # setter method for consensusPhylo slot
   x@consensusPhylo <- value
@@ -94,6 +121,10 @@ setReplaceMethod("consensusPhylo", "CopyKit", function(x, value) {
 })
 
 #' @export
+#' @rdname internals
+#' @name distMat
+#' @aliases distMat,CopyKit-method
+#' @param x CopyKit object.
 setMethod("distMat", "CopyKit", function(x) {
   # accessor for the distMat slot
   out <- x@distMat
@@ -101,6 +132,10 @@ setMethod("distMat", "CopyKit", function(x) {
 })
 
 #' @export
+#' @rdname internals
+#' @name distMat<-
+#' @aliases distMat<-,CopyKit-method
+#' @param x CopyKit object.
 setReplaceMethod("distMat", "CopyKit", function(x, value) {
   # setter method for distMat slot
   x@distMat <- value
@@ -108,6 +143,10 @@ setReplaceMethod("distMat", "CopyKit", function(x, value) {
 })
 
 #' @export
+#' @rdname internals
+#' @name graph
+#' @aliases graph,CopyKit-method
+#' @param x CopyKit object.
 setMethod("graph", "CopyKit", function(x) {
   # accessor for the getGraph slot
   out <- x@graph
@@ -115,6 +154,10 @@ setMethod("graph", "CopyKit", function(x) {
 })
 
 #' @export
+#' @rdname internals
+#' @name graph
+#' @aliases graph<-,CopyKit-method
+#' @param x CopyKit object.
 setReplaceMethod("graph", "CopyKit", function(x, value) {
   # setter method for getGraph slot
   x@graph <- value
@@ -122,6 +165,10 @@ setReplaceMethod("graph", "CopyKit", function(x, value) {
 })
 
 #' @export
+#' @rdname internals
+#' @name show
+#' @aliases show,CopyKit-method
+#' @param x CopyKit object.
 #' @importFrom ape Ntip Nnode
 #' @importMethodsFrom SingleCellExperiment show
 setMethod("show", "CopyKit", function(object) {
@@ -146,6 +193,9 @@ setMethod("show", "CopyKit", function(object) {
 })
 
 #' @export
+#' @rdname internals
+#' @name %!in%
+#' @aliases %!in%,CopyKit-method
 `%!in%` <- Negate(`%in%`)
 
 # suppress cat output from function
@@ -518,9 +568,15 @@ copykit_example_filtered <- function() {
   return(copykit_obj_filt)
 }
 
+#' @name mock_bincounts
+#' @aliases mock_bincounts
 #' @export
+#' @docType methods
+#' @return A CopyKit object with simulated bincounts
+#' @rdname internals
 #' @keywords internal
 #' @importFrom stats rpois runif
+#' @importFrom utils globalVariables
 mock_bincounts <- function(ncells = 30,
                         ncells_diploid = 5,
                         position_gain = 4900:5493,

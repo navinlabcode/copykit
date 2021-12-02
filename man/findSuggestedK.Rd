@@ -4,6 +4,7 @@
 \alias{findSuggestedK}
 \alias{hdbscanCBI}
 \alias{leidenCBI}
+\alias{louvainCBI}
 \title{findSuggestedK}
 \usage{
 findSuggestedK(
@@ -20,6 +21,8 @@ findSuggestedK(
 hdbscanCBI(data, minPts, diss = inherits(data, "dist"), ...)
 
 leidenCBI(data, k, seed_leid, diss = inherits(data, "dist"), ...)
+
+louvainCBI(data, k, seed_leid, diss = inherits(data, "dist"), ...)
 }
 \arguments{
 \item{scCNA}{scCNA object.}

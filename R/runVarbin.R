@@ -57,7 +57,7 @@
 #'
 #' \itemize{
 #'
-#'    \item{CBS:} #' \code{runSegmentation} Fits a piece-wise constant function
+#'    \item{CBS:} \code{runSegmentation} Fits a piece-wise constant function
 #'    to the transformed the smoothed bin counts. Bin counts are smoothed with
 #'    \code{\link[DNAcopy]{smooth.CNA}} using the Circular Binary Segmentation
 #'    (CBS) algorithm from \code{\link[DNAcopy]{segment}} with default it applies

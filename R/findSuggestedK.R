@@ -300,6 +300,7 @@ leidenCBI <- function(data,k,seed_leid,diss=inherits(data,"dist"),...){
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' @keywords internal
 #' @export
+#' @rdname findSuggestedK
 louvainCBI <- function(data,k,seed_leid,diss=inherits(data,"dist"),...){
 
   g_minor  <-

@@ -4,19 +4,72 @@
 \name{CopyKit-internals}
 \alias{CopyKit-internals}
 \alias{segment_ratios}
+\alias{segment_ratios,CopyKit-method}
 \alias{ratios}
-\alias{ratios,CopyKit}
+\alias{ratios,CopyKit-method}
+\alias{bincounts}
+\alias{bincounts,CopyKit-method}
+\alias{consensus}
+\alias{consensus,CopyKit-method}
+\alias{consensus<-}
+\alias{consensus<-,CopyKit-method}
+\alias{phylo}
+\alias{phylo,CopyKit-method}
+\alias{phylo<-}
+\alias{phylo<-,CopyKit-method}
+\alias{consensusPhylo}
+\alias{consensusPhylo,CopyKit-method}
+\alias{consensusPhylo<-}
+\alias{consensusPhylo<-,CopyKit-method}
+\alias{distMat}
+\alias{distMat,CopyKit-method}
+\alias{distMat<-}
+\alias{distMat<-,CopyKit-method}
+\alias{graph}
+\alias{graph,CopyKit-method}
+\alias{graph<-,CopyKit-method}
+\alias{show}
+\alias{show,CopyKit-method}
+\alias{\%!in\%}
+\alias{\%!in\%,CopyKit-method}
 \alias{superclones_pal}
 \alias{subclones_pal}
 \alias{find_scaffold_genes}
 \alias{l2e.normal.sd}
 \alias{overdispersion}
 \alias{parCor}
+\alias{mock_bincounts}
 \title{CopyKit internal functions.}
 \usage{
 \S4method{segment_ratios}{CopyKit}(x, withDimnames = TRUE)
 
 \S4method{ratios}{CopyKit}(x, withDimnames = TRUE)
+
+\S4method{bincounts}{CopyKit}(x, withDimnames = TRUE)
+
+\S4method{consensus}{CopyKit}(x, withDimnames = TRUE)
+
+\S4method{consensus}{CopyKit}(x) <- value
+
+\S4method{phylo}{CopyKit}(x)
+
+\S4method{phylo}{CopyKit}(x) <- value
+
+\S4method{consensusPhylo}{CopyKit}(x)
+
+\S4method{consensusPhylo}{CopyKit}(x) <- value
+
+\S4method{distMat}{CopyKit}(x)
+
+\S4method{distMat}{CopyKit}(x) <- value
+
+\S4method{graph}{CopyKit}(x)
+
+\S4method{graph}{CopyKit}(x) <- value
+
+\S4method{show}{CopyKit}(object)
+
+... \%!in\% NA
 
 superclones_pal()
 
@@ -29,6 +82,15 @@ l2e.normal.sd(xs)
 overdispersion(v)
 
 parCor(x, BPPARAM = BiocParallel::bpparam())
+
+mock_bincounts(
+  ncells = 30,
+  ncells_diploid = 5,
+  position_gain = 4900:5493,
+  position_del = 6523:7056,
+  genome = "hg38",
+  resolution = "200kb"
+)
 }
 \arguments{
 \item{x}{CopyKit object.}
@@ -47,6 +109,8 @@ A numerci vector with the estimation of the index of dispersion,
 which is used when estimating standard errors for each segment mean
 
 A matrix with the pairwise correlation from the segment ratio means.
+
+A CopyKit object with simulated bincounts
 }
 \description{
 This document establish setters and getters to facilitate access
