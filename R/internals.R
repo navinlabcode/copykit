@@ -194,8 +194,7 @@ setMethod("show", "CopyKit", function(object) {
 
 #' @export
 #' @rdname internals
-#' @name %!in%
-#' @aliases %!in%,CopyKit-method
+#' @keywords internal
 `%!in%` <- Negate(`%in%`)
 
 # suppress cat output from function

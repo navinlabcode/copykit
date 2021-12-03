@@ -246,8 +246,6 @@ plotGeneCopy <- function(scCNA,
 
       p <- p + color_lab
 
-      print(p)
-
     }
 
     # adding facets if provided

@@ -31,7 +31,6 @@
 \alias{show}
 \alias{show,CopyKit-method}
 \alias{\%!in\%}
-\alias{\%!in\%,CopyKit-method}
 \alias{superclones_pal}
 \alias{subclones_pal}
 \alias{find_scaffold_genes}
