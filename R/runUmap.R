@@ -9,7 +9,7 @@
 #' @param seed Sets a seed for the pseudorandom number generator.
 #' @param name String specifying the name to be used to store the result in the
 #' reducedDims of the output.
-#' @param min_dist  	The effective minimum distance between embedded points.
+#' @param min_dist The effective minimum distance between embedded points.
 #' Smaller values will result in a more clustered/clumped embedding where nearby
 #' points on the manifold are drawn closer together, while larger values will
 #' result on a more even dispersal of points. The value should be set relative

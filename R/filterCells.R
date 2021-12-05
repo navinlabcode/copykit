@@ -1,19 +1,13 @@
 #' Filter noise cells
 #'
-#' Uses a nearest neighbor approach to find noise copy number profiles within the
-#' segment means.
+#' Uses a nearest neighbor approach to find noise copy number profiles within
+#' the segment means.
 #'
 #' @author Hua-Jun Wu
 #' @author Darlan Conterno Minussi
 #' @author Junke Wang
 #'
-#' @details \code{filterCells} Calculates a correlation matrix across
-#' the segment means among all cells and takes the mean of its k-nearest
-#' neighbors correlation. A threshold (argument resolution) is used for
-#' the minimum acceptable mean correlation among the cell and its neighbors.
-#' Values below the set resolution will be classified as noise cells.
-#'
-#' @param scCNA scCNA object.
+#' @param scCNA CopyKit object.
 #' @param assay String with the name of the assay to pull data.
 #' @param k A numeric scalar with the number k-nearest-neighbor cells to
 #' calculate the mean correlation
@@ -21,6 +15,12 @@
 #' correlation cut off will be.
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #'should be parallelized.
+#'
+#' @details \code{filterCells} To detect low-quality samples, CopyKit calculates
+#'  the Pearson correlation matrix of all samples from the segment ratio means.
+#'  Next, we calculate a sample-wise mean of the correlation between a sample
+#'  and its k-nearest-neighbors. Samples in which the correlation value is lower
+#'  than the defined threshold are classified as low-quality cells.
 #'
 #' @return Adds a column 'filtered' to
 #' \code{\link[SummarizedExperiment]{colData}}. Cells that pass the filtering
@@ -90,7 +90,7 @@ filterCells <- function(scCNA,
       dst_knn_df$filtered
 
   } else
-    stop("Sample names do not match metadata sample info. Check colData(scCNA).")
+    stop("Sample names do not match colData info. Check colData(scCNA).")
 
   message("Done.")
   return(scCNA)

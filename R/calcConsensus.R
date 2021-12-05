@@ -1,6 +1,6 @@
 #' Calculate a consensus matrix of segment means based on \code{colData}
 #'
-#' @param scCNA The scCNA object.
+#' @param scCNA The CopyKit object.
 #' @param assay String with the name of the assay to pull data from to calculate
 #' the consensus matrix.
 #' @param consensus_by A string with the column from colData that will be used
@@ -13,7 +13,7 @@
 #'  of the ith segment mean of all single cells assigned to the same element of
 #'  \link{colData},
 #'
-#' @return A consensus matrix stored in the consensus slot of the CopyKit object.
+#' @return A consensus matrix stored in the consensus slot of the CopyKit object
 #' @export
 #'
 #' @examples
@@ -55,7 +55,7 @@ calcConsensus <- function(scCNA,
 
   #sanity check
   if (!identical(rownames(consensus_info), rownames(seg_data))) {
-    stop("Order of elements in metadata and in segment_ratios must be identical.")
+    stop("Order of elements in colData and segment_ratios must be identical.")
   }
 
   ## reading list with clusters

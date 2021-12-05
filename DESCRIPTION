@@ -21,9 +21,13 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-3701-9608")) )
 Description: A suite of tools for single cell copy number analysis 
         focusing on reads binning, segmentation, normalization, 
-        filtering, analysis, and visualization. CopyKit can perform
-        pre-processing, QC, copy number inference,
-        and subclone clustering to delineate the clonal diversity of tumors.
+        filtering, analysis, and visualization. CopyKit extends Bioconductors’ 
+        SingleCellExperiment class for the analysis of copy number datasets.
+        We divide CopyKit functions into four modules: 1) Pre-processing,
+        2) Quality Control, 3) Data Analysis, and 4) Visualization. CopyKit
+        can be applied to a broad applications for studying diverse areas of 
+        cancer biology, including intratumor heterogeneity, premalignant 
+        progression, and metastasis. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -34,7 +38,8 @@ Suggests:
     rmarkdown
 Language: en-US
 biocViews: Software, SingleCell, DNASeq, Sequencing, 
-           Visualization, Normalization
+           Visualization, Normalization, Clustering,
+           ImmunoOncology, DataImport
 Imports: 
     dplyr,
     uwot,

@@ -4,7 +4,7 @@
 \alias{runDistMat}
 \title{Run distance matrix calculations}
 \usage{
-runDistMat(scCNA, metric = "euclidean", n_threads = parallel::detectCores()/4)
+runDistMat(scCNA, metric = "euclidean", n_threads = 1)
 }
 \arguments{
 \item{scCNA}{scCNA object.}

@@ -21,7 +21,7 @@
 
 runDistMat <- function(scCNA,
                        metric = "euclidean",
-                       n_threads = parallel::detectCores() / 4) {
+                       n_threads = 1) {
   # cores check
   if (n_threads < 1) {
     n_threads <- 1

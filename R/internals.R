@@ -575,7 +575,6 @@ copykit_example_filtered <- function() {
 #' @rdname internals
 #' @keywords internal
 #' @importFrom stats rpois runif
-#' @importFrom utils globalVariables
 mock_bincounts <- function(ncells = 30,
                         ncells_diploid = 5,
                         position_gain = 4900:5493,
