@@ -99,13 +99,15 @@ Each row is a cell and colums represent genomic positions.
 \examples{
 copykit_obj <- copykit_example_filtered()
 set.seed(1000)
-copykit_obj <- copykit_obj[,sample(200)]
+copykit_obj <- copykit_obj[, sample(200)]
 copykit_obj <- findClusters(copykit_obj)
 copykit_obj <- calcConsensus(copykit_obj)
 copykit_obj <- runConsensusPhylo(copykit_obj)
-colData(copykit_obj)$section <- stringr::str_extract(colData(copykit_obj)$sample,
- "(L[0-9]+L[0-9]+|L[0-9]+)")
-plotHeatmap(copykit_obj, label = c('section', 'subclones'))
+colData(copykit_obj)$section <- stringr::str_extract(
+    colData(copykit_obj)$sample,
+    "(L[0-9]+L[0-9]+|L[0-9]+)"
+)
+plotHeatmap(copykit_obj, label = c("section", "subclones"))
 }
 \references{
 Zuguang Gu, Roland Eils, Matthias Schlesner, Complex heatmaps

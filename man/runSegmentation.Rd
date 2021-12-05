@@ -20,13 +20,13 @@ runSegmentation(
 
 \item{method}{A character with the segmentation method of choice.}
 
-\item{seed}{Numeric. Set seed for CBS segmentation permutation reproducibility}
+\item{seed}{Numeric. Set seed for CBS permutation reproducibility}
 
 \item{alpha}{A numeric with the. significance levels for the test to accept
 change-points for CBS segmentation. See \code{\link[DNAcopy]{segment}}.}
 
 \item{gamma}{A numeric passed on to 'multipcf' segmentation. Penalty for each
-discontinuity in the curve, default is 40. See \code{\link[copynumber]{multipcf}}.}
+discontinuity in the curve. \code{\link[copynumber]{multipcf}}.}
 
 \item{undo.splits}{A character string specifying how change-points are to be
 undone, if at all. Default is "none". Other choices are "prune", which uses
@@ -50,13 +50,13 @@ Runs a segmentation algorithm using the ratio data.
    \item{CBS:} #' \code{runSegmentation} Fits a piece-wise constant function
    to the transformed the smoothed bin counts. Bin counts are smoothed with
    \code{\link[DNAcopy]{smooth.CNA}} using the Circular Binary Segmentation
-   (CBS) algorithm from \code{\link[DNAcopy]{segment}} with default it applies
-   undo.prune with value of 0.05.
+   (CBS) algorithm from \code{\link[DNAcopy]{segment}} with default it
+   applies undo.prune with value of 0.05.
 
-   \item{multipcf:} Performs the joint segmentation from the \code{copynumber}
-   package using the \code{\link[copynumber]{multipcf}} function. By fitting
-   piecewise constant curves with common breakpoints for all samples.
-
+   \item{multipcf:} Performs the joint segmentation from the
+   \code{copynumber} package using the \code{\link[copynumber]{multipcf}}
+   function. By fitting piecewise constant curves with common breakpoints
+   for all samples.
 
 }
 
@@ -69,5 +69,4 @@ copykit_obj <- mock_bincounts()
 copykit_obj <- runVst(copykit_obj)
 copykit_obj <- calcRatios(copykit_obj)
 copykit_obj <- runSegmentation(copykit_obj)
-
 }

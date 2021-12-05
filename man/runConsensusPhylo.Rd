@@ -27,6 +27,5 @@ copykit_obj <- copykit_example_filtered()
 copykit_obj <- findClusters(copykit_obj)
 copykit_obj <- calcConsensus(copykit_obj)
 copykit_obj <- runConsensusPhylo(copykit_obj)
-plotPhylo(copykit_obj, consensus = TRUE, label = 'subclones')
-
+plotPhylo(copykit_obj, consensus = TRUE, label = "subclones")
 }

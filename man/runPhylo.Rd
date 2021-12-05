@@ -32,7 +32,6 @@ Performs phylogenetic analysis
 \examples{
 copykit_obj <- copykit_example_filtered()
 copykit_obj <- runPhylo(copykit_obj)
-
 }
 \author{
 Darlan Conterno Minussi

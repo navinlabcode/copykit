@@ -14,7 +14,8 @@ runCountReads(
 )
 }
 \arguments{
-\item{dir}{A path for the directory containing BAM files from short-read sequencing.}
+\item{dir}{A path for the directory containing BAM files from short-read
+sequencing.}
 
 \item{genome}{Name of the genome assembly. Default: 'hg38'.}
 
@@ -34,8 +35,9 @@ A matrix of bin counts within the scCNA object that can be accessed
 with \code{bincounts}
 
 #' @references
-Navin, N., Kendall, J., Troge, J. et al. Tumour evolution inferred by single-cell
-sequencing. Nature 472, 90–94 (2011). https://doi.org/10.1038/nature09807
+Navin, N., Kendall, J., Troge, J. et al. Tumour evolution inferred by
+single-cell sequencing. Nature 472, 90–94 (2011).
+https://doi.org/10.1038/nature09807
 
 Baslan, T., Kendall, J., Ward, B., et al (2015). Optimizing sparse sequencing
 of single cells for highly multiplex copy number profiling.
@@ -46,20 +48,20 @@ runCountReads performs the variable binning (VarBin) algorithm to a series of
 BAM files resulting from short-read sequencing.
 }
 \details{
-\code{runCountReads} takes as input duplicate marked BAM files from whole
-genome sequencing and runs the variable binning pipeline algorithm. It is important
-that BAM files are duplicate marked. Briefly, the genome is split into pre-determined bins.
- The bin size is controlled by the argument \code{bin_size}. By using VarBin,
- for a diploid cell, each bin will receive equal amount of reads, controlling for mappability.
-A lowess function is applied to perform GC correction across the bins. The argument
-\code{genome} can be set to 'hg38' or 'hg19' to select the scaffolds genome
-assembly. The scaffolds are GenomicRanges objects that can be seen with
-copykit:::hg38_rg and copykit:::hg19_rg.
+\code{runCountReads} takes as input duplicate marked BAM files from
+whole genome sequencing and runs the variable binning pipeline algorithm.
+It is important that BAM files are duplicate marked. Briefly, the genome is
+split into pre-determined bins. The bin size is controlled by the argument
+\code{resolution}. By using VarBin, for a diploid cell, each bin will
+receive equal amount of reads, controlling for mappability.
+A lowess function is applied to perform GC correction across the bins.
+The argument \code{genome} can be set to 'hg38' or 'hg19' to select the
+scaffolds genome assembly. The scaffolds are GenomicRanges objects
 Information regarding the alignment of the reads to the bins and from the bam
 files are stored in the #' \code{\link[SummarizedExperiment]{colData}}.
-\code{min_bincount} Indicates the minimum mean bincount a cell must present to
-be kept in the dataset. Cells with low bincounts generally present bin dropouts
-due to low read count that will be poorly segmented.
+\code{min_bincount} Indicates the minimum mean bincount a cell must present
+to be kept in the dataset. Cells with low bincounts generally present bin
+dropouts due to low read count that will be poorly segmented.
 }
 \examples{
 \dontrun{

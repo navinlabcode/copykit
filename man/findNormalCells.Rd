@@ -48,5 +48,4 @@ performs a sample-wise calculation of the segment means coefficient
 \examples{
 copykit_obj <- copykit_example()
 copykit_obj <- findNormalCells(copykit_obj)
-
 }

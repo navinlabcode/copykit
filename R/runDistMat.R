@@ -7,16 +7,16 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param metric distance metric passed to calculate the distance matrix (Defaults to "euclidean").
+#' @param metric distance metric passed to calculate the distance matrix.
 #' @param n_threads Number of threads used to calculate the distance matrix.
-#' Passed to `amap::Dist`. As default it uses 1/4 of the detected cores available.
+#' Passed to `amap::Dist`.
 #'
 #' @return A distance matrix in the slot \code{distMat} from scCNA object.
-#' Access the distance matrix with: \code{copykit::distMat(scCNA, withDimnames = TRUE)}
+#' Access the distance matrix with: \code{distMat(scCNA, withDimnames = TRUE)}
 #' @export
 #'
 #' @examples
-#' copykit_obj <- copykit_example_filtered()
+#' copykit_obj <- copykit_example_filtered()[,1:10]
 #' copykit_obj <- runDistMat(copykit_obj)
 runDistMat <- function(scCNA,
                        metric = "euclidean",

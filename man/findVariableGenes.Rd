@@ -36,6 +36,6 @@ object and can be accessed with \code{\link[S4Vectors]{metadata}}.
 \examples{
 copykit_obj <- copykit_example_filtered()
 copykit_obj <- findVariableGenes(copykit_obj,
-               genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"))
-
+    genes = c("FHIT", "PTEN", "FOXO1", "BRCA1")
+)
 }

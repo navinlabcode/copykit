@@ -29,7 +29,6 @@ may result in long segmentation times for a few cells with large breakpoint coun
 \examples{
 copykit_obj <- mock_bincounts()
 copykit_obj <- runVst(copykit_obj)
-
 }
 \references{
 Freeman, M. F.; Tukey, J. W. (1950), "Transformations related to the angular

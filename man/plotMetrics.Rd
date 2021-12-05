@@ -32,7 +32,6 @@ copykit_obj <- runVst(copykit_obj)
 copykit_obj <- calcRatios(copykit_obj)
 copykit_obj <- runSegmentation(copykit_obj)
 copykit_obj <- runMetrics(copykit_obj)
-
 }
 \author{
 Darlan Conterno Minussi

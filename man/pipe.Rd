@@ -13,6 +13,6 @@ pipe
 See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
 }
 \examples{
-iris \%>\% head
+iris \%>\% head()
 }
 \keyword{internal}

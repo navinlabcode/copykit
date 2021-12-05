@@ -24,9 +24,9 @@ using \code{findVariableGenes}.
 \examples{
 copykit_obj <- copykit_example_filtered()
 copykit_obj <- findVariableGenes(copykit_obj,
-               genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"))
+    genes = c("FHIT", "PTEN", "FOXO1", "BRCA1")
+)
 plotVariableGenes(copykit_obj)
-
 }
 \seealso{
 \code{\link{findVariableGenes}}

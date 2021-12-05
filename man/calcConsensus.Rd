@@ -13,7 +13,7 @@ calcConsensus(
 )
 }
 \arguments{
-\item{scCNA}{The scCNA object.}
+\item{scCNA}{The CopyKit object.}
 
 \item{assay}{String with the name of the assay to pull data from to calculate
 the consensus matrix.}
@@ -27,7 +27,7 @@ to isolate the cells by factor and calculate the consensus.}
 should be parallelized.}
 }
 \value{
-A consensus matrix stored in the consensus slot of the CopyKit object.
+A consensus matrix stored in the consensus slot of the CopyKit object
 }
 \description{
 Calculate a consensus matrix of segment means based on \code{colData}
@@ -41,5 +41,4 @@ Consensus profiles are calculated by averaging or taking the median
 copykit_obj <- copykit_example_filtered()
 copykit_obj <- findClusters(copykit_obj)
 copykit_obj <- calcConsensus(copykit_obj)
-
 }
