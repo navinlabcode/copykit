@@ -39,7 +39,7 @@ Suggests:
 Language: en-US
 biocViews: Software, SingleCell, DNASeq, Sequencing, 
            Visualization, Normalization, Clustering,
-           ImmunoOncology, DataImport
+           ImmunoOncology, DataImport, CellBiology, QualityControl
 Imports: 
     dplyr,
     uwot,
@@ -53,7 +53,6 @@ Imports:
     scran,
     ape,
     S4Vectors,
-    parallel,
     scales,
     tidyr,
     tibble,

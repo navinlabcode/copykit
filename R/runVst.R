@@ -27,28 +27,25 @@
 #' @examples
 #' copykit_obj <- mock_bincounts()
 #' copykit_obj <- runVst(copykit_obj)
-#'
 runVst <- function(scCNA,
-                   transformation = c('ft','log')) {
+                   transformation = c("ft", "log")) {
+    transformation <- match.arg(transformation)
 
-  transformation <- match.arg(transformation)
+    varbin_counts_df <- bincounts(scCNA)
 
-  varbin_counts_df <- bincounts(scCNA)
+    if (transformation == "ft") {
+        counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) sqrt(x) + sqrt(x + 1))
+    }
 
-  if (transformation == 'ft') {
-    counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) sqrt(x) + sqrt(x+1))
-  }
+    if (transformation == "log") {
+        varbin_counts_df[varbin_counts_df == 0] <- 1e-4
+        counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) log(x))
+    }
 
-  if (transformation == 'log') {
-    varbin_counts_df[varbin_counts_df == 0] <- 1e-4
-    counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) log(x))
-  }
+    counts_df_ft <- as.data.frame(counts_df_ft)
 
-  counts_df_ft <- as.data.frame(counts_df_ft)
+    S4Vectors::metadata(scCNA)$vst <- transformation
+    SummarizedExperiment::assay(scCNA, transformation) <- counts_df_ft
 
-  S4Vectors::metadata(scCNA)$vst <- transformation
-  SummarizedExperiment::assay(scCNA, transformation) <- counts_df_ft
-
-  return(scCNA)
-
+    return(scCNA)
 }

@@ -1,0 +1,15 @@
+---
+title: "CopyKit_UserGuide"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CopyKit_UserGuide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Please go to [https://github.com/navinlabcode/CopyKit-UserGuide](https://github.com/navinlabcode/CopyKit-UserGuide) for the complete user guide.
+
+```{r}
+sessionInfo()
+```
+

@@ -29,76 +29,69 @@
 #'
 #' @examples
 calcInteger <- function(scCNA,
-                        assay = 'segment_ratios',
-                        method = 'fixed',
+                        assay = "segment_ratios",
+                        method = "fixed",
                         ploidy_value = NULL,
-                        name = 'integer',
+                        name = "integer",
                         penalty = 25,
                         BPPARAM = bpparam()) {
+    seg_ratios_df <- SummarizedExperiment::assay(scCNA, assay)
 
-  seg_ratios_df <- SummarizedExperiment::assay(scCNA, assay)
+    if (!is.null(ploidy_value)) {
+        if (method == "fixed") {
+            if (is.null(ploidy_value) && !is.numeric(ploidy_value)) {
+                stop("Method fixed requires a numeric value for ploidy_value argument.")
+            }
 
-  if (!is.null(ploidy_value)) {
+            message(
+                "Scaling ratio values by ploidy value ",
+                ploidy_value
+            )
 
-    if (method == 'fixed') {
+            # ploidy values are added to colData information
+            SummarizedExperiment::colData(scCNA)$ploidy <- ploidy_value
 
-      if (is.null(ploidy_value) && !is.numeric(ploidy_value)) {
-        stop("Method fixed requires a numeric value for ploidy_value argument.")
-      }
-
-      message(paste("Scaling ratio values by ploidy value",
-                    ploidy_value))
-
-      # ploidy values are added to colData information
-      SummarizedExperiment::colData(scCNA)$ploidy <- ploidy_value
-
-      # saving ploidy scaling method
-      S4Vectors::metadata(scCNA)$ploidy_method <- 'fixed'
-
+            # saving ploidy scaling method
+            S4Vectors::metadata(scCNA)$ploidy_method <- "fixed"
+        }
     }
 
-  }
+    if (method == "scquantum") {
+        rg <- as.data.frame(SummarizedExperiment::rowRanges(scCNA))
 
-  if (method == 'scquantum') {
+        sc_quants <-
+            BiocParallel::bplapply(
+                assay(scCNA, "segment_ratios"),
+                scquantum::ploidy.inference,
+                chrom = rg$seqnames,
+                start = rg$start,
+                end = rg$end,
+                penalty = penalty,
+                BPPARAM = BPPARAM
+            )
 
-    rg <- as.data.frame(SummarizedExperiment::rowRanges(scCNA))
+        sc_ploidies <- sapply(sc_quants, function(x) x$ploidy)
+        sc_confidence <- sapply(sc_quants, function(x) x$peak_height)
 
-    sc_quants <-
-      BiocParallel::bplapply(
-        assay(scCNA, 'segment_ratios'),
-        scquantum::ploidy.inference,
-        chrom = rg$seqnames,
-        start = rg$start,
-        end = rg$end,
-        penalty = penalty,
-        BPPARAM = BPPARAM
-      )
+        SummarizedExperiment::colData(scCNA)$ploidy <- sc_ploidies
+        SummarizedExperiment::colData(scCNA)$ploidy_confidence <- sc_confidence
+    }
 
-    sc_ploidies <- sapply(sc_quants, function(x) x$ploidy)
-    sc_confidence <- sapply(sc_quants, function(x) x$peak_height)
+    # check to guarantee multiplication
+    if (!identical(names(seg_ratios_df), colData(scCNA)$sample)) {
+        stop("Order of cells in segment_ratios and colData() is not identical.")
+    }
 
-    SummarizedExperiment::colData(scCNA)$ploidy <- sc_ploidies
-    SummarizedExperiment::colData(scCNA)$ploidy_confidence <- sc_confidence
+    # obtain the matrix of integer values by multiplying the seg ratios
+    # by the diagonal of the ploidy colData vector
+    int_values <-
+        round(as.matrix(seg_ratios_df) %*% diag(colData(scCNA)$ploidy)) %>%
+        as.data.frame()
 
-  }
+    # recovering names
+    names(int_values) <- names(seg_ratios_df)
 
-  # check to guarantee multiplication
-  if (!identical(names(seg_ratios_df), colData(scCNA)$sample)) {
-    stop("Order of cells in segment_ratios and colData() is not identical.")
-  }
+    SummarizedExperiment::assay(scCNA, name) <- int_values
 
-  # obtain the matrix of integer values by multiplying the seg ratios
-  # by the diagonal of the ploidy colData vector
-  int_values <-
-    round(as.matrix(seg_ratios_df) %*% diag(colData(scCNA)$ploidy)) %>%
-    as.data.frame()
-
-  # recovering names
-  names(int_values) <- names(seg_ratios_df)
-
-  SummarizedExperiment::assay(scCNA, name) <- int_values
-
-  return(scCNA)
-
+    return(scCNA)
 }
-

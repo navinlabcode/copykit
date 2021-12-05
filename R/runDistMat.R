@@ -18,31 +18,30 @@
 #' @examples
 #' copykit_obj <- copykit_example_filtered()
 #' copykit_obj <- runDistMat(copykit_obj)
-
 runDistMat <- function(scCNA,
                        metric = "euclidean",
                        n_threads = 1) {
-  # cores check
-  if (n_threads < 1) {
-    n_threads <- 1
-  }
+    # cores check
+    if (n_threads < 1) {
+        n_threads <- 1
+    }
 
-  message(paste("Calculating distance matrix with metric:", metric))
-  message(paste("Using", n_threads, "cores."))
+    message("Calculating distance matrix with metric: ", metric)
+    message("Using ", n_threads, " cores.")
 
-  seg_data <- t(segment_ratios(scCNA)) %>%
-    as.data.frame()
+    seg_data <- t(segment_ratios(scCNA)) %>%
+        as.data.frame()
 
-  dist_mat <-
-    amap::Dist(seg_data,
-               method = metric,
-               nbproc = n_threads)
+    dist_mat <-
+        amap::Dist(seg_data,
+            method = metric,
+            nbproc = n_threads
+        )
 
-  distMat(scCNA) <- dist_mat
+    distMat(scCNA) <- dist_mat
 
-  message("Access distance matrix with copykit::distMat()")
-  message("Done.")
+    message("Access distance matrix with copykit::distMat()")
+    message("Done.")
 
-  return(scCNA)
-
+    return(scCNA)
 }

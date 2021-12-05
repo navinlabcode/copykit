@@ -7,7 +7,7 @@
 #'
 #' @details Calculates a sample-wise normalization of the selected assay by the
 #' mean bin counts returns ratios where a value of 1 corresponds to the neutral
-#'copy number state of the sample
+#' copy number state of the sample
 #'
 #' @return A ratio matrix within the slot assay(scCNA, 'ratios')
 #' can be accessed with \code{ratios}.
@@ -19,20 +19,17 @@
 #' copykit_obj <- mock_bincounts()
 #' copykit_obj <- runVst(copykit_obj)
 #' copykit_obj <- calcRatios(copykit_obj)
-#'
 calcRatios <- function(scCNA,
                        assay = c("ft", "bincounts", "smoothed_bincounts"),
                        fun = c("mean", "median")) {
+    assay <- match.arg(assay)
+    fun <- match.arg(fun)
 
-  assay <- match.arg(assay)
-  fun <- match.arg(fun)
+    counts <- SummarizedExperiment::assay(scCNA, assay)
 
-  counts <- SummarizedExperiment::assay(scCNA, assay)
+    ratios_df <- sweep(counts, 2, apply(counts, 2, fun), "/")
 
-  ratios_df <- sweep(counts, 2, apply(counts, 2, fun), '/')
+    SummarizedExperiment::assay(scCNA, "ratios") <- round(ratios_df, 2)
 
-  SummarizedExperiment::assay(scCNA, "ratios") <- round(ratios_df, 2)
-
-  return(scCNA)
-
+    return(scCNA)
 }

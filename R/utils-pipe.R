@@ -9,5 +9,5 @@
 #' @export
 #' @importFrom magrittr %>%
 #' @usage lhs \%>\% rhs
-#' @examples iris %>% head
+#' @examples iris %>% head()
 NULL
