@@ -28,4 +28,3 @@ src <- src_organism("TxDb.Hsapiens.UCSC.hg38.knownGene")
 hg38_genes <- genes(src, columns = "symbol")
 
 usethis::use_data(hg38_genes)
-

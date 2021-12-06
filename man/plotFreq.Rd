@@ -66,7 +66,6 @@ If the label argument lines are overlapped with different colors.
 }
 \examples{
 set.seed(1000)
-copykit_obj <- copykit_example_filtered()[,sample(40)]
+copykit_obj <- copykit_example_filtered()[, sample(40)]
 plotFreq(copykit_obj)
-
 }

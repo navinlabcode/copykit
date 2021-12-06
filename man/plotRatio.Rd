@@ -32,6 +32,7 @@ plotRatio will return a ratio plot for the selected cell. If
 copykit_obj <- copykit_example_filtered()
 plotRatio(copykit_obj)
 }
+
 }
 \author{
 Darlan Conterno Minussi

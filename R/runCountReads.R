@@ -5,7 +5,8 @@
 #'
 #' @author Darlan Conterno Minussi
 #'
-#' @param dir A path for the directory containing BAM files from short-read sequencing.
+#' @param dir A path for the directory containing BAM files from short-read
+#' sequencing.
 #' @param genome Name of the genome assembly. Default: 'hg38'.
 #' @param resolution The resolution of the VarBin method. Default: '200kb'.
 #' @param remove_Y (default == FALSE) If set to TRUE, removes information from
@@ -15,27 +16,28 @@
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
 #'
-#' @details \code{runCountReads} takes as input duplicate marked BAM files from whole
-#' genome sequencing and runs the variable binning pipeline algorithm. It is important
-#' that BAM files are duplicate marked. Briefly, the genome is split into pre-determined bins.
-#'  The bin size is controlled by the argument \code{bin_size}. By using VarBin,
-#'  for a diploid cell, each bin will receive equal amount of reads, controlling for mappability.
-#' A lowess function is applied to perform GC correction across the bins. The argument
-#' \code{genome} can be set to 'hg38' or 'hg19' to select the scaffolds genome
-#' assembly. The scaffolds are GenomicRanges objects that can be seen with
-#' copykit:::hg38_rg and copykit:::hg19_rg.
+#' @details \code{runCountReads} takes as input duplicate marked BAM files from
+#' whole genome sequencing and runs the variable binning pipeline algorithm.
+#' It is important that BAM files are duplicate marked. Briefly, the genome is
+#' split into pre-determined bins. The bin size is controlled by the argument
+#' \code{resolution}. By using VarBin, for a diploid cell, each bin will
+#' receive equal amount of reads, controlling for mappability.
+#' A lowess function is applied to perform GC correction across the bins.
+#' The argument \code{genome} can be set to 'hg38' or 'hg19' to select the
+#' scaffolds genome assembly. The scaffolds are GenomicRanges objects
 #' Information regarding the alignment of the reads to the bins and from the bam
 #' files are stored in the #' \code{\link[SummarizedExperiment]{colData}}.
-#' \code{min_bincount} Indicates the minimum mean bincount a cell must present to
-#' be kept in the dataset. Cells with low bincounts generally present bin dropouts
-#' due to low read count that will be poorly segmented.
+#' \code{min_bincount} Indicates the minimum mean bincount a cell must present
+#' to be kept in the dataset. Cells with low bincounts generally present bin
+#' dropouts due to low read count that will be poorly segmented.
 #'
 #' @return A matrix of bin counts within the scCNA object that can be accessed
 #' with \code{bincounts}
 #'
-#'#' @references
-#' Navin, N., Kendall, J., Troge, J. et al. Tumour evolution inferred by single-cell
-#' sequencing. Nature 472, 90–94 (2011). https://doi.org/10.1038/nature09807
+#' #' @references
+#' Navin, N., Kendall, J., Troge, J. et al. Tumour evolution inferred by
+#' single-cell sequencing. Nature 472, 90–94 (2011).
+#' https://doi.org/10.1038/nature09807
 #'
 #' Baslan, T., Kendall, J., Ward, B., et al (2015). Optimizing sparse sequencing
 #' of single cells for highly multiplex copy number profiling.
@@ -56,267 +58,285 @@
 #' copykit_obj <- runCountReads("/PATH/TO/BAM/FILES")
 #' }
 #'
-
 runCountReads <- function(dir,
                           genome = c("hg38", "hg19"),
-                          resolution = c("200kb",
-                                         "50kb",
-                                         "100kb",
-                                         "175kb",
-                                         "250kb",
-                                         "500kb",
-                                         "1Mb",
-                                         "2.5Mb"),
+                          resolution = c(
+                              "200kb",
+                              "50kb",
+                              "100kb",
+                              "175kb",
+                              "250kb",
+                              "500kb",
+                              "1Mb",
+                              "2.5Mb"
+                          ),
                           remove_Y = FALSE,
                           min_bincount = 10,
                           BPPARAM = bpparam()) {
+    genome <- match.arg(genome)
+    resolution <- match.arg(resolution)
 
-  genome <- match.arg(genome)
-  resolution <- match.arg(resolution)
+    # bindings for NSE and data
+    Chr <- chr <- strand <- GeneID <- NULL
+    reads_assigned_bins <- reads_duplicates <- reads_total <- NULL
 
-  # bindings for NSE and data
-  Chr <- chr <- strand <- GeneID <- NULL
-  reads_assigned_bins <- reads_duplicates <- reads_total <- NULL
+    files <-
+        list.files(dir,
+            pattern = "*.bam",
+            full.names = TRUE,
+            ignore.case = TRUE
+        )
 
-  files <-
-    list.files(dir,
-               pattern = "*.bam",
-               full.names = TRUE,
-               ignore.case = TRUE)
+    # managing .bai files
+    if (any(sapply(files, function(x) {
+          !stringr::str_detect(x, ".bai")
+      }))) {
+        files <- files[!stringr::str_detect(files, ".bai")]
+    }
 
-  # managing .bai files
-  if (any(sapply(files, function(x)
-    ! stringr::str_detect(x, ".bai")))) {
-    files <- files[!stringr::str_detect(files, ".bai")]
-  }
+    if (any(sapply(files, function(x) {
+          !stringr::str_detect(x, ".bam")
+      }))) {
+        stop("Directory does not contain .bam files.")
+    }
 
-  if (any(sapply(files, function(x)
-    ! stringr::str_detect(x, ".bam")))) {
-    stop("Directory does not contain .bam files.")
-  }
+    if (rlang::is_empty(files)) {
+        stop("No .bam files detected.")
+    }
 
-  if (rlang::is_empty(files)) {
-    stop("No .bam files detected.")
-  }
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # test pair end or single-read
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    pairend_test <-
+        suppressMessages(
+            BiocParallel::bplapply(files[1:5], Rsamtools::testPairedEndBam,
+                BPPARAM = BPPARAM
+            )
+        )
 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # test pair end or single-read
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  pairend_test <-
-    suppressMessages(
-      BiocParallel::bplapply(files[1:5], Rsamtools::testPairedEndBam,
-                             BPPARAM = BPPARAM)
+    if (all(unlist(pairend_test))) {
+        is_paired_end <- TRUE
+    } else {
+        is_paired_end <- FALSE
+    }
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # genomic ranges (varbin scaffolds)
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # Reading hg38 VarBin ranges
+    if (genome == "hg38") {
+        hg38_grangeslist <- hg38_grangeslist
+
+        hg38_rg <- switch(resolution,
+            "50kb" = hg38_grangeslist[["hg38_50kb"]],
+            "100kb" = hg38_grangeslist[["hg38_100kb"]],
+            "175kb" = hg38_grangeslist[["hg38_175kb"]],
+            "200kb" = hg38_grangeslist[["hg38_200kb"]],
+            "250kb" = hg38_grangeslist[["hg38_250kb"]],
+            "500kb" = hg38_grangeslist[["hg38_500kb"]],
+            "1Mb" = hg38_grangeslist[["hg38_1Mb"]],
+            "2.5Mb" = hg38_grangeslist[["hg38_2Mb"]]
+        )
+
+        hg38_rg <- as.data.frame(hg38_rg)
+
+        rg <- hg38_rg %>%
+            dplyr::rename(chr = "seqnames") %>%
+            dplyr::mutate(GeneID = 1:nrow(hg38_rg))
+
+        if (remove_Y == TRUE) {
+            rg <- dplyr::filter(
+                rg,
+                chr != "chrY"
+            )
+        }
+    }
+
+    # reading hg19 varbin ranges
+    if (genome == "hg19") {
+        rg <- hg19_rg %>%
+            dplyr::mutate(GeneID = 1:nrow(hg19_rg))
+
+        if (remove_Y == TRUE) {
+            rg <- dplyr::filter(
+                rg,
+                chr != "chrY"
+            )
+        }
+    }
+
+    files_names <- list.files(dir, pattern = "*.bam", full.names = FALSE)
+    files_names <- stringr::str_remove(files_names, ".bam")
+
+    # managing .bai files on filenames
+    if (any(sapply(files_names, function(x) {
+          !stringr::str_detect(x, ".bai")
+      }))) {
+        files_names <-
+            files_names[!stringr::str_detect(files_names, ".bai")]
+    }
+
+    message(
+        "Counting reads for genome ",
+        genome,
+        " and resolution: ",
+        resolution
     )
 
-  if (all(unlist(pairend_test))) {
-    is_paired_end <- TRUE
-  } else is_paired_end <- FALSE
+    varbin_counts_list_all_fields <-
+        suppressMessages(
+            BiocParallel::bplapply(
+                files,
+                Rsubread::featureCounts,
+                ignoreDup = TRUE,
+                countMultiMappingReads = FALSE,
+                annot.ext = rg,
+                useMetaFeatures = FALSE,
+                verbose = FALSE,
+                isPairedEnd = is_paired_end,
+                BPPARAM = BPPARAM
+            )
+        )
 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # genomic ranges (varbin scaffolds)
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    names(varbin_counts_list_all_fields) <- stringr::str_remove(
+        files_names,
+        stringr::fixed(".bam",
+            ignore_case = TRUE
+        )
+    )
 
-  # Reading hg38 VarBin ranges
-  if (genome == "hg38") {
+    varbin_counts_list <- lapply(
+        varbin_counts_list_all_fields,
+        "[[",
+        1
+    )
 
-    hg38_grangeslist <- hg38_grangeslist
+    varbin_counts_list <- lapply(
+        varbin_counts_list,
+        as.vector
+    )
 
-    hg38_rg <- switch(resolution,
-                      "50kb" = hg38_grangeslist[["hg38_50kb"]],
-                      "100kb" = hg38_grangeslist[["hg38_100kb"]],
-                      "175kb" = hg38_grangeslist[["hg38_175kb"]],
-                      "200kb" = hg38_grangeslist[["hg38_200kb"]],
-                      "250kb" = hg38_grangeslist[["hg38_250kb"]],
-                      "500kb" = hg38_grangeslist[["hg38_500kb"]],
-                      "1Mb" = hg38_grangeslist[["hg38_1Mb"]],
-                      "2.5Mb" = hg38_grangeslist[["hg38_2Mb"]])
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # filtering for minimal mean bin count
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # obtaining the index of the ones that FAIL to meet the min_bincount arg
+    min_bc <- which(vapply(varbin_counts_list, mean, numeric(1)) < min_bincount)
+    # subsetting counts list and main counts list
 
-    hg38_rg <- as.data.frame(hg38_rg)
-
-    rg <- hg38_rg %>%
-      dplyr::rename(chr = "seqnames") %>%
-      dplyr::mutate(GeneID = 1:nrow(hg38_rg))
-
-    if (remove_Y == TRUE) {
-      rg <- dplyr::filter(rg,
-                          chr != "chrY")
-
+    if (length(min_bc) > 0) {
+        varbin_counts_list <- varbin_counts_list[-min_bc]
+        varbin_counts_list_all_fields <- varbin_counts_list_all_fields[-min_bc]
+        message(
+            length(min_bc), " bam files had less than ", min_bincount,
+            " mean bincounts and were removed."
+        )
     }
 
-  }
 
-  # reading hg19 varbin ranges
-  if (genome == "hg19") {
-    rg <- hg19_rg %>%
-      dplyr::mutate(GeneID = 1:nrow(hg19_rg))
+    # LOWESS GC normalization
 
-    if (remove_Y == TRUE) {
-      rg <- dplyr::filter(rg,
-                          chr != "chrY")
+    message("Performing GC correction.")
 
-    }
-
-  }
-
-  files_names <- list.files(dir, pattern = "*.bam", full.names = FALSE)
-  files_names <- stringr::str_remove(files_names, ".bam")
-
-  # managing .bai files on filenames
-  if (any(sapply(files_names, function(x)
-    ! stringr::str_detect(x, ".bai")))) {
-    files_names <-
-      files_names[!stringr::str_detect(files_names, ".bai")]
-  }
-
-  message(paste(
-    "Counting reads for genome",
-    genome,
-    "and resolution:",
-    resolution
-  ))
-
-  varbin_counts_list_all_fields <-
-    suppressMessages(
-      BiocParallel::bplapply(
-        files,
-        Rsubread::featureCounts,
-        ignoreDup = TRUE,
-        countMultiMappingReads = FALSE,
-        annot.ext = rg,
-        useMetaFeatures = FALSE,
-        verbose = FALSE,
-        isPairedEnd = is_paired_end,
+    varbin_counts_list_gccor <-
+        BiocParallel::bplapply(varbin_counts_list, function(x) {
+            gc_cor <- lowess(rg$gc_content, log(x + 1e-3), f = 0.05)
+            gc_cor_z <- approx(gc_cor$x, gc_cor$y, rg$gc_content)
+            exp(log(x) - gc_cor_z$y) * median(x)
+        },
         BPPARAM = BPPARAM
-      )
+        )
+
+    varbin_counts_df <- round(dplyr::bind_cols(varbin_counts_list_gccor), 2)
+
+    # filtering low read counts where the sum of bins does not reach min_reads
+    varbin_counts_df <-
+        varbin_counts_df[which(colSums(varbin_counts_df) != 0)]
+
+    rg <- rg %>%
+        dplyr::select(-strand, -GeneID)
+
+    rg_gr <- GenomicRanges::makeGRangesFromDataFrame(rg,
+        ignore.strand = TRUE,
+        keep.extra.columns = TRUE
     )
 
-  names(varbin_counts_list_all_fields) <- stringr::str_remove(files_names,
-                                                   stringr::fixed(".bam",
-                                                                  ignore_case = TRUE))
 
-  varbin_counts_list <- lapply(varbin_counts_list_all_fields,
-                               '[[',
-                               1)
-
-  varbin_counts_list <- lapply(varbin_counts_list,
-                               as.vector)
-
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # filtering for minimal mean bin count
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # obtaining the index of the ones that FAIL to meet the min_bincount arg
-  min_bc <- which(vapply(varbin_counts_list, mean, numeric(1)) < min_bincount)
-  #subsetting counts list and main counts list
-
-  if (length(min_bc) > 0) {
-
-    varbin_counts_list <- varbin_counts_list[-min_bc]
-    varbin_counts_list_all_fields <- varbin_counts_list_all_fields[-min_bc]
-    message(paste(length(min_bc), "bam files had less than", min_bincount,
-                  "mean bincounts and were removed."))
-
-  }
-
-
-  #LOWESS GC normalization
-
-  message("Performing GC correction.")
-
-  varbin_counts_list_gccor <-
-    BiocParallel::bplapply(varbin_counts_list, function(x) {
-      gc_cor <- lowess(rg$gc_content, log(x + 1e-3), f = 0.05)
-      gc_cor_z <- approx(gc_cor$x, gc_cor$y, rg$gc_content)
-      exp(log(x) - gc_cor_z$y) * median(x)
-    },
-    BPPARAM = BPPARAM)
-
-  varbin_counts_df <- round(dplyr::bind_cols(varbin_counts_list_gccor),2)
-
-  # filtering low read counts where the sum of bins does not reach min_reads
-  varbin_counts_df <-
-    varbin_counts_df[which(colSums(varbin_counts_df) != 0)]
-
-  rg <- rg %>%
-    dplyr::select(-strand,-GeneID)
-
-  rg_gr <- GenomicRanges::makeGRangesFromDataFrame(rg,
-                                                   ignore.strand = TRUE,
-                                                   keep.extra.columns = TRUE)
-
-
-  cna_obj <-  CopyKit(assays = list(bincounts = varbin_counts_df),
-    rowRanges = rg_gr
-  )
-
-  # Adding genome and resolution information to metadata
-  S4Vectors::metadata(cna_obj)$genome <- genome
-  S4Vectors::metadata(cna_obj)$resolution <- resolution
-
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sun Feb 14 20:55:01 2021
-  # ADDING READS METRICS TO METADATA
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sun Feb 14 20:55:24 2021
-
-  varbin_reads_list <- lapply(varbin_counts_list_all_fields,
-                              '[[',
-                              4)
-
-  # saving info and removing columns from list elements
-  metadata_info_names <- varbin_reads_list[[1]][c(1, 2, 8, 9, 12, 14), 1]
-  metadata_info_names <-
-    c(
-      "reads_assigned_bins",
-      "reads_unmapped",
-      "reads_duplicates",
-      "reads_multimapped",
-      "reads_unassigned",
-      "reads_ambiguous"
+    cna_obj <- CopyKit(
+        assays = list(bincounts = varbin_counts_df),
+        rowRanges = rg_gr
     )
 
-  varbin_reads_info <-
-    lapply(seq_along(varbin_reads_list), function(x)  {
-      # RSubread seems to change underlines to dot on some cases
-      # Have to make more complicated lapply to extract the name of the list
-      # and guarantee that the cell is properly named
-      name <- names(varbin_reads_list)[[x]]
-      df <- varbin_reads_list[[x]][c(1, 2, 8, 9, 12, 14),-1, drop = FALSE]
-      names(df) <- name
-      df
-    })
+    # Adding genome and resolution information to metadata
+    S4Vectors::metadata(cna_obj)$genome <- genome
+    S4Vectors::metadata(cna_obj)$resolution <- resolution
 
-  names(varbin_reads_list) <- names(varbin_counts_list_all_fields)
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sun Feb 14 20:55:01 2021
+    # ADDING READS METRICS TO METADATA
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sun Feb 14 20:55:24 2021
 
-  bam_metrics <- dplyr::bind_cols(varbin_reads_info)
-  rownames(bam_metrics) <- metadata_info_names
-
-  bam_metrics <- as.data.frame(t(bam_metrics))
-
-  # adding total
-  reads_tot <- rowSums(bam_metrics)
-
-  bam_metrics$sample <- rownames(bam_metrics)
-  bam_metrics <-
-    dplyr::relocate(bam_metrics, sample, .before = reads_assigned_bins)
-
-  bam_metrics <- bam_metrics %>%
-    dplyr::mutate(
-      reads_total = reads_tot,
-      percentage_duplicates = round(reads_duplicates / reads_total, 3)
+    varbin_reads_list <- lapply(
+        varbin_counts_list_all_fields,
+        "[[",
+        4
     )
 
-  if (sum(bam_metrics$reads_duplicates) == 0) {
-    warning(
-      "runCountReads did not detect any duplicate reads.
+    # saving info and removing columns from list elements
+    metadata_info_names <- varbin_reads_list[[1]][c(1, 2, 8, 9, 12, 14), 1]
+    metadata_info_names <-
+        c(
+            "reads_assigned_bins",
+            "reads_unmapped",
+            "reads_duplicates",
+            "reads_multimapped",
+            "reads_unassigned",
+            "reads_ambiguous"
+        )
+
+    varbin_reads_info <-
+        lapply(seq_along(varbin_reads_list), function(x) {
+            # RSubread seems to change underlines to dot on some cases
+            # Have to make more complicated lapply to extract the name of the list
+            # and guarantee that the cell is properly named
+            name <- names(varbin_reads_list)[[x]]
+            df <- varbin_reads_list[[x]][c(1, 2, 8, 9, 12, 14), -1, drop = FALSE]
+            names(df) <- name
+            df
+        })
+
+    names(varbin_reads_list) <- names(varbin_counts_list_all_fields)
+
+    bam_metrics <- dplyr::bind_cols(varbin_reads_info)
+    rownames(bam_metrics) <- metadata_info_names
+
+    bam_metrics <- as.data.frame(t(bam_metrics))
+
+    # adding total
+    reads_tot <- rowSums(bam_metrics)
+
+    bam_metrics$sample <- rownames(bam_metrics)
+    bam_metrics <-
+        dplyr::relocate(bam_metrics, sample, .before = reads_assigned_bins)
+
+    bam_metrics <- bam_metrics %>%
+        dplyr::mutate(
+            reads_total = reads_tot,
+            percentage_duplicates = round(reads_duplicates / reads_total, 3)
+        )
+
+    if (sum(bam_metrics$reads_duplicates) == 0) {
+        warning(
+            "runCountReads did not detect any duplicate reads.
       Make sure your input bam files have duplicates marked.",
-      call. = FALSE,
-      noBreaks. = TRUE
-    )
-  }
+            call. = FALSE,
+            noBreaks. = TRUE
+        )
+    }
 
-  # adding to metadata
-  SummarizedExperiment::colData(cna_obj) <-
-    S4Vectors::DataFrame(bam_metrics)
-  colnames(cna_obj) <- names(varbin_counts_df)
+    # adding to metadata
+    SummarizedExperiment::colData(cna_obj) <-
+        S4Vectors::DataFrame(bam_metrics)
+    colnames(cna_obj) <- names(varbin_counts_df)
 
-  return(cna_obj)
-
+    return(cna_obj)
 }

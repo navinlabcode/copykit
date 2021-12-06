@@ -73,121 +73,123 @@
 #' @examples
 #' copykit_obj <- copykit_example_filtered()
 #' copykit_obj <- findClusters(copykit_obj)
-
 findClusters <- function(scCNA,
-                         embedding = "umap",
-                         method = c("hdbscan", "leiden", "louvain"),
-                         k_superclones = NULL,
-                         k_subclones = NULL,
-                         seed = 17) {
-  method <- match.arg(method)
+    embedding = "umap",
+    method = c("hdbscan", "leiden", "louvain"),
+    k_superclones = NULL,
+    k_subclones = NULL,
+    seed = 17) {
+    method <- match.arg(method)
 
-  # obtaining data from reducedDim slot
-  if (!is.null(SingleCellExperiment::reducedDim(scCNA, embedding))) {
-    umap_df <-
-      SingleCellExperiment::reducedDim(scCNA, embedding) %>%
-      as.data.frame()
-
-  } else
-    stop("Reduced dimensions slot is NULL. Use runUmap() to create it.")
-
-  # checks
-  if (is.null(k_subclones) &&
-      is.null(S4Vectors::metadata(scCNA)$suggestedK)) {
-    stop("k_subclones must have a numeric value.")
-  }
-
-  # if suggestedK is not null, use it as default
-  if (is.null(k_subclones) &&
-      !is.null(S4Vectors::metadata(scCNA)$suggestedK)) {
-    message(paste(
-      "Using suggested k_subclones =",
-      S4Vectors::metadata(scCNA)$suggestedK
-    ))
-
-    k_subclones <- S4Vectors::metadata(scCNA)$suggestedK
-  }
-
-  if (!is.numeric(k_subclones)) {
-    stop("k_subclones must be a numeric values.")
-  }
-
-  # superclones clustering
-  if (!is.null(k_superclones)) {
-    # type check
-    if (!is.numeric(k_superclones)) {
-      stop("k_superclones must have a numeric value.")
+    # obtaining data from reducedDim slot
+    if (!is.null(SingleCellExperiment::reducedDim(scCNA, embedding))) {
+        umap_df <-
+            SingleCellExperiment::reducedDim(scCNA, embedding) %>%
+            as.data.frame()
+    } else {
+        stop("Reduced dimensions slot is NULL. Use runUmap() to create it.")
     }
 
-    g_major <-
-      scran::buildSNNGraph(umap_df, k = k_superclones, transposed = TRUE)
-    superclones <-
-      as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
-    #storing info
-    SummarizedExperiment::colData(scCNA)$superclones <- superclones
-
-  }
-
-  message(paste("Finding clusters, using method:", method))
-
-  # subclones using leiden
-  if (method == "leiden" || method == "louvain") {
-    g_minor  <-
-      scran::buildSNNGraph(umap_df, k = k_subclones, transposed = TRUE)
-
-    # saving g_minor graph
-    copykit::graph(scCNA) <- g_minor
-
-    # subclones
-    if (method == 'leiden') {
-      leid_obj <- igraph::cluster_leiden(g_minor,
-                                         resolution_parameter = 0.2,
-                                         n_iterations = 100)
+    # checks
+    if (is.null(k_subclones) &&
+        is.null(S4Vectors::metadata(scCNA)$suggestedK)) {
+        stop("k_subclones must have a numeric value.")
     }
 
-    if (method == 'louvain') {
-      leid_obj <- igraph::cluster_leiden(g_minor)
+    # if suggestedK is not null, use it as default
+    if (is.null(k_subclones) &&
+        !is.null(S4Vectors::metadata(scCNA)$suggestedK)) {
+        message(
+            "Using suggested k_subclones = ",
+            S4Vectors::metadata(scCNA)$suggestedK
+        )
+
+        k_subclones <- S4Vectors::metadata(scCNA)$suggestedK
     }
 
-    leid_obj_com <- igraph::membership(leid_obj)
+    if (!is.numeric(k_subclones)) {
+        stop("k_subclones must be a numeric values.")
+    }
 
-    subclones <- as.factor(paste0('c', leid_obj$membership))
+    # superclones clustering
+    if (!is.null(k_superclones)) {
+        # type check
+        if (!is.numeric(k_superclones)) {
+            stop("k_superclones must have a numeric value.")
+        }
 
-    n_clones <- length(unique(subclones))
-    message(paste("Found", n_clones, "subclones."))
+        g_major <-
+            scran::buildSNNGraph(umap_df, k = k_superclones, transposed = TRUE)
+        superclones <-
+            as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
+        # storing info
+        SummarizedExperiment::colData(scCNA)$superclones <- superclones
+    }
 
-  }
+    message("Finding clusters, using method: ", method)
 
-  # subclones using hdbscan
-  if (method == "hdbscan") {
-    set.seed(seed)
-    hdb <- dbscan::hdbscan(umap_df,
-                           minPts = k_subclones)
-    hdb_clusters <- as.character(hdb$cluster)
+    # subclones using leiden
+    if (method == "leiden" || method == "louvain") {
+        g_minor <-
+            scran::buildSNNGraph(umap_df, k = k_subclones, transposed = TRUE)
 
-    hdb_df <- data.frame(cell = rownames(umap_df),
-                         hdb = hdb_clusters)
+        # saving g_minor graph
+        copykit::graph(scCNA) <- g_minor
 
-    subclones <- as.factor(paste0('c', hdb_df$hdb))
+        # subclones
+        if (method == "leiden") {
+            leid_obj <- igraph::cluster_leiden(g_minor,
+                resolution_parameter = 0.2,
+                n_iterations = 100
+            )
+        }
 
-    n_clones <- length(unique(subclones))
-    n_outliers <- length(subclones[subclones == 'c0'])
+        if (method == "louvain") {
+            leid_obj <- igraph::cluster_leiden(g_minor)
+        }
 
-    if (n_outliers > 0) {
-      message(paste("Found", n_outliers, "outliers cells (group 'c0')"))
-      message(paste("Found", n_clones - 1, "subclones."))
-    } else
-      message(paste("Found", n_clones, "subclones."))
+        leid_obj_com <- igraph::membership(leid_obj)
 
-  }
+        subclones <- as.factor(paste0("c", leid_obj$membership))
 
-  # storing subclones info
-  SummarizedExperiment::colData(scCNA)$subclones <-
-    forcats::fct_relevel(droplevels(subclones),
-                         gtools::mixedsort(unique(as.character(subclones))))
+        n_clones <- length(unique(subclones))
+        message("Found ", n_clones, " subclones.")
+    }
 
-  message("Done.")
+    # subclones using hdbscan
+    if (method == "hdbscan") {
+        set.seed(seed)
+        hdb <- dbscan::hdbscan(umap_df,
+            minPts = k_subclones
+        )
+        hdb_clusters <- as.character(hdb$cluster)
 
-  return(scCNA)
+        hdb_df <- data.frame(
+            cell = rownames(umap_df),
+            hdb = hdb_clusters
+        )
 
+        subclones <- as.factor(paste0("c", hdb_df$hdb))
+
+        n_clones <- length(unique(subclones))
+        n_outliers <- length(subclones[subclones == "c0"])
+
+        if (n_outliers > 0) {
+            message("Found ", n_outliers, "outliers cells (group 'c0')")
+            message("Found ", n_clones - 1, " subclones.")
+        } else {
+            message("Found ", n_clones, " subclones.")
+        }
+    }
+
+    # storing subclones info
+    SummarizedExperiment::colData(scCNA)$subclones <-
+        forcats::fct_relevel(
+            droplevels(subclones),
+            gtools::mixedsort(unique(as.character(subclones)))
+        )
+
+    message("Done.")
+
+    return(scCNA)
 }

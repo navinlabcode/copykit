@@ -46,94 +46,100 @@
 #' copykit_obj <- copykit_example_filtered()
 #' copykit_obj <- findSuggestedK(copykit_obj)
 #' plotSuggestedK(copykit_obj)
-#'
 plotSuggestedK <- function(scCNA,
-                           geom = c('boxplot', 'tile', 'dotplot', 'scatterplot')) {
+                           geom = c("boxplot", "tile", "dotplot", "scatterplot")) {
+    geom <- match.arg(geom)
 
-  geom <- match.arg(geom)
+    # bindings for NSE objects
+    k <- subclones <- bootmean <- chosen <- mean_jac <- n_cells <- NULL
 
-  # bindings for NSE objects
-  k <- subclones <- bootmean <- chosen <- mean_jac <- n_cells <- NULL
+    df <- S4Vectors::metadata(scCNA)$suggestedK_df
+    sug_k <- S4Vectors::metadata(scCNA)$suggestedK
 
-  df <- S4Vectors::metadata(scCNA)$suggestedK_df
-  sug_k <- S4Vectors::metadata(scCNA)$suggestedK
+    df <- dplyr::mutate(df, k = as.character(k))
 
-  df <- dplyr::mutate(df, k = as.character(k))
+    # df expanded for geom tile
+    df_exp <- tidyr::complete(
+        df,
+        k,
+        subclones
+    )
 
-  # df expanded for geom tile
-  df_exp <- tidyr::complete(df,
-                            k,
-                            subclones)
+    # common layers
+    common_layers <- list(
+        scale_y_discrete(limits = gtools::mixedsort(unique(df$subclones))),
+        scale_x_discrete(limits = gtools::mixedsort(unique(df$k))),
+        theme_classic(), labs(fill = "jaccard\nsimilarity")
+    )
 
-  # common layers
-  common_layers <- list(scale_y_discrete(limits = gtools::mixedsort(unique(df$subclones))),
-                        scale_x_discrete(limits = gtools::mixedsort(unique(df$k))),
-                        theme_classic(), labs(fill = 'jaccard\nsimilarity'))
+    if (geom == "dotplot") {
+        p <- ggplot(df, aes(k, subclones)) +
+            geom_point(aes(
+                size = bootmean,
+                fill = bootmean
+            ),
+            shape = 21
+            ) +
+            scale_fill_viridis_c(option = 2) +
+            common_layers
+    }
 
-  if( geom == 'dotplot') {
+    if (geom == "tile") {
+        p <- ggplot(df_exp, aes(k, subclones)) +
+            geom_tile(aes(fill = bootmean), color = "black") +
+            scale_fill_viridis_c(na.value = "grey", option = 2) +
+            common_layers +
+            theme(panel.border = element_rect(fill = NA, size = 3))
+    }
 
-    p <- ggplot(df, aes(k, subclones)) +
-      geom_point(aes(size = bootmean,
-                     fill = bootmean),
-                 shape = 21) +
-      scale_fill_viridis_c(option = 2) +
-      common_layers
+    if (geom == "boxplot") {
+        mean_per_k <- df %>%
+            dplyr::group_by(k) %>%
+            dplyr::summarise(mean_jac = mean(bootmean))
 
-  }
+        # adding color for chosen k
+        df <- dplyr::mutate(df, chosen = ifelse(df$k == as.character(sug_k),
+            TRUE,
+            FALSE
+        ))
 
-  if (geom == 'tile') {
+        p <- ggplot() +
+            geom_boxplot(
+                data = df, aes(k, bootmean, fill = chosen),
+                alpha = 1
+            ) +
+            geom_point(
+                data = mean_per_k, aes(k, mean_jac),
+                fill = "red",
+                shape = 21,
+                size = 3
+            ) +
+            scale_fill_manual(values = c("TRUE" = "khaki", "FALSE" = "grey90")) +
+            scale_x_discrete(limits = gtools::mixedsort(unique(df$k))) +
+            theme_classic() +
+            theme(
+                axis.line.y = element_blank(),
+                axis.line.x = element_blank(),
+                legend.position = "none"
+            ) +
+            labs(y = "jaccard similarity")
+    }
 
-    p <- ggplot(df_exp, aes(k, subclones)) +
-      geom_tile(aes(fill = bootmean), color = 'black') +
-      scale_fill_viridis_c(na.value = 'grey', option = 2) +
-      common_layers +
-      theme(panel.border = element_rect(fill = NA, size = 3))
+    if (geom == "scatterplot") {
+        p <- ggplot(df, aes(x = n_cells, y = bootmean)) +
+            geom_point(aes(fill = subclones), shape = 21) +
+            stat_smooth(method = "lm", se = FALSE) +
+            facet_wrap(vars(as.numeric(k)), scales = "free_x") +
+            scale_fill_manual(
+                values = subclones_pal(),
+                limits = gtools::mixedsort(unique(df$subclones))
+            ) +
+            theme_classic() +
+            labs(
+                x = "number of cells",
+                y = "jaccard similarity"
+            )
+    }
 
-  }
-
-  if (geom == 'boxplot') {
-
-    mean_per_k <- df %>%
-      dplyr::group_by(k) %>%
-      dplyr::summarise(mean_jac = mean(bootmean))
-
-    # adding color for chosen k
-    df <- dplyr::mutate(df, chosen = ifelse(df$k == as.character(sug_k),
-                                        TRUE,
-                                        FALSE))
-
-    p <- ggplot() +
-      geom_boxplot(data = df, aes(k, bootmean, fill = chosen),
-                   alpha = 1) +
-      geom_point(data = mean_per_k, aes(k, mean_jac),
-                 fill = 'red',
-                 shape = 21,
-                 size = 3) +
-      scale_fill_manual(values = c("TRUE" = 'khaki', "FALSE" = "grey90")) +
-      scale_x_discrete(limits = gtools::mixedsort(unique(df$k))) +
-      theme_classic() +
-      theme(axis.line.y = element_blank(),
-            axis.line.x = element_blank(),
-            legend.position = 'none') +
-      labs(y = 'jaccard similarity')
-
-  }
-
-  if (geom == 'scatterplot') {
-
-    p <- ggplot(df, aes(x = n_cells, y = bootmean)) +
-      geom_point(aes(fill = subclones), shape = 21) +
-      stat_smooth(method = 'lm', se = FALSE) +
-      facet_wrap(vars(as.numeric(k)), scales = 'free_x') +
-      scale_fill_manual(values = subclones_pal(),
-                        limits = gtools::mixedsort(unique(df$subclones))) +
-      theme_classic() +
-      labs(x = "number of cells",
-           y = 'jaccard similarity')
-
-
-  }
-
-  print(p)
-
+    print(p)
 }

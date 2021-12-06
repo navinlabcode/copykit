@@ -29,9 +29,10 @@ Used to find the subclones}
 \item{seed}{A numeric passed on to pseudo-random dependent functions.}
 }
 \value{
-Cluster information is added to \code{\link[SummarizedExperiment]{colData}}
-in columns superclones or subclones. Superclones are prefixed by 's' whereas
- subclones are prefixed by 'c'
+Cluster information is added to
+\code{\link[SummarizedExperiment]{colData}} in columns superclones or
+subclones. Superclones are prefixed by 's' whereas subclones are prefixed
+by 'c'.
 }
 \description{
 Search for clusters in the scCNA data.
@@ -74,8 +75,8 @@ Laks, E., McPherson, A., Zahn, H., et al. (2019). Clonal
 Leland McInnes and John Healy and James Melville. UMAP: Uniform Manifold
 Approximation and Projection for Dimension Reduction. arXiv:1802.03426
 
-Lun ATL, McCarthy DJ, Marioni JC (2016). “A step-by-step workflow for low-level
-analysis of single-cell RNA-seq data with Bioconductor.”
+Lun ATL, McCarthy DJ, Marioni JC (2016). “A step-by-step workflow for
+low-level analysis of single-cell RNA-seq data with Bioconductor.”
 F1000Res., 5, 2122. doi: 10.12688/f1000research.9501.2.
 }
 \seealso{

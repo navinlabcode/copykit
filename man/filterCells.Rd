@@ -13,7 +13,7 @@ filterCells(
 )
 }
 \arguments{
-\item{scCNA}{scCNA object.}
+\item{scCNA}{CopyKit object.}
 
 \item{assay}{String with the name of the assay to pull data.}
 
@@ -33,20 +33,20 @@ criteria receive the label "kept", whereas cells that do not pass the
 filtering criteria receive the label "removed".
 }
 \description{
-Uses a nearest neighbor approach to find noise copy number profiles within the
-segment means.
+Uses a nearest neighbor approach to find noise copy number profiles within
+the segment means.
 }
 \details{
-\code{filterCells} Calculates a correlation matrix across
-the segment means among all cells and takes the mean of its k-nearest
-neighbors correlation. A threshold (argument resolution) is used for
-the minimum acceptable mean correlation among the cell and its neighbors.
-Values below the set resolution will be classified as noise cells.
+\code{filterCells} To detect low-quality samples, CopyKit calculates
+ the Pearson correlation matrix of all samples from the segment ratio means.
+ Next, we calculate a sample-wise mean of the correlation between a sample
+ and its k-nearest-neighbors. Samples in which the correlation value is lower
+ than the defined threshold are classified as low-quality cells.
 }
 \examples{
 copykit_obj <- copykit_example()
 copykit_obj <- findNormalCells(copykit_obj)
-copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+copykit_obj <- copykit_obj[, colData(copykit_obj)$is_normal == "FALSE"]
 copykit_obj <- filterCells(copykit_obj)
 }
 \author{

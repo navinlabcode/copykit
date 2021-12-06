@@ -105,54 +105,56 @@
 #' copykit_obj <- runVarbin("~/path/to/bam/files/", remove_Y = TRUE)
 #' }
 #'
-
 runVarbin <- function(dir,
                       genome = c("hg38", "hg19"),
-                      resolution = c("200kb",
-                                     "50kb",
-                                     "100kb",
-                                     "175kb",
-                                     "250kb",
-                                     "500kb",
-                                     "1Mb",
-                                     "2.5Mb"),
+                      resolution = c(
+                          "200kb",
+                          "50kb",
+                          "100kb",
+                          "175kb",
+                          "250kb",
+                          "500kb",
+                          "1Mb",
+                          "2.5Mb"
+                      ),
                       remove_Y = FALSE,
-                      method = c('CBS', 'multipcf'),
+                      method = c("CBS", "multipcf"),
                       vst = c("ft", "log"),
                       seed = 17,
                       min_bincount = 10,
                       alpha = 1e-9,
                       gamma = 40,
-                      name = 'segment_ratios',
+                      name = "segment_ratios",
                       BPPARAM = bpparam()) {
+    genome <- match.arg(genome)
+    vst <- match.arg(vst)
+    method <- match.arg(method)
+    resolution <- match.arg(resolution)
 
-  genome <- match.arg(genome)
-  vst <- match.arg(vst)
-  method <- match.arg(method)
-  resolution <- match.arg(resolution)
+    copykit_object <- runCountReads(dir,
+        genome = genome,
+        resolution = resolution,
+        remove_Y = remove_Y,
+        min_bincount = min_bincount,
+        BPPARAM = BPPARAM
+    )
 
-  copykit_object <- runCountReads(dir,
-                                  genome = genome,
-                                  resolution = resolution,
-                                  remove_Y = remove_Y,
-                                  min_bincount = min_bincount,
-                                  BPPARAM = BPPARAM)
+    copykit_object <- runVst(copykit_object,
+        transformation = vst
+    )
 
-  copykit_object <- runVst(copykit_object,
-                           transformation = vst)
+    copykit_object <- runSegmentation(copykit_object,
+        seed = seed,
+        name = name,
+        alpha = alpha,
+        gamma = gamma,
+        method = method,
+        BPPARAM = BPPARAM
+    )
 
-  copykit_object <- runSegmentation(copykit_object,
-                                    seed = seed,
-                                    name = name,
-                                    alpha = alpha,
-                                    gamma = gamma,
-                                    method = method,
-                                    BPPARAM = BPPARAM)
+    copykit_object <- logNorm(copykit_object,
+        transform = "log"
+    )
 
-  copykit_object <- logNorm(copykit_object,
-                            transform = 'log')
-
-  return(copykit_object)
-
+    return(copykit_object)
 }
-

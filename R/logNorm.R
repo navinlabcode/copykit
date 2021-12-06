@@ -20,32 +20,29 @@
 #' @examples
 #' copykit_obj <- copykit_example()
 #' copykit_obj <- logNorm(copykit_obj)
-#'
 logNorm <- function(scCNA,
                     transform = c("log", "log2", "log10", "log1p"),
-                    assay = 'segment_ratios',
-                    name = 'logr') {
+                    assay = "segment_ratios",
+                    name = "logr") {
+    transform <- match.arg(transform)
 
-  transform <- match.arg(transform)
+    # obtaining data
+    seg_ratios <- SummarizedExperiment::assay(scCNA, assay)
 
-  # obtaining data
-  seg_ratios <- SummarizedExperiment::assay(scCNA, assay)
+    # saving logr
+    seg_ratios[seg_ratios == 0] <- 1e-3
 
-  #saving logr
-  seg_ratios[seg_ratios == 0] <- 1e-3
+    if (transform == "log") {
+        seg_ratios_logr <- log(seg_ratios)
+    } else if (transform == "log2") {
+        seg_ratios_logr <- log2(seg_ratios)
+    } else if (transform == "log1p") {
+        seg_ratios_logr <- log1p(seg_ratios)
+    } else if (transform == "log10") {
+        seg_ratios_logr <- log10(seg_ratios)
+    }
 
-  if (transform == 'log') {
-    seg_ratios_logr <- log(seg_ratios)
-  } else if (transform == 'log2') {
-    seg_ratios_logr <- log2(seg_ratios)
-  } else if (transform == 'log1p') {
-    seg_ratios_logr <- log1p(seg_ratios)
-  } else if (transform == 'log10') {
-    seg_ratios_logr <- log10(seg_ratios)
-  }
+    SummarizedExperiment::assay(scCNA, name) <- round(seg_ratios_logr, 2)
 
-  SummarizedExperiment::assay(scCNA, name) <- round(seg_ratios_logr, 2)
-
-  return(scCNA)
-
+    return(scCNA)
 }

@@ -14,7 +14,7 @@
 #' @param resolution A numeric scalar that set's how strict the
 #' correlation cut off will be.
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
-#'should be parallelized.
+#' should be parallelized.
 #'
 #' @details \code{filterCells} To detect low-quality samples, CopyKit calculates
 #'  the Pearson correlation matrix of all samples from the segment ratio means.
@@ -34,65 +34,68 @@
 #' @examples
 #' copykit_obj <- copykit_example()
 #' copykit_obj <- findNormalCells(copykit_obj)
-#' copykit_obj <- copykit_obj[,colData(copykit_obj)$is_normal == "FALSE"]
+#' copykit_obj <- copykit_obj[, colData(copykit_obj)$is_normal == "FALSE"]
 #' copykit_obj <- filterCells(copykit_obj)
-
 filterCells <- function(scCNA,
-                        assay = 'segment_ratios',
-                        k = 5,
-                        resolution = 0.9,
-                        BPPARAM = BiocParallel::bpparam()) {
+    assay = "segment_ratios",
+    k = 5,
+    resolution = 0.9,
+    BPPARAM = BiocParallel::bpparam()) {
+    if (!is.numeric(resolution)) {
+        stop("Resolution needs to be a number between 0 and 1")
+    }
 
-  if (!is.numeric(resolution)) {
-    stop("Resolution needs to be a number between 0 and 1")
-  }
+    if (resolution < 0 || resolution > 1) {
+        stop("Resolution needs to be a number between 0 and 1")
+    }
 
-  if (resolution < 0 || resolution > 1) {
-    stop("Resolution needs to be a number between 0 and 1")
-  }
+    seg <- SummarizedExperiment::assay(scCNA, assay)
 
-  seg <- SummarizedExperiment::assay(scCNA, assay)
+    message("Calculating correlation matrix.")
 
-  message("Calculating correlation matrix.")
+    # correction to avoid correlations calculations with standard deviation zero
+    zero_sd_idx <- which(apply(seg, 2, sd) == 0)
 
-  # correction to avoid correlations calculations with standard deviation zero
-  zero_sd_idx <- which(apply(seg, 2, sd) == 0)
+    if (length(zero_sd_idx) >= 1) {
+        seg[1, zero_sd_idx] <- seg[1, zero_sd_idx] + 1e-3
+    }
 
-  if (length(zero_sd_idx) >= 1) {
-    seg[1, zero_sd_idx] <- seg[1, zero_sd_idx] + 1e-3
-  }
+    # calculating correlations
 
-  # calculating correlations
+    dst <- parCor(seg, BPPARAM = BPPARAM)
 
-  dst <- parCor(seg, BPPARAM=BPPARAM)
+    dst_knn_df <- apply(as.matrix(dst), 1, function(x) {
+        mean(sort(x, decreasing = TRUE)[2:(k + 1)])
+    }) %>%
+        tibble::enframe(
+            name = "sample",
+            value = "cor"
+        )
 
-  dst_knn_df <- apply(as.matrix(dst), 1, function(x) {
-    mean(sort(x, decreasing = TRUE)[2:(k + 1)])
-  }) %>%
-    tibble::enframe(name = "sample",
-                    value = "cor")
+    dst_knn_df <- dst_knn_df %>%
+        dplyr::mutate(filtered = dplyr::case_when(
+            cor >= resolution ~ "kept",
+            cor < resolution ~ "removed"
+        ))
 
-  dst_knn_df <- dst_knn_df %>%
-    dplyr::mutate(filtered = dplyr::case_when(cor >= resolution ~ "kept",
-                                              cor < resolution ~ "removed"))
+    n_filtered <- table(dst_knn_df$filtered)["removed"]
+    message("Marked ", n_filtered, " cells to be removed.")
 
-  n_filtered <- table(dst_knn_df$filtered)['removed']
-  message(paste("Marked", n_filtered, "cells to be removed."))
+    message(
+        "Adding information to metadata. Access with colData(scCNA)."
+    )
+    if (identical(
+        SummarizedExperiment::colData(scCNA)$sample,
+        dst_knn_df$sample
+    )) {
+        SummarizedExperiment::colData(scCNA)$filter_corr_value <-
+            round(dst_knn_df$cor, 3)
+        SummarizedExperiment::colData(scCNA)$filtered <-
+            dst_knn_df$filtered
+    } else {
+        stop("Sample names do not match colData info. Check colData(scCNA).")
+    }
 
-  message(
-    "Adding information to metadata. Access with colData(scCNA)."
-  )
-  if (identical(SummarizedExperiment::colData(scCNA)$sample,
-                dst_knn_df$sample)) {
-    SummarizedExperiment::colData(scCNA)$filter_corr_value <-
-      round(dst_knn_df$cor, 3)
-    SummarizedExperiment::colData(scCNA)$filtered <-
-      dst_knn_df$filtered
-
-  } else
-    stop("Sample names do not match colData info. Check colData(scCNA).")
-
-  message("Done.")
-  return(scCNA)
-
+    message("Done.")
+    return(scCNA)
 }

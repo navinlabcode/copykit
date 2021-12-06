@@ -49,5 +49,4 @@ represent a linear regression across the points.
 copykit_obj <- copykit_example_filtered()
 copykit_obj <- findSuggestedK(copykit_obj)
 plotSuggestedK(copykit_obj)
-
 }

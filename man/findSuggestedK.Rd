@@ -67,7 +67,6 @@ is tested.
 \examples{
 copykit_obj <- copykit_example_filtered()
 copykit_obj <- findSuggestedK(copykit_obj)
-
 }
 \references{
 Hennig, C. (2007) Cluster-wise assessment of cluster stability.

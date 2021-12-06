@@ -34,43 +34,45 @@
 #' @examples
 #' copykit_obj <- copykit_example_filtered()
 #' copykit_obj <- findVariableGenes(copykit_obj,
-#'                genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"))
-#'
+#'     genes = c("FHIT", "PTEN", "FOXO1", "BRCA1")
+#' )
 findVariableGenes <- function(scCNA,
                               genes,
                               assay = "logr",
                               top_n = 50) {
-  # checks
-  if (top_n > length(genes)) {
-    top_n <- length(genes)
-  }
+    # checks
+    if (top_n > length(genes)) {
+        top_n <- length(genes)
+    }
 
-  #obtaining df with genes positions
-  # find_scaffold_genes in internals.R
- df <- find_scaffold_genes(scCNA,
-                           genes = genes)
+    # obtaining df with genes positions
+    # find_scaffold_genes in internals.R
+    df <- find_scaffold_genes(scCNA,
+        genes = genes
+    )
 
-  # obtaining data and subsetting
-  seg_data <- SummarizedExperiment::assay(scCNA, assay)
-  seg_data_genes <- seg_data[df$pos, ]
+    # obtaining data and subsetting
+    seg_data <- SummarizedExperiment::assay(scCNA, assay)
+    seg_data_genes <- seg_data[df$pos, ]
 
-  rownames(seg_data_genes) <- df$gene
+    rownames(seg_data_genes) <- df$gene
 
-  # running principal component analysis
-  pca_obj <- prcomp(t(seg_data_genes))
+    # running principal component analysis
+    pca_obj <- prcomp(t(seg_data_genes))
 
-  pca_df <- data.frame(gene = names(pca_obj$rotation[, 1]),
-                       p1 = pca_obj$rotation[, 1])
+    pca_df <- data.frame(
+        gene = names(pca_obj$rotation[, 1]),
+        p1 = pca_obj$rotation[, 1]
+    )
 
-  pca_df <- pca_df[order(abs(pca_df$p1), decreasing = TRUE), ]
+    pca_df <- pca_df[order(abs(pca_df$p1), decreasing = TRUE), ]
 
-  hvg <- as.character(pca_df$gene[1:top_n])
+    hvg <- as.character(pca_df$gene[1:top_n])
 
-  attr(hvg, 'pca_pc1_loading') <- pca_obj$rotation[, 1]
-  attr(hvg, 'pca_df') <- pca_df
+    attr(hvg, "pca_pc1_loading") <- pca_obj$rotation[, 1]
+    attr(hvg, "pca_df") <- pca_df
 
-  S4Vectors::metadata(scCNA)$hvg <- hvg
+    S4Vectors::metadata(scCNA)$hvg <- hvg
 
-  return(scCNA)
-
+    return(scCNA)
 }

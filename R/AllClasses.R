@@ -38,15 +38,15 @@ setOldClass("igraph")
 #' @importClassesFrom S4Vectors DataFrame SimpleList
 #' @exportClass CopyKit
 .CopyKit <- setClass(
-  "CopyKit",
-  slots = representation(
-    phylo = "phylo",
-    consensusPhylo = "phylo",
-    distMat = "dist",
-    graph = "igraph",
-    consensus = "data.frame"
-  ),
-  contains = "SingleCellExperiment"
+    "CopyKit",
+    slots = representation(
+        phylo = "phylo",
+        consensusPhylo = "phylo",
+        distMat = "dist",
+        graph = "igraph",
+        consensus = "data.frame"
+    ),
+    contains = "SingleCellExperiment"
 )
 
 #' @export
@@ -57,14 +57,14 @@ CopyKit <- function(consensus = data.frame(),
                     distMat = dist(matrix(0, 0, 0)),
                     graph = igraph::graph.empty(),
                     ...) {
-  cna <-
-    SingleCellExperiment::SingleCellExperiment(...)
-  .CopyKit(
-    cna,
-    phylo = phylo,
-    consensusPhylo = consensusPhylo,
-    distMat = distMat,
-    graph = graph,
-    consensus = consensus
-  )
+    cna <-
+        SingleCellExperiment::SingleCellExperiment(...)
+    .CopyKit(
+        cna,
+        phylo = phylo,
+        consensusPhylo = consensusPhylo,
+        distMat = distMat,
+        graph = graph,
+        consensus = consensus
+    )
 }

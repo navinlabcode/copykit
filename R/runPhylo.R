@@ -18,81 +18,77 @@
 #' @examples
 #' copykit_obj <- copykit_example_filtered()
 #' copykit_obj <- runPhylo(copykit_obj)
-#'
-
 runPhylo <- function(scCNA,
                      method = "nj",
                      metric = "euclidean",
                      assay = "segment_ratios",
                      n_threads = parallel::detectCores() / 4) {
-  # cores check
-  if (n_threads < 1) {
-    n_threads <- 1
-  }
-
-
-  # getting data
-  if (!assay %in% names(SummarizedExperiment::assays(scCNA))) {
-    stop("No data found in the assay! Please check the assay name.")
-  }
-
-  seg_data <- SummarizedExperiment::assay(scCNA, assay)
-
-
-  if (assay == "integer") {
-    ## with integers
-    message("Using integer data...")
-    seg_data[, ncol(seg_data) + 1] <- 2
-    seg_data[, ncol(seg_data) + 1] <- 2
-    seg_data <- t(seg_data) %>% as.data.frame()
-
-  } else {
-    # with ratios
-    message("Using ratio data...")
-    seg_data[, ncol(seg_data) + 1] <- 1
-    seg_data[, ncol(seg_data) + 1] <- 1
-    seg_data <- t(seg_data) %>% as.data.frame()
-
-  }
-
-
-  # calculating distance matrix
-  message("Calculating distance matrix")
-  distMat <- amap::Dist(seg_data,
-                        method = metric,
-                        nbproc = n_threads)
-
-  # ordering cells
-  if (method %in% c("nj", "me")) {
-    if (method == "nj") {
-      message("Creating neighbor-joining tree.")
-      tree <- ape::nj(distMat)
+    # cores check
+    if (n_threads < 1) {
+        n_threads <- 1
     }
 
-    if (method == "me") {
-      message("Creating minimum evolution tree.")
-      tree <- ape::fastme.bal(distMat)
+
+    # getting data
+    if (!assay %in% names(SummarizedExperiment::assays(scCNA))) {
+        stop("No data found in the assay! Please check the assay name.")
     }
 
-  } else {
-    stop("Currently only nj and me trees are supported.")
-  }
+    seg_data <- SummarizedExperiment::assay(scCNA, assay)
 
 
-  # root the tree
-  tree <- ape::root.phylo(tree,
-                          outgroup = which(tree$tip.label == paste0("V", Ntip(tree))),
-                          resolve.root = TRUE)
-  tree <- ape::drop.tip(tree, tip = as.character(c(
-    paste0("V", nrow(seg_data)), paste0("V", nrow(seg_data) - 1)
-  )))
+    if (assay == "integer") {
+        ## with integers
+        message("Using integer data...")
+        seg_data[, ncol(seg_data) + 1] <- 2
+        seg_data[, ncol(seg_data) + 1] <- 2
+        seg_data <- t(seg_data) %>% as.data.frame()
+    } else {
+        # with ratios
+        message("Using ratio data...")
+        seg_data[, ncol(seg_data) + 1] <- 1
+        seg_data[, ncol(seg_data) + 1] <- 1
+        seg_data <- t(seg_data) %>% as.data.frame()
+    }
 
-  tree <- ape::ladderize(tree)
 
-  phylo(scCNA) <- tree
+    # calculating distance matrix
+    message("Calculating distance matrix")
+    distMat <- amap::Dist(seg_data,
+        method = metric,
+        nbproc = n_threads
+    )
 
-  message("Access slot with copykit::phylo(scCNA).")
-  message("Done.")
-  return(scCNA)
+    # ordering cells
+    if (method %in% c("nj", "me")) {
+        if (method == "nj") {
+            message("Creating neighbor-joining tree.")
+            tree <- ape::nj(distMat)
+        }
 
+        if (method == "me") {
+            message("Creating minimum evolution tree.")
+            tree <- ape::fastme.bal(distMat)
+        }
+    } else {
+        stop("Currently only nj and me trees are supported.")
+    }
+
+
+    # root the tree
+    tree <- ape::root.phylo(tree,
+        outgroup = which(tree$tip.label == paste0("V", Ntip(tree))),
+        resolve.root = TRUE
+    )
+    tree <- ape::drop.tip(tree, tip = as.character(c(
+        paste0("V", nrow(seg_data)), paste0("V", nrow(seg_data) - 1)
+    )))
+
+    tree <- ape::ladderize(tree)
+
+    phylo(scCNA) <- tree
+
+    message("Access slot with copykit::phylo(scCNA).")
+    message("Done.")
+    return(scCNA)
 }

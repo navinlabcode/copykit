@@ -24,43 +24,40 @@
 #' copykit_obj <- calcRatios(copykit_obj)
 #' copykit_obj <- runSegmentation(copykit_obj)
 #' copykit_obj <- runMetrics(copykit_obj)
-
-
 runMetrics <- function(scCNA,
                        BPPARAM = bpparam()) {
 
-  ###################
-  # Retrieving data
+    ###################
+    # Retrieving data
 
-  dat_seg <- segment_ratios(scCNA)
-  dat_rat <- ratios(scCNA)
-  dat_bin <- bincounts(scCNA)
-  rg <- SummarizedExperiment::rowRanges(scCNA)
+    dat_seg <- segment_ratios(scCNA)
+    dat_rat <- ratios(scCNA)
+    dat_bin <- bincounts(scCNA)
+    rg <- SummarizedExperiment::rowRanges(scCNA)
 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:01 2021
-  # overdispersion ----
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:10 2021
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:01 2021
+    # overdispersion ----
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:10 2021
 
-  message("Calculating overdispersion.")
+    message("Calculating overdispersion.")
 
-  overdisp <- BiocParallel::bplapply(dat_bin,
-                                  overdispersion,
-                                  BPPARAM = BPPARAM)
+    overdisp <- BiocParallel::bplapply(dat_bin,
+        overdispersion,
+        BPPARAM = BPPARAM
+    )
 
-  overdisp <- unlist(overdisp)
+    overdisp <- unlist(overdisp)
 
-  SummarizedExperiment::colData(scCNA)$overdispersion <- overdisp
+    SummarizedExperiment::colData(scCNA)$overdispersion <- overdisp
 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:25 2021
-  # Breakpoint count
-  # Performed for every chromosome
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:34 2021
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:25 2021
+    # Breakpoint count
+    # Performed for every chromosome
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fri Jun 25 13:22:34 2021
 
-  scCNA <- .countBreakpoints(scCNA)
+    scCNA <- .countBreakpoints(scCNA)
 
-  message("Done.")
+    message("Done.")
 
-  return(scCNA)
-
+    return(scCNA)
 }
-

@@ -22,22 +22,21 @@
 #' copykit_obj <- findClusters(copykit_obj)
 #' copykit_obj <- calcConsensus(copykit_obj)
 #' copykit_obj <- inferMrca(copykit_obj)
-#'
 inferMrca <- function(scCNA,
                       value = 1) {
+    if (nrow(consensus(scCNA)) == 0) {
+        stop("Consensus slot is empty. run calcConsensus().")
+    }
 
-  if (nrow(consensus(scCNA)) == 0) {
-    stop("Consensus slot is empty. run calcConsensus().")
-  }
+    consensus_df <- as.data.frame(t(consensus(scCNA)))
 
-  consensus_df <- as.data.frame(t(consensus(scCNA)))
+    anc_profile <- apply(
+        consensus_df,
+        2,
+        function(x) x[which.min(abs(x - value))]
+    )
 
-  anc_profile <- apply(consensus_df,
-                       2,
-                       function(x) x[which.min(abs(x-value))])
+    metadata(scCNA)$inferred_mrca <- anc_profile
 
-  metadata(scCNA)$inferred_mrca <- anc_profile
-
-  return(scCNA)
-
+    return(scCNA)
 }

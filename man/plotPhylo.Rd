@@ -15,8 +15,9 @@ plotPhylo(
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{label}{A string with the element of \code{\link[SummarizedExperiment]{colData}}.
-to annotate the tips of the tree.}
+\item{label}{A string with the element of
+\code{\link[SummarizedExperiment]{colData}}. to annotate the tips of the
+tree.}
 
 \item{label_colors}{A named list with colors for the label annotation.
 Must match label length}
@@ -38,7 +39,7 @@ Plots a phylogenetic tree.
 copykit_obj <- copykit_example_filtered()
 copykit_obj <- findClusters(copykit_obj)
 copykit_obj <- runPhylo(copykit_obj)
-plotPhylo(copykit_obj, label = 'subclones')
+plotPhylo(copykit_obj, label = "subclones")
 }
 \author{
 Junke Wang

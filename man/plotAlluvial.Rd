@@ -25,7 +25,9 @@ Produces an alluvial plot from character elements of the metadata
 \examples{
 copykit_obj <- copykit_example_filtered()
 copykit_obj <- findClusters(copykit_obj)
-colData(copykit_obj)$section <- stringr::str_extract(colData(copykit_obj)$sample,
- "(L[0-9]+L[0-9]+|L[0-9]+)")
+colData(copykit_obj)$section <- stringr::str_extract(
+    colData(copykit_obj)$sample,
+    "(L[0-9]+L[0-9]+|L[0-9]+)"
+)
 plotAlluvial(copykit_obj, label = c("subclones", "section"))
 }

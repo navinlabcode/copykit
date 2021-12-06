@@ -11,24 +11,25 @@ plotUmap(scCNA, embedding = "umap", label = NULL)
 
 \item{embedding}{String with the name of the reducedDim to pull data from.}
 
-\item{label}{A string with the elements from \code{\link[SummarizedExperiment]{colData}}
-to color the umap points.}
+\item{label}{A string with the elements from
+\code{\link[SummarizedExperiment]{colData}} to color the umap points.}
 }
 \value{
 A ggplot object containing the reduced dimensions UMAP plot.
 }
 \description{
-Plots UMAP embedding stored in \code{\link[SingleCellExperiment]{reducedDim}} slot.
+Plots UMAP embedding stored in \code{\link[SingleCellExperiment]{reducedDim}}
+slot.
 }
 \details{
 A reduced dimension representation with UMAP in the slot
 \code{\link[SingleCellExperiment]{reducedDim}} from the scCNA object.
 \code{plotUmap} automatically searches for cluster information in the
- \code{\link[SummarizedExperiment]{colData}} and colors the clusters according
+\code{\link[SummarizedExperiment]{colData}} and colors the clusters according
 to that information.
 
-Otherwise a column from \code{\link[SummarizedExperiment]{colData}} can be used
-as an argument for 'label' to color the points on the plot.
+Otherwise a column from \code{\link[SummarizedExperiment]{colData}} can
+be used as an argument for 'label' to color the points on the plot.
 }
 \examples{
 copykit_obj <- copykit_example_filtered()
@@ -38,12 +39,14 @@ plotUmap(copykit_obj)
 
 copykit_obj <- findClusters(copykit_obj)
 
-plotUmap(copykit_obj, label = 'subclones')
+plotUmap(copykit_obj, label = "subclones")
 
-colData(copykit_obj)$section <- stringr::str_extract(colData(copykit_obj)$sample,
- "(L[0-9]+L[0-9]+|L[0-9]+)")
+colData(copykit_obj)$section <- stringr::str_extract(
+    colData(copykit_obj)$sample,
+    "(L[0-9]+L[0-9]+|L[0-9]+)"
+)
 
-plotUmap(copykit_obj, label = c('section'))
+plotUmap(copykit_obj, label = c("section"))
 }
 \author{
 Darlan Conterno Minussi

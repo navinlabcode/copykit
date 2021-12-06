@@ -17,7 +17,8 @@ runUmap(
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{assay}{String with the name of the assay to pull data from to make the embedding.}
+\item{assay}{String with the name of the assay to pull data from to make the
+embedding.}
 
 \item{seed}{Sets a seed for the pseudorandom number generator.}
 
@@ -32,7 +33,8 @@ will be spread out. See \code{\link[uwot]{umap}}.}
 neighboring sample points) used for manifold approximation.
 Larger values result in more global views of the manifold,
 while smaller values result in more local data being preserved.
-In general values should be in the range 2 to 100. See \code{\link[uwot]{umap}}.}
+In general values should be in the range 2 to 100.
+See \code{\link[uwot]{umap}}.}
 
 \item{name}{String specifying the name to be used to store the result in the
 reducedDims of the output.}
@@ -40,15 +42,17 @@ reducedDims of the output.}
 \item{...}{Additional parameters passed to \code{\link[uwot]{umap}}.}
 }
 \value{
-A reduced dimension representation with UMAP in the slot \code{reducedDim} from scCNA object. Access reduced dimensions slot with: \code{SingleCellExperiment::reducedDim(scCNA, 'umap', withDimnames = FALSE)}
+A reduced dimension representation with UMAP in the slot
+ \code{reducedDim} from scCNA object. Access reduced dimensions slot with:
+ \code{reducedDim(scCNA, 'umap', withDimnames = FALSE)}
 }
 \description{
-Creates a umap embedding using the package uwot from the segment ratios values
+Creates a umap embedding using the package uwot from the segment ratios
+ values
 }
 \examples{
 copykit_obj <- copykit_example_filtered()
 copykit_obj <- runUmap(copykit_obj)
-
 }
 \author{
 Darlan Conterno Minussi

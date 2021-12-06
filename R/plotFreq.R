@@ -46,195 +46,207 @@
 #'
 #' @examples
 #' set.seed(1000)
-#' copykit_obj <- copykit_example_filtered()[,sample(40)]
+#' copykit_obj <- copykit_example_filtered()[, sample(40)]
 #' plotFreq(copykit_obj)
-#'
 plotFreq <- function(scCNA,
                      high_threshold = 1.3,
                      low_threshold = 0.7,
                      assay = "segment_ratios",
                      label = NULL,
-                     geom = c('area', 'line'),
+                     geom = c("area", "line"),
                      BPPARAM = bpparam()) {
+    geom <- match.arg(geom)
 
-  geom <- match.arg(geom)
+    # bindings for NSE
+    start <- xstart <- xend <- abspos <- value <- freq <- NULL
 
-  # bindings for NSE
-  start <- xstart <- xend <- abspos <- value <- freq <- NULL
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## aesthetic setup
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## aesthetic setup
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  # obtaining chromosome lengths
-  chr_ranges <-
-    as.data.frame(SummarizedExperiment::rowRanges(scCNA))
-  chr_lengths <- rle(as.numeric(chr_ranges$seqnames))$lengths
+    # obtaining chromosome lengths
+    chr_ranges <-
+        as.data.frame(SummarizedExperiment::rowRanges(scCNA))
+    chr_lengths <- rle(as.numeric(chr_ranges$seqnames))$lengths
 
 
-  # obtaining first and last row of each chr
-  chr_ranges_start <-  chr_ranges %>%
-    dplyr::group_by(seqnames) %>%
-    dplyr::arrange(seqnames, start) %>%
-    dplyr::filter(dplyr::row_number() == 1) %>%
-    dplyr::ungroup()
+    # obtaining first and last row of each chr
+    chr_ranges_start <- chr_ranges %>%
+        dplyr::group_by(seqnames) %>%
+        dplyr::arrange(seqnames, start) %>%
+        dplyr::filter(dplyr::row_number() == 1) %>%
+        dplyr::ungroup()
 
-  chr_ranges_end <-  chr_ranges %>%
-    dplyr::group_by(seqnames) %>%
-    dplyr::arrange(seqnames, start) %>%
-    dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
-    dplyr::ungroup()
+    chr_ranges_end <- chr_ranges %>%
+        dplyr::group_by(seqnames) %>%
+        dplyr::arrange(seqnames, start) %>%
+        dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
+        dplyr::ungroup()
 
-  # Creating data frame object for chromosome rectangles shadows
-  chrom_rects <- data.frame(
-    chr = chr_ranges_start$seqnames,
-    xstart = as.numeric(chr_ranges_start$abspos),
-    xend = as.numeric(chr_ranges_end$abspos)
-  )
-  xbreaks <- rowMeans(chrom_rects %>%
-                        dplyr::select(xstart,
-                                      xend))
-
-  if (nrow(chrom_rects) == 24) {
-    chrom_rects$colors <- rep(c("white", "gray"),
-                              length(chr_lengths) / 2)
-  } else {
-    chrom_rects$colors <- c(rep(c("white", "gray"),
-                                (length(chr_lengths) / 2)), "white")
-  }
-
-  # Creating the geom_rect object
-  ggchr_back <-
-    list(geom_rect(
-      data = chrom_rects,
-      aes(
-        xmin = xstart,
-        xmax = xend,
-        ymin = -Inf,
-        ymax = Inf,
-        fill = colors
-      ),
-      alpha = .2
-    ),
-    scale_fill_identity())
-
-  sec_breaks <- c(0, 0.5e9, 1e9, 1.5e9, 2e9, 2.5e9, 3e9)
-  sec_labels <- c(0, 0.5, 1, 1.5, 2, 2.5, 3)
-
-  # theme
-  ggaes <- list(
-    scale_x_continuous(
-      breaks = xbreaks,
-      labels = gsub("chr", "", chrom_rects$chr),
-      expand = c(0, 0)
-    ),
-    theme_classic(),
-    xlab("chromosome"),
-    ylab("frequency"),
-    theme(
-      axis.text.x = element_text(
-        angle = 0,
-        vjust = .5,
-        size = 15
-      ),
-      axis.text.y = element_text(size = 15),
-      legend.position = "none",
-      axis.ticks.x = element_blank(),
-      axis.title = element_text(size = 15),
-      plot.title = element_text(size = 15),
-      panel.border = element_rect(colour = "black", fill=NA, size = 1.3)
+    # Creating data frame object for chromosome rectangles shadows
+    chrom_rects <- data.frame(
+        chr = chr_ranges_start$seqnames,
+        xstart = as.numeric(chr_ranges_start$abspos),
+        xend = as.numeric(chr_ranges_end$abspos)
     )
-  )
+    xbreaks <- rowMeans(chrom_rects %>%
+        dplyr::select(
+            xstart,
+            xend
+        ))
 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # Data
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    if (nrow(chrom_rects) == 24) {
+        chrom_rects$colors <- rep(
+            c("white", "gray"),
+            length(chr_lengths) / 2
+        )
+    } else {
+        chrom_rects$colors <- c(rep(
+            c("white", "gray"),
+            (length(chr_lengths) / 2)
+        ), "white")
+    }
 
-  # gather data
-  dat <- as.data.frame(t(SummarizedExperiment::assay(scCNA, assay)))
-  meta <- as.data.frame(SummarizedExperiment::colData(scCNA))
+    # Creating the geom_rect object
+    ggchr_back <-
+        list(
+            geom_rect(
+                data = chrom_rects,
+                aes(
+                    xmin = xstart,
+                    xmax = xend,
+                    ymin = -Inf,
+                    ymax = Inf,
+                    fill = colors
+                ),
+                alpha = .2
+            ),
+            scale_fill_identity()
+        )
 
-  # creating event matrix
-  dat_class <-
-    as.data.frame(apply(
-      dat,
-      2,
-      cut,
-      breaks = c(-Inf,low_threshold, high_threshold, Inf),
-      labels = c("loss", "neutral", "gain")
-    ))
+    sec_breaks <- c(0, 0.5e9, 1e9, 1.5e9, 2e9, 2.5e9, 3e9)
+    sec_labels <- c(0, 0.5, 1, 1.5, 2, 2.5, 3)
 
-  # if label is provided the dataframe will be split according to the label
-  # otherwise use the full dataset
-  if (!is.null(label)) {
-    meta_vector <- dplyr::pull(meta, label)
-    dat_split <- split(dat_class, meta_vector)
-  } else {
-    dat_split <- list(frequency_plot = dat_class)
-  }
+    # theme
+    ggaes <- list(
+        scale_x_continuous(
+            breaks = xbreaks,
+            labels = gsub("chr", "", chrom_rects$chr),
+            expand = c(0, 0)
+        ),
+        theme_classic(),
+        xlab("chromosome"),
+        ylab("frequency"),
+        theme(
+            axis.text.x = element_text(
+                angle = 0,
+                vjust = .5,
+                size = 15
+            ),
+            axis.text.y = element_text(size = 15),
+            legend.position = "none",
+            axis.ticks.x = element_blank(),
+            axis.title = element_text(size = 15),
+            plot.title = element_text(size = 15),
+            panel.border = element_rect(colour = "black", fill = NA, size = 1.3)
+        )
+    )
 
-  # calculating frequency table
-  freq_table <- BiocParallel::bplapply(dat_split, function(x) {
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Data
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    colnames(x) <- chr_ranges$abspos
+    # gather data
+    dat <- as.data.frame(t(SummarizedExperiment::assay(scCNA, assay)))
+    meta <- as.data.frame(SummarizedExperiment::colData(scCNA))
 
-     x %>%
-      tidyr::gather(key = 'abspos',
-                    value = 'value') %>%
-      dplyr::mutate(abspos = as.numeric(abspos)) %>%
-      dplyr::group_by(abspos) %>%
-      dplyr::count(value) %>%
-      dplyr::mutate(freq = n/sum(n)) %>%
-      dplyr::ungroup() %>%
-      tidyr::complete(abspos, value, fill = list(freq = 0, n = 0))
+    # creating event matrix
+    dat_class <-
+        as.data.frame(apply(
+            dat,
+            2,
+            cut,
+            breaks = c(-Inf, low_threshold, high_threshold, Inf),
+            labels = c("loss", "neutral", "gain")
+        ))
 
-  }, BPPARAM = BPPARAM)
+    # if label is provided the dataframe will be split according to the label
+    # otherwise use the full dataset
+    if (!is.null(label)) {
+        meta_vector <- dplyr::pull(meta, label)
+        dat_split <- split(dat_class, meta_vector)
+    } else {
+        dat_split <- list(frequency_plot = dat_class)
+    }
 
-  freq_df <- dplyr::bind_rows(freq_table, .id = 'label')
+    # calculating frequency table
+    freq_table <- BiocParallel::bplapply(dat_split, function(x) {
+        colnames(x) <- chr_ranges$abspos
 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # plot
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        x %>%
+            tidyr::gather(
+                key = "abspos",
+                value = "value"
+            ) %>%
+            dplyr::mutate(abspos = as.numeric(abspos)) %>%
+            dplyr::group_by(abspos) %>%
+            dplyr::count(value) %>%
+            dplyr::mutate(freq = n / sum(n)) %>%
+            dplyr::ungroup() %>%
+            tidyr::complete(abspos, value, fill = list(freq = 0, n = 0))
+    }, BPPARAM = BPPARAM)
 
-  if (geom == 'area') {
-  p <- ggplot() +
-    ggchr_back +
-    ggaes +
-      geom_area(data = subset(freq_df, value == 'gain'),
+    freq_df <- dplyr::bind_rows(freq_table, .id = "label")
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # plot
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    if (geom == "area") {
+        p <- ggplot() +
+            ggchr_back +
+            ggaes +
+            geom_area(
+                data = subset(freq_df, value == "gain"),
                 aes(abspos, freq),
-                fill = 'firebrick3') +
-      geom_area(data = subset(freq_df, value == 'loss'),
-                aes(abspos,-freq),
-                fill = 'dodgerblue3') +
-      facet_wrap(vars(label), ncol = 1)
+                fill = "firebrick3"
+            ) +
+            geom_area(
+                data = subset(freq_df, value == "loss"),
+                aes(abspos, -freq),
+                fill = "dodgerblue3"
+            ) +
+            facet_wrap(vars(label), ncol = 1)
+    }
 
-  }
+    if (geom == "line" && !is.null(label)) {
+        p <- ggplot() +
+            ggchr_back +
+            ggaes +
+            geom_line(
+                data = subset(freq_df, value == "gain"),
+                aes(abspos, freq, color = label)
+            ) +
+            geom_line(
+                data = subset(freq_df, value == "loss"),
+                aes(abspos, -freq, color = label)
+            ) +
+            theme(legend.position = "bottom")
+    }
 
-  if (geom == 'line' && !is.null(label)) {
+    if (geom == "line" && is.null(label)) {
+        p <- ggplot() +
+            ggchr_back +
+            ggaes +
+            geom_line(
+                data = subset(freq_df, value == "gain"),
+                aes(abspos, freq), color = "firebrick3"
+            ) +
+            geom_line(
+                data = subset(freq_df, value == "loss"),
+                aes(abspos, -freq), color = "dodgerblue3"
+            )
+    }
 
-    p <-  ggplot() +
-      ggchr_back +
-      ggaes +
-      geom_line(data = subset(freq_df, value == 'gain'),
-                aes(abspos, freq, color = label)) +
-      geom_line(data = subset(freq_df, value == 'loss'),
-                aes(abspos,-freq, color = label)) +
-      theme(legend.position = "bottom")
-
-  }
-
-  if (geom == 'line' && is.null(label)) {
-
-    p <-  ggplot() +
-      ggchr_back +
-      ggaes +
-      geom_line(data = subset(freq_df, value == 'gain') ,
-                aes(abspos, freq), color = 'firebrick3') +
-      geom_line(data = subset(freq_df, value == 'loss'),
-                aes(abspos,-freq), color = 'dodgerblue3')
-
-  }
-
-print(p)
-
+    print(p)
 }

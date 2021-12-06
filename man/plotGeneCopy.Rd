@@ -54,10 +54,14 @@ If the argument geom is set to 'barplot' plotGeneCopy calculates the gene-wise
 copykit_obj <- copykit_example_filtered()
 copykit_obj <- findClusters(copykit_obj)
 plotGeneCopy(copykit_obj, genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"))
-plotGeneCopy(copykit_obj, genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"),
-label = 'subclones')
-plotGeneCopy(copykit_obj, genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"),
-label = 'subclones', dodge.width = 0.8)
+plotGeneCopy(copykit_obj,
+    genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"),
+    label = "subclones"
+)
+plotGeneCopy(copykit_obj,
+    genes = c("FHIT", "PTEN", "FOXO1", "BRCA1"),
+    label = "subclones", dodge.width = 0.8
+)
 }
 \author{
 Darlan Conterno Minussi
