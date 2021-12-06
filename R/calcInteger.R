@@ -1,6 +1,8 @@
+#' calcInteger()
+#'
 #' Calculates the integer copy number profile for each single-cell
 #'
-#' @param scCNA The scCNA object.
+#' @param scCNA The CopyKit object.
 #' @param assay String with the name of the assay to pull data from to calculate
 #' integers.
 #' @param method Method used to scale the ratio values to integer.
@@ -25,22 +27,27 @@
 #' @export
 #'
 #' @importFrom S4Vectors metadata
+#' @importFrom scquantum ploidy.inference
 #' @importFrom SummarizedExperiment assay colData rowRanges
 #'
 #' @examples
+#' copykit_obj <- mock_bincounts(ncells_diploid = 0)
+#' copykit_obj <- calcInteger(copykit_obj, method = "scquantum")
+
 calcInteger <- function(scCNA,
-                        assay = "segment_ratios",
+                        assay = "bincounts",
                         method = "fixed",
                         ploidy_value = NULL,
                         name = "integer",
                         penalty = 25,
                         BPPARAM = bpparam()) {
-    seg_ratios_df <- SummarizedExperiment::assay(scCNA, assay)
+
+    df <- SummarizedExperiment::assay(scCNA, assay)
 
     if (!is.null(ploidy_value)) {
         if (method == "fixed") {
             if (is.null(ploidy_value) && !is.numeric(ploidy_value)) {
-                stop("Method fixed requires a numeric value for ploidy_value argument.")
+                stop("Method fixed requires a numeric value for ploidy_value.")
             }
 
             message(
@@ -61,7 +68,7 @@ calcInteger <- function(scCNA,
 
         sc_quants <-
             BiocParallel::bplapply(
-                assay(scCNA, "segment_ratios"),
+                assay(scCNA, assay),
                 scquantum::ploidy.inference,
                 chrom = rg$seqnames,
                 start = rg$start,
@@ -71,25 +78,25 @@ calcInteger <- function(scCNA,
             )
 
         sc_ploidies <- sapply(sc_quants, function(x) x$ploidy)
-        sc_confidence <- sapply(sc_quants, function(x) x$peak_height)
+        sc_confidence <- sapply(sc_quants, function(x) x$confidence_ratio)
 
         SummarizedExperiment::colData(scCNA)$ploidy <- sc_ploidies
         SummarizedExperiment::colData(scCNA)$ploidy_confidence <- sc_confidence
     }
 
     # check to guarantee multiplication
-    if (!identical(names(seg_ratios_df), colData(scCNA)$sample)) {
+    if (!identical(names(df), colData(scCNA)$sample)) {
         stop("Order of cells in segment_ratios and colData() is not identical.")
     }
 
     # obtain the matrix of integer values by multiplying the seg ratios
     # by the diagonal of the ploidy colData vector
     int_values <-
-        round(as.matrix(seg_ratios_df) %*% diag(colData(scCNA)$ploidy)) %>%
+        round(as.matrix(df) %*% diag(colData(scCNA)$ploidy)) %>%
         as.data.frame()
 
     # recovering names
-    names(int_values) <- names(seg_ratios_df)
+    names(int_values) <- names(df)
 
     SummarizedExperiment::assay(scCNA, name) <- int_values
 
