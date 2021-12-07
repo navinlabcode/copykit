@@ -35,7 +35,8 @@ Suggests:
     testthat,
     spelling,
     knitr,
-    rmarkdown
+    rmarkdown,
+    scquantum
 Language: en-US
 biocViews: Software, SingleCell, DNASeq, Sequencing, 
            Visualization, Normalization, Clustering,

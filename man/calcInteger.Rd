@@ -2,11 +2,11 @@
 % Please edit documentation in R/calcInteger.R
 \name{calcInteger}
 \alias{calcInteger}
-\title{Calculates the integer copy number profile for each single-cell}
+\title{calcInteger()}
 \usage{
 calcInteger(
   scCNA,
-  assay = "segment_ratios",
+  assay = "bincounts",
   method = "fixed",
   ploidy_value = NULL,
   name = "integer",
@@ -15,7 +15,7 @@ calcInteger(
 )
 }
 \arguments{
-\item{scCNA}{The scCNA object.}
+\item{scCNA}{The CopyKit object.}
 
 \item{assay}{String with the name of the assay to pull data from to calculate
 integers.}
@@ -47,4 +47,8 @@ Calculates the integer copy number profile for each single-cell
 segment means from the scCNA object and multiplies those means by the value
 provided in the argument ploidy_value.
 }
+}
+\examples{
+copykit_obj <- mock_bincounts(ncells_diploid = 0)
+copykit_obj <- calcInteger(copykit_obj, method = "scquantum")
 }
