@@ -43,6 +43,7 @@ calcInteger <- function(scCNA,
                         BPPARAM = bpparam()) {
 
     df <- SummarizedExperiment::assay(scCNA, assay)
+    seg <- SummarizedExperiment::assay(scCNA, 'segment_ratios')
 
     if (!is.null(ploidy_value)) {
         if (method == "fixed") {
@@ -92,11 +93,11 @@ calcInteger <- function(scCNA,
     # obtain the matrix of integer values by multiplying the seg ratios
     # by the diagonal of the ploidy colData vector
     int_values <-
-        round(as.matrix(df) %*% diag(colData(scCNA)$ploidy)) %>%
+        round(as.matrix(seg) %*% diag(colData(scCNA)$ploidy)) %>%
         as.data.frame()
 
     # recovering names
-    names(int_values) <- names(df)
+    names(int_values) <- names(seg)
 
     SummarizedExperiment::assay(scCNA, name) <- int_values
 
