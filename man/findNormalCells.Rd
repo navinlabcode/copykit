@@ -9,20 +9,24 @@ findNormalCells(
   assay = "segment_ratios",
   resolution = "auto",
   remove_XY = TRUE,
-  simul = TRUE
+  simul = TRUE,
+  seed = 17
 )
 }
 \arguments{
 \item{scCNA}{scCNA object}
 
-\item{assay}{String with the name of the assay to pull data from to find normal cells.}
+\item{assay}{String with the name of the assay to pull data from to find
+normal cells.}
 
-\item{resolution}{A numeric scalar used as threshold to detect normal cells. See details.}
+\item{resolution}{A numeric scalar used as threshold to detect normal cells.}
 
-\item{remove_XY}{A boolean that removes chrX and chrY from the analysis. Recommended.}
+\item{remove_XY}{A boolean that removes chrX and chrY from the analysis.}
 
 \item{simul}{A boolean that if TRUE adds a simulated normal dataset to boost
 identifying normal cells in datasets with small proportions of normal cells.}
+
+\item{seed}{Seed passed on to reproduce simulated CV of normal cells.}
 }
 \value{
 information is added to \code{\link[SummarizedExperiment]{colData}}
@@ -41,7 +45,7 @@ performs a sample-wise calculation of the segment means coefficient
  detect normal cells even in datasets with limited amounts of diploid cells
  and guarantees that no aneuploid cell will be removed from datasets without
  any normal cells. The distribution with the smallest coefficient of variance
- is assumed to be originating from normal cells. Cells are classified as normal
+ is assumed originate from normal cells. Cells are classified as normal
  if they have a coefficient of variance smaller than the mean plus five times
  the standard deviation of the normal cell distribution.
 }

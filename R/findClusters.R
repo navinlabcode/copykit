@@ -158,10 +158,10 @@ findClusters <- function(scCNA,
 
     # subclones using hdbscan
     if (method == "hdbscan") {
-        set.seed(seed)
-        hdb <- dbscan::hdbscan(umap_df,
-            minPts = k_subclones
-        )
+        withr::with_seed(seed,
+                         hdb <- dbscan::hdbscan(umap_df,
+                                                minPts = k_subclones))
+
         hdb_clusters <- as.character(hdb$cluster)
 
         hdb_df <- data.frame(

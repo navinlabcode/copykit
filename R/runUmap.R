@@ -27,6 +27,7 @@
 #'
 #' @importFrom uwot umap
 #' @importFrom SummarizedExperiment assay
+#' @importFrom withr with_seed
 #'
 #' @return A reduced dimension representation with UMAP in the slot
 #'  \code{reducedDim} from scCNA object. Access reduced dimensions slot with:
@@ -48,12 +49,12 @@ runUmap <- function(scCNA,
 
     message("Using assay: ", assay)
     message("Embedding data with UMAP. Using seed ", seed)
-    set.seed(seed)
-
-    dat_umap <- uwot::umap(seg_data,
-        min_dist = min_dist,
-        n_neighbors = n_neighbors,
-        ...
+    withr::with_seed(
+        seed,
+        dat_umap <- uwot::umap(seg_data,
+                               min_dist = min_dist,
+                               n_neighbors = n_neighbors,
+                               ...)
     )
 
     SingleCellExperiment::reducedDim(scCNA, type = name) <- dat_umap
