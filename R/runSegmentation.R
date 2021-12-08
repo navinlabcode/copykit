@@ -42,6 +42,7 @@
 #' @importFrom DNAcopy CNA smooth.CNA segment
 #' @importFrom aCGH mergeLevels combine.func
 #' @importFrom dplyr mutate bind_cols
+#' @importFrom withr with_seed
 #' @importFrom stringr str_detect str_remove str_replace
 #' @importFrom S4Vectors metadata
 #' @importFrom SummarizedExperiment assay
@@ -178,8 +179,11 @@ runSegmentation <- function(scCNA,
                     data.type = "logratio",
                     sampleid = names(x)
                 )
-            set.seed(seed)
-            smoothed_CNA_counts <- DNAcopy::smooth.CNA(CNA_object)[, 3]
+            withr::with_seed(seed,
+                             smoothed_CNA_counts <- DNAcopy::smooth.CNA(CNA_object)[, 3]
+
+            )
+
         }, BPPARAM = BPPARAM)
 
     smooth_counts_df <- dplyr::bind_cols(smooth_counts) %>%
@@ -209,17 +213,20 @@ runSegmentation <- function(scCNA,
                             data.type = "logratio",
                             sampleid = names(x)
                         )
-                    set.seed(seed)
 
-                    segment_smoothed_CNA_object <-
-                        .quiet(
-                            DNAcopy::segment(
-                                CNA_object,
-                                alpha = alpha,
-                                min.width = 5,
-                                undo.splits = undo.splits
-                            )
-                        )
+                    withr::with_seed(seed,
+                                     segment_smoothed_CNA_object <-
+                                         .quiet(
+                                             DNAcopy::segment(
+                                                 CNA_object,
+                                                 alpha = alpha,
+                                                 min.width = 5,
+                                                 undo.splits = undo.splits
+                                             )
+                                         )
+                                     )
+
+
                     short_cbs <- segment_smoothed_CNA_object[[2]]
                     log_seg_mean_LOWESS <-
                         rep(short_cbs$seg.mean, short_cbs$num.mark)

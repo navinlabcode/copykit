@@ -21,7 +21,9 @@
 #' should be plotted.
 #' @param genes A character vector with the HUGO symbol for genes to be annotated
 #' on the heatmap.
-#' @param consensus A boolean indicating if the consensus heatmap should be plotted.
+#' @param consensus A boolean indicating if the consensus heatmap should be
+#' plotted.
+#' @param n_threads Number of threads passed on to \code{runDistMat}.
 #'
 #' @return A \code{ComplexHeatmap} object with a heatmap of copy number data
 #' where the columns are the genomic positions and each row is a cell.
@@ -111,7 +113,8 @@ plotHeatmap <- function(scCNA,
     consensus = FALSE,
     rounding_error = FALSE,
     genes = NULL,
-    row_split = NULL) {
+    row_split = NULL,
+    n_threads = 1) {
     # args
     order_cells <- match.arg(order_cells)
 
@@ -268,7 +271,9 @@ plotHeatmap <- function(scCNA,
             # checking distance matrix
             if (length(copykit::distMat(scCNA)) == 0) {
                 message("No distance matrix detected in the scCNA object.")
-                scCNA <- runDistMat(scCNA, metric = "euclidean")
+                scCNA <- runDistMat(scCNA,
+                                    metric = "euclidean",
+                                    n_threads = n_threads)
             }
 
             if (nrow(as.matrix(copykit::distMat(scCNA))) != ncol(scCNA)) {

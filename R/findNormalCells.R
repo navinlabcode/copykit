@@ -3,11 +3,13 @@
 #' Find cells that are not aneuploid in the dataset.
 #'
 #' @param scCNA scCNA object
-#' @param assay String with the name of the assay to pull data from to find normal cells.
-#' @param resolution A numeric scalar used as threshold to detect normal cells. See details.
-#' @param remove_XY A boolean that removes chrX and chrY from the analysis. Recommended.
+#' @param assay String with the name of the assay to pull data from to find
+#' normal cells.
+#' @param resolution A numeric scalar used as threshold to detect normal cells.
+#' @param remove_XY A boolean that removes chrX and chrY from the analysis.
 #' @param simul A boolean that if TRUE adds a simulated normal dataset to boost
 #' identifying normal cells in datasets with small proportions of normal cells.
+#' @param seed Seed passed on to reproduce simulated CV of normal cells.
 #'
 #' @details performs a sample-wise calculation of the segment means coefficient
 #'  of variation and fits a normal mixture model to the observed distribution f
@@ -17,7 +19,7 @@
 #'  detect normal cells even in datasets with limited amounts of diploid cells
 #'  and guarantees that no aneuploid cell will be removed from datasets without
 #'  any normal cells. The distribution with the smallest coefficient of variance
-#'  is assumed to be originating from normal cells. Cells are classified as normal
+#'  is assumed originate from normal cells. Cells are classified as normal
 #'  if they have a coefficient of variance smaller than the mean plus five times
 #'  the standard deviation of the normal cell distribution.
 #'
@@ -40,7 +42,8 @@ findNormalCells <- function(scCNA,
     assay = "segment_ratios",
     resolution = "auto",
     remove_XY = TRUE,
-    simul = TRUE) {
+    simul = TRUE,
+    seed = 17) {
 
     # bindings for NSE (non-standard evaluation)
     is_normal <- NULL
@@ -76,11 +79,13 @@ findNormalCells <- function(scCNA,
     )
 
     if (simul == TRUE) {
-        set.seed(17)
-        cv_simul <- rnorm(1000,
-            mean = 0,
-            sd = 0.01
+        withr::with_seed(seed,
+            cv_simul <- rnorm(1000,
+                              mean = 0,
+                              sd = 0.01
+            )
         )
+
         names(cv_simul) <- paste0("simul", 1:length(cv_simul))
 
         cv <- c(cv_simul, cv)
