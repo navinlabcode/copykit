@@ -31,7 +31,7 @@ runVst <- function(scCNA,
     transformation <- match.arg(transformation)
 
     varbin_counts_df <- bincounts(scCNA)
-browser()
+
     if (transformation == "ft") {
         counts_df_ft <- as.data.frame(apply(varbin_counts_df,
                                             2,
