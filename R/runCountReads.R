@@ -13,6 +13,8 @@
 #' the chrY from the dataset.
 #' @param min_bincount A numerical indicating the minimum mean bin counts a
 #' cell should have to remain in the dataset.
+#' @param is_paired_end A boolean indicating if bam files are from single-read
+#' or pair end sequencing.
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
 #' should be parallelized.
 #'
@@ -49,7 +51,6 @@
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom S4Vectors DataFrame metadata
 #' @importFrom rlang is_empty
-#' @importFrom Rsamtools testPairedEndBam
 #'
 #' @export
 #'
@@ -72,6 +73,7 @@ runCountReads <- function(dir,
                           ),
                           remove_Y = FALSE,
                           min_bincount = 10,
+                          is_paired_end = FALSE,
                           BPPARAM = bpparam()) {
     genome <- match.arg(genome)
     resolution <- match.arg(resolution)
@@ -102,22 +104,6 @@ runCountReads <- function(dir,
 
     if (rlang::is_empty(files)) {
         stop("No .bam files detected.")
-    }
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # test pair end or single-read
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    pairend_test <-
-        suppressMessages(
-            BiocParallel::bplapply(files[1:5], Rsamtools::testPairedEndBam,
-                BPPARAM = BPPARAM
-            )
-        )
-
-    if (all(unlist(pairend_test))) {
-        is_paired_end <- TRUE
-    } else {
-        is_paired_end <- FALSE
     }
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

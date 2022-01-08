@@ -11,7 +11,6 @@
 #' @keywords internal
 #'
 #' @importFrom dplyr pull bind_rows mutate select
-#' @importFrom purrr map_dfc
 #' @importFrom SummarizedExperiment rowRanges seqnames
 #'
 #' @examples
@@ -35,7 +34,7 @@
 
     brkpt_by_chrom <-
         lapply(dat_seg_split, function(x) {
-            purrr::map_dfc(x, function(i) {
+            apply(x, 2, function(i) {
                 length(rle(i)$values) - 1
             }) %>%
                 unlist()

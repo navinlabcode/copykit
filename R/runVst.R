@@ -21,7 +21,6 @@
 #' @return A slot into the scCNA object containing the variance stabilized matrix.
 #' @importFrom SummarizedExperiment assay
 #' @importFrom S4Vectors metadata
-#' @importFrom purrr map_dfc
 #' @export
 #'
 #' @examples
@@ -32,14 +31,18 @@ runVst <- function(scCNA,
     transformation <- match.arg(transformation)
 
     varbin_counts_df <- bincounts(scCNA)
-
+browser()
     if (transformation == "ft") {
-        counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) sqrt(x) + sqrt(x + 1))
+        counts_df_ft <- as.data.frame(apply(varbin_counts_df,
+                                            2,
+                                            function(x) sqrt(x) + sqrt(x + 1)))
     }
 
     if (transformation == "log") {
         varbin_counts_df[varbin_counts_df == 0] <- 1e-4
-        counts_df_ft <- purrr::map_dfc(varbin_counts_df, function(x) log(x))
+        counts_df_ft <- as.data.frame(apply(varbin_counts_df,
+                                            2,
+                                            function(x) log(x)))
     }
 
     counts_df_ft <- as.data.frame(counts_df_ft)

@@ -27,7 +27,6 @@
 #' @export
 #'
 #' @importFrom S4Vectors metadata
-#' @importFrom scquantum ploidy.inference
 #' @importFrom SummarizedExperiment assay colData rowRanges
 #'
 #' @examples

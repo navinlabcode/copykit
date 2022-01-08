@@ -16,6 +16,8 @@
 #' @param method A character indicating the segmentation method.
 #' @param min_bincount A numerical indicating the minimum mean bin counts a
 #' cell should have to remain in the dataset.
+#' @param is_paired_end A boolean indicating if bam files are from single-read
+#' or pair end sequencing.
 #' @param seed A numeric scalar that sets the seed for CBS segmentation permutation
 #' reproducibility.
 #' @param alpha A numeric with the. significance levels for the test to accept
@@ -118,6 +120,7 @@ runVarbin <- function(dir,
                           "2.5Mb"
                       ),
                       remove_Y = FALSE,
+                      is_paired_end = FALSE,
                       method = c("CBS", "multipcf"),
                       vst = c("ft", "log"),
                       seed = 17,
@@ -136,6 +139,7 @@ runVarbin <- function(dir,
         resolution = resolution,
         remove_Y = remove_Y,
         min_bincount = min_bincount,
+        is_paired_end = is_paired_end,
         BPPARAM = BPPARAM
     )
 

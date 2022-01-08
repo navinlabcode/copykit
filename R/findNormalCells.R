@@ -59,6 +59,7 @@ findNormalCells <- function(scCNA,
     # retrieving data
     rg <- as.data.frame(SummarizedExperiment::rowRanges(scCNA))
     seg <- SummarizedExperiment::assay(scCNA, assay)
+    ncells <- ncol(scCNA)
 
     if (remove_XY == TRUE) {
         rg <- rg %>%
@@ -80,7 +81,7 @@ findNormalCells <- function(scCNA,
 
     if (simul == TRUE) {
         withr::with_seed(seed,
-            cv_simul <- rnorm(1000,
+            cv_simul <- rnorm(ncells,
                               mean = 0,
                               sd = 0.01
             )

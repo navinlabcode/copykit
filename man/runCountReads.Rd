@@ -10,6 +10,7 @@ runCountReads(
   resolution = c("200kb", "50kb", "100kb", "175kb", "250kb", "500kb", "1Mb", "2.5Mb"),
   remove_Y = FALSE,
   min_bincount = 10,
+  is_paired_end = FALSE,
   BPPARAM = bpparam()
 )
 }
@@ -26,6 +27,9 @@ the chrY from the dataset.}
 
 \item{min_bincount}{A numerical indicating the minimum mean bin counts a
 cell should have to remain in the dataset.}
+
+\item{is_paired_end}{A boolean indicating if bam files are from single-read
+or pair end sequencing.}
 
 \item{BPPARAM}{A \linkS4class{BiocParallelParam} specifying how the function
 should be parallelized.}

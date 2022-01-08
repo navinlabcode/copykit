@@ -2,7 +2,7 @@ Package: copykit
 Title: CopyKit
 URL: https://github.com/navinlabcode/copykit
 BugReports: https://github.com/navinlabcode/copykit/issues
-Version: 0.0.0.9033
+Version: 0.0.0.9034
 Authors@R: c(
     person(given = "Darlan",
            family = "Conterno Minussi",
@@ -35,6 +35,7 @@ Suggests:
     testthat,
     spelling,
     knitr,
+    scquantum,
     rmarkdown
 Language: en-US
 biocViews: Software, SingleCell, DNASeq, Sequencing, 
@@ -74,21 +75,18 @@ Imports:
     miniUI,
     pals,
     aCGH,
-    Rsamtools,
     copynumber,
     ggalluvial,
     viridis,
-    purrr,
     ggtree,
     rlang,
     methods,
-    scquantum,
     withr
 RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 Depends: 
     SingleCellExperiment,
-    R (>= 4.1.0),
+    R (>= 4.0.0),
     Rsubread,
     GenomicRanges,
     DNAcopy

@@ -9,6 +9,7 @@ runVarbin(
   genome = c("hg38", "hg19"),
   resolution = c("200kb", "50kb", "100kb", "175kb", "250kb", "500kb", "1Mb", "2.5Mb"),
   remove_Y = FALSE,
+  is_paired_end = FALSE,
   method = c("CBS", "multipcf"),
   vst = c("ft", "log"),
   seed = 17,
@@ -29,6 +30,9 @@ of the VarBin method, i. e. the bin resulting bin size.}
 
 \item{remove_Y}{A boolean when set to TRUE, removes information from the chrY
 from the dataset.}
+
+\item{is_paired_end}{A boolean indicating if bam files are from single-read
+or pair end sequencing.}
 
 \item{method}{A character indicating the segmentation method.}
 

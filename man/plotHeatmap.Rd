@@ -14,7 +14,8 @@ plotHeatmap(
   consensus = FALSE,
   rounding_error = FALSE,
   genes = NULL,
-  row_split = NULL
+  row_split = NULL,
+  n_threads = 1
 )
 }
 \arguments{
@@ -34,7 +35,8 @@ Must match label length and have the same names as label}
 \code{\link[SummarizedExperiment]{colData}} to add a barplot with frequency
 of the groups to a consensus heatmap.}
 
-\item{consensus}{A boolean indicating if the consensus heatmap should be plotted.}
+\item{consensus}{A boolean indicating if the consensus heatmap should be
+plotted.}
 
 \item{rounding_error}{A boolean indicating if the rounding error matrix
 should be plotted.}
@@ -44,6 +46,8 @@ on the heatmap.}
 
 \item{row_split}{A string with the names of the columns from
 \code{\link[SummarizedExperiment]{colData}} to split the heatmap.}
+
+\item{n_threads}{Number of threads passed on to \code{runDistMat}.}
 }
 \value{
 A \code{ComplexHeatmap} object with a heatmap of copy number data
