@@ -4,9 +4,9 @@
 # CopyKit
 
 <!-- badges: start -->
-<center>
-![CopyKit logo](images/copykit_hexsticker_v2.png "fig:")
-</center>
+
+![Copykit Logo](images/copykit_hexsticker_v2.png)
+
 <!-- badges: end -->
 
 *CopyKit* provides a suite of tools for pre-processing, quality control,
