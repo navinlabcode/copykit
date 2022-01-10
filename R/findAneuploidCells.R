@@ -1,8 +1,8 @@
-#' findNormalCells
+#' findAneuploidCells
 #'
 #' Find cells that are not aneuploid in the dataset.
 #'
-#' @param scCNA scCNA object
+#' @param scCNA The CopyKit object
 #' @param assay String with the name of the assay to pull data from to find
 #' normal cells.
 #' @param resolution A numeric scalar used as threshold to detect normal cells.
@@ -12,20 +12,20 @@
 #' @param seed Seed passed on to reproduce simulated CV of normal cells.
 #'
 #' @details performs a sample-wise calculation of the segment means coefficient
-#'  of variation and fits a normal mixture model to the observed distribution f
+#'  of variation and fits a Gaussian mixture model to the observed distribution f
 #'  rom all cells. To increase the sensitivity of the model, the expected
-#'  distribution of the coefficient of variation for diploid cells is simulated
+#'  distribution of the coefficient of variation for euploid cells is simulated
 #'  for a thousand cells (mean = 0, sd = 0.01). This way, CopyKit can adequately
-#'  detect normal cells even in datasets with limited amounts of diploid cells
+#'  detect euploid cells even in datasets with limited amounts of euploid cells
 #'  and guarantees that no aneuploid cell will be removed from datasets without
-#'  any normal cells. The distribution with the smallest coefficient of variance
-#'  is assumed originate from normal cells. Cells are classified as normal
+#'  any euploid cells. The distribution with the smallest coefficient of variance
+#'  is assumed originate from normal cells. Cells are classified as euploid
 #'  if they have a coefficient of variance smaller than the mean plus five times
 #'  the standard deviation of the normal cell distribution.
 #'
 #' @return information is added to \code{\link[SummarizedExperiment]{colData}}
-#' in a columns named 'is_normal' being TRUE if a cell is detected as normal and
-#' FALSE if the cell is detected as aneuploid.
+#' in a columns named 'is_aneuploid' being TRUE if a cell is detected as
+#' aneuploid and FALSE if the cell is detected as euploid.
 #'
 #' @export
 #'
@@ -37,8 +37,8 @@
 #'
 #' @examples
 #' copykit_obj <- copykit_example()
-#' copykit_obj <- findNormalCells(copykit_obj)
-findNormalCells <- function(scCNA,
+#' copykit_obj <- findAneuploidCells(copykit_obj)
+findAneuploidCells <- function(scCNA,
     assay = "segment_ratios",
     resolution = "auto",
     remove_XY = TRUE,
@@ -46,7 +46,7 @@ findNormalCells <- function(scCNA,
     seed = 17) {
 
     # bindings for NSE (non-standard evaluation)
-    is_normal <- NULL
+    is_aneuploid <- NULL
 
     if (remove_XY == FALSE & simul == TRUE) {
         stop("Argument simul can't be used if remove_XY == FALSE.")
@@ -121,15 +121,15 @@ findNormalCells <- function(scCNA,
     )
 
     cv_df_low_cv <- cv_df %>%
-        dplyr::mutate(is_normal = case_when(
-            CV > resolution ~ FALSE,
-            TRUE ~ TRUE
+        dplyr::mutate(is_aneuploid = case_when(
+            CV > resolution ~ TRUE,
+            TRUE ~ FALSE
         ))
 
     message(
         "Copykit detected ",
         nrow(cv_df_low_cv %>%
-            dplyr::filter(is_normal == TRUE)),
+            dplyr::filter(is_aneuploid == FALSE)),
         " that are possibly normal cells using a resolution of: ",
         round(resolution, 3)
     )
@@ -141,7 +141,7 @@ findNormalCells <- function(scCNA,
             cv_df_low_cv$sample
         ), ]
 
-    SummarizedExperiment::colData(scCNA)$is_normal <- info$is_normal
+    SummarizedExperiment::colData(scCNA)$is_aneuploid <- info$is_aneuploid
     SummarizedExperiment::colData(scCNA)$find_normal_cv <-
         round(info$CV, 2)
 
