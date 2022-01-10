@@ -163,11 +163,11 @@ plotPhylo <- function(scCNA,
                 list(
                     superclones = superclones_pal(),
                     subclones = subclones_pal(),
-                    filtered = c(
-                        "removed" = "#DA614D",
-                        "kept" = "#5F917A"
+                    outlier = c(
+                        "TRUE" = "#DA614D",
+                        "FALSE" = "#5F917A"
                     ),
-                    is_normal = c(
+                    is_aneuploid = c(
                         "TRUE" = "#396DB3",
                         "FALSE" = "#11181D"
                     )
@@ -176,7 +176,7 @@ plotPhylo <- function(scCNA,
 
             if (any(str_detect(
                 label,
-                c("superclones", "subclones", "filtered", "is_normal")
+                c("superclones", "subclones", "outlier", "is_aneuploid")
             ))) {
                 # if label is one of the four above, uses the default specified colors above
                 label_colors <- label_colors[[label]]

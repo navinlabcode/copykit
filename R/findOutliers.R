@@ -78,7 +78,7 @@ findOutliers <- function(scCNA,
             cor < resolution ~ "TRUE"
         ))
 
-    n_filtered <- table(dst_knn_df$filtered)["TRUE"]
+    n_filtered <- table(dst_knn_df$outlier)["TRUE"]
     message("Marked ", n_filtered, " cells as outliers.")
 
     message(
