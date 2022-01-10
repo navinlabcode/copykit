@@ -5,7 +5,7 @@
 
 <!-- badges: start -->
 <center>
-<img src="images/copykit_hexsticker_v2.png" title="fig:" style="width:20.0%;height:20.0%" alt="CopyKit logo" />
+![CopyKit logo](images/copykit_hexsticker_v2.png "fig:")
 </center>
 <!-- badges: end -->
 

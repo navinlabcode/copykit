@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 <center>
-![CopyKit logo](images/copykit_hexsticker_v2.png){height=20% width=20%}
+![CopyKit logo](images/copykit_hexsticker_v2.png)
 </center>
 <!-- badges: end -->
 
