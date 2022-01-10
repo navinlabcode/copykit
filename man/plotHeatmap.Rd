@@ -79,11 +79,11 @@ Each row is a cell and colums represent genomic positions.
    \item{label_colors}: A named list, list element names must match column
    names for \code{\link[SummarizedExperiment]{colData}} and list elements
    must match the number of items present in the columns provided in argument
-    'label'. For example: to set colors for column 'filtered' containing
-    elements 'kept' or 'filtered' a valid input would be:
-    'list(filtered = c('kept' = 'green', 'filtered' = 'red))'.
-     Default colors are provided for 'superclones', 'subclones', 'is_normal',
-     and 'filtered' that can be overriden with 'label_colors'.
+    'label'. For example: to set colors for column 'outlier' containing
+    elements 'TRUE' or 'FALSE' a valid input would be:
+    'list(outlier = c('FALSE' = 'green', 'TRUE' = 'red))'.
+     Default colors are provided for 'superclones', 'subclones', 'is_aneuploid',
+     and 'outlier' that can be override with 'label_colors'.
 
    \item{rounding_error}: Must be used with assay = 'integer'.
    \code{plotHeatmap} will access the ploidies stored into colData(scCNA)$ploidy

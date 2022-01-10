@@ -57,7 +57,7 @@ Search for clusters in the scCNA data.
  \itemize{
  \item{hdbscan}: hdbscan is an outlier aware clustering algorithm, since
  extensive filtering of the dataset can be applied before clustering with
- \code{\link{filterCells}}, any cell classified as an outlier is inferred
+ \code{\link{findOutliers}}, any cell classified as an outlier is inferred
  to the same cluster group as its closest, non-outlier, nearest-neighbor
   according to Euclidean distance.
  }

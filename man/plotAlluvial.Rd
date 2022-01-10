@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotAlluvial.R
 \name{plotAlluvial}
 \alias{plotAlluvial}
-\title{plotAlluvial}
+\title{plotAlluvial()}
 \usage{
 plotAlluvial(scCNA, label, label_colors = NULL, min_cells = NULL)
 }
@@ -11,7 +11,8 @@ plotAlluvial(scCNA, label, label_colors = NULL, min_cells = NULL)
 
 \item{label}{A string with two or more  elements from \code{\link[SummarizedExperiment]{colData}}.}
 
-\item{label_colors}{An optional named vector with the colors of each element from label.}
+\item{label_colors}{An optional named vector with the colors of each element
+from label.}
 
 \item{min_cells}{An optional numeric to filter stratum that do not reach
 the minimum amount of cells.}
