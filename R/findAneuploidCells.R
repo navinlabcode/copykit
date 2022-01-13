@@ -130,7 +130,7 @@ findAneuploidCells <- function(scCNA,
         "Copykit detected ",
         nrow(cv_df_low_cv %>%
             dplyr::filter(is_aneuploid == FALSE)),
-        " that are possibly normal cells using a resolution of: ",
+        " that are possibly euploid cells using a resolution of: ",
         round(resolution, 3)
     )
 

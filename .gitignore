@@ -7,4 +7,5 @@ data-raw
 test_delete_folder
 .DS_Store
 snakemake_markdup
+images
 ._.DS_Store

@@ -647,7 +647,7 @@ mock_bincounts <- function(ncells = 30,
     metadata(copykit_obj_bincounts)$resolution <- resolution
     colData(copykit_obj_bincounts)$sample <- names(bincounts(copykit_obj_bincounts))
     colData(copykit_obj_bincounts)$ground_truth <- rep(
-        c(TRUE, FALSE),
+        c(FALSE, TRUE),
         c(
             ncells_diploid,
             ncells_aneuploid
