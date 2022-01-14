@@ -29,7 +29,7 @@
 plotConsensusLine <- function(scCNA) {
 
     # bindings for NSE
-    start <- xstart <- xend <- abspos
+    start <- xstart <- xend <- abspos <- NULL
 
     ####################
     ## checks
