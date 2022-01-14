@@ -21,6 +21,9 @@
 #' should be plotted.
 #' @param genes A character vector with the HUGO symbol for genes to be annotated
 #' on the heatmap.
+#' @param col A colorRamp2 vector that controls the color scale of the heatmap.
+#' See \code{\link[ComplexHeatmap]{Heatmap}} or ComplexHeatmap online docs for
+#' help.
 #' @param consensus A boolean indicating if the consensus heatmap should be
 #' plotted.
 #' @param n_threads Number of threads passed on to \code{runDistMat}.
@@ -113,6 +116,7 @@ plotHeatmap <- function(scCNA,
     consensus = FALSE,
     rounding_error = FALSE,
     genes = NULL,
+    col = NULL,
     row_split = NULL,
     n_threads = 1) {
     # args
@@ -481,6 +485,7 @@ plotHeatmap <- function(scCNA,
     # list with arguments for complexheatmap
     complex_args <- list(
         use_raster = TRUE,
+        col = col,
         bottom_annotation = mk,
         right_annotation = ha_barplot,
         column_title = "genomic coordinates",

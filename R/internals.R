@@ -623,12 +623,13 @@ mock_bincounts <- function(ncells = 30,
     nbins_del <- length(position_del)
 
     # creating mock diploid and aneuploid cell
-    mock_diploid <- rpois(nbins, 50)
-    mock_aneuploid <- rpois(nbins, 50)
+    mock_diploid <- withr::with_seed(123, rpois(nbins, 50))
+    mock_aneuploid <- withr::with_seed(123, rpois(nbins, 50))
 
     # adding events to aneuploid cells
-    mock_aneuploid[position_gain] <- rpois(nbins_gain, 100)
-    mock_aneuploid[position_del] <- rpois(nbins_del, 25)
+    mock_aneuploid[position_gain] <- withr::with_seed(123,
+                                                      rpois(nbins_gain, 100))
+    mock_aneuploid[position_del] <- withr::with_seed(123, rpois(nbins_del, 25))
 
     # creating the cell counts matrix
     m <- matrix(c(mock_diploid, mock_aneuploid), ncol = 2)
@@ -636,7 +637,8 @@ mock_bincounts <- function(ncells = 30,
     mock_counts <- as.data.frame(m[, rep_pop])
 
     # adding some uniform error to avoid all cells having the same variance.
-    mock_counts <- mock_counts + runif(nbins * ncells, -5, 5)
+    mock_counts <- mock_counts + withr::with_seed(123,
+                                                  runif(nbins * ncells, -5, 5))
 
     # creating copykit object with mock counts
     copykit_obj_bincounts <- CopyKit(
