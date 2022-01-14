@@ -14,6 +14,7 @@ plotHeatmap(
   consensus = FALSE,
   rounding_error = FALSE,
   genes = NULL,
+  col = NULL,
   row_split = NULL,
   n_threads = 1
 )
@@ -43,6 +44,10 @@ should be plotted.}
 
 \item{genes}{A character vector with the HUGO symbol for genes to be annotated
 on the heatmap.}
+
+\item{col}{A colorRamp2 vector that controls the color scale of the heatmap.
+See \code{\link[ComplexHeatmap]{Heatmap}} or ComplexHeatmap online docs for
+help.}
 
 \item{row_split}{A string with the names of the columns from
 \code{\link[SummarizedExperiment]{colData}} to split the heatmap.}
