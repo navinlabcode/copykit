@@ -72,16 +72,12 @@ plotRatio <- function(scCNA,
             xend
         ))
 
-    if (nrow(chrom_rects) == 24) {
-        chrom_rects$colors <- rep(
-            c("white", "gray"),
-            length(chr_lengths) / 2
-        )
+    if (nrow(chrom_rects) %% 2 == 0) {
+        chrom_rects$colors <- c("white", "gray")
     } else {
-        chrom_rects$colors <- c(rep(
+        chrom_rects$colors <- rep_len(
             c("white", "gray"),
-            (length(chr_lengths) / 2)
-        ), "white")
+            nrow(chrom_rects))
     }
 
     # Creating the geom_rect object
@@ -169,7 +165,7 @@ plotRatio <- function(scCNA,
         df <- dat_ratios_l %>%
             dplyr::mutate(segment_ratio = dat_seg_l$segment_ratio)
     } else {
-          stop("Nrow in copykit::segment_ratios() assay different than nrow in copykit::ratios().")
+          stop("Nrow in copykit::segment_ratios() assay different than nrow in ratios().")
       }
 
     if (!is.null(colData(scCNA)$ploidy)) {
@@ -287,7 +283,8 @@ plotRatio <- function(scCNA,
         runGadget(ui, server)
     } else {
         if (sample_name %!in% colData(scCNA)$sample) {
-            stop("sample_name argument is not on dataset. Make sure to have the correct sample name")
+            stop("sample_name argument is not on dataset.
+                 Make sure to have the correct sample name")
         }
 
         df_plot <-
