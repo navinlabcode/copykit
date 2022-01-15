@@ -10,8 +10,7 @@
 <!-- badges: end -->
 
 *CopyKit* provides a suite of tools for pre-processing, quality control,
-analysis, and visualization of single cell whole genome DNA sequencing
-datasets.
+analysis, and visualization of single cell DNA sequencing datasets.
 
 ## Installation
 
