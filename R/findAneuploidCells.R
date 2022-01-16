@@ -94,7 +94,7 @@ findAneuploidCells <- function(scCNA,
 
     if (resolution == "auto") {
         fit <- tryCatch(
-            mixtools::normalmixEM(cv),
+            withr::with_seed(seed, mixtools::normalmixEM(cv)),
             error = function(e) {
                 message("Could not identify aneuploid cells in the dataset.")
                 message("Marking all cells as diploid.")
