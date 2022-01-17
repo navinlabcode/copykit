@@ -6,5 +6,6 @@ inst/doc
 data-raw
 test_delete_folder
 .DS_Store
+snakemake_pipelines
 images
 ._.DS_Store
