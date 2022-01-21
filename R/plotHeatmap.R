@@ -458,14 +458,14 @@ plotHeatmap <- function(scCNA,
             n_groups <- length(elements_groups)
             hex <- scales::hue_pal()(n_groups)
 
-            col <- structure(hex,
+            col_group <- structure(hex,
                 names = elements_groups
             )
 
             ha_barplot <-
                 rowAnnotation(
                     foo = anno_barplot(metadata_counts,
-                        gp = grid::gpar(fill = col)
+                        gp = grid::gpar(fill = col_group)
                     ),
                     show_annotation_name = FALSE
                 )
@@ -667,11 +667,11 @@ plotHeatmap <- function(scCNA,
                     n <- length(elements)
                     hex <- scales::hue_pal(h = c(0, 360) + h, l = 65)(n)
 
-                    col <- structure(hex,
+                    col_lab <- structure(hex,
                         names = elements
                     )
 
-                    label_colors[i] <- list(col)
+                    label_colors[i] <- list(col_lab)
                     names(label_colors)[i] <- label[i]
 
                     # adding an increment to color on the color wheel and
