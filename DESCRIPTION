@@ -57,7 +57,7 @@ Imports:
     scales,
     tidyr,
     tibble,
-    igraph,
+    igraph (>= 1.2.8),
     BiocGenerics,
     grid,
     stringr,
