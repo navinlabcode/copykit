@@ -219,7 +219,6 @@ runCountReads <- function(dir,
         )
     }
 
-
     # LOWESS GC normalization
 
     message("Performing GC correction.")
@@ -235,9 +234,10 @@ runCountReads <- function(dir,
 
     varbin_counts_df <- round(dplyr::bind_cols(varbin_counts_list_gccor), 2)
 
-    # filtering low read counts where the sum of bins does not reach min_reads
-    varbin_counts_df <-
-        varbin_counts_df[which(colSums(varbin_counts_df) != 0)]
+    # filtering low read counts where the sum of bins does not reach more than 0
+    good_cells <- names(varbin_counts_df[which(colSums(varbin_counts_df) != 0)])
+
+    varbin_counts_df <- varbin_counts_df[good_cells]
 
     rg <- rg %>%
         dplyr::select(-strand, -GeneID)
@@ -293,8 +293,10 @@ runCountReads <- function(dir,
     names(varbin_reads_list) <- names(varbin_counts_list_all_fields)
 
     bam_metrics <- dplyr::bind_cols(varbin_reads_info)
-    rownames(bam_metrics) <- metadata_info_names
 
+    # making sure metrics match varbin_counts_df
+    bam_metrics <- bam_metrics[good_cells]
+    rownames(bam_metrics) <- metadata_info_names
     bam_metrics <- as.data.frame(t(bam_metrics))
 
     # adding total
