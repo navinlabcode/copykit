@@ -92,5 +92,6 @@ plotVariableGenes <- function(scCNA,
         ) +
         my_theme
 
-    print(p)
+    # return plot
+    p
 }

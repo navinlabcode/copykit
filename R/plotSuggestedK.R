@@ -117,11 +117,11 @@ plotSuggestedK <- function(scCNA,
             scale_fill_manual(values = c("TRUE" = "khaki", "FALSE" = "grey90")) +
             scale_x_discrete(limits = gtools::mixedsort(unique(df$k))) +
             theme_classic() +
-            theme(
-                axis.line.y = element_blank(),
-                axis.line.x = element_blank(),
-                legend.position = "none"
-            ) +
+            theme(legend.position = "none",
+                  axis.title.x = element_text(size = 14),
+                  axis.text.x = element_text(size = 12),
+                  axis.title.y = element_text(size = 14),
+                  axis.text.y = element_text(size = 12)) +
             labs(y = "jaccard similarity")
     }
 
@@ -141,5 +141,6 @@ plotSuggestedK <- function(scCNA,
             )
     }
 
-    print(p)
+    # return plot
+    p
 }

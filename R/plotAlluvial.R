@@ -142,5 +142,6 @@ plotAlluvial <- function(scCNA,
             limits = force
         )
 
-    print(p)
+    # return plot
+    p
 }

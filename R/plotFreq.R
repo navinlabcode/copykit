@@ -248,5 +248,6 @@ plotFreq <- function(scCNA,
             )
     }
 
-    print(p)
+    # return plot
+    p
 }

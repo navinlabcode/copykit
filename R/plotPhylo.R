@@ -226,6 +226,7 @@ plotPhylo <- function(scCNA,
             }
         }
 
-        print(p)
+        # return plot
+        p
     }
 }

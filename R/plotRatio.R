@@ -269,7 +269,8 @@ plotRatio <- function(scCNA,
                     ggline
             }
 
-            print(p)
+            # return plot
+            p
         })
         #
         # Handle the Done button being pressed.
@@ -355,6 +356,7 @@ plotRatio <- function(scCNA,
                 ggline
         }
 
-        print(p)
+        # return plot
+        p
     }
 }

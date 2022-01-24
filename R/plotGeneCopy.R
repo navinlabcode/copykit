@@ -166,7 +166,8 @@ plotGeneCopy <- function(scCNA,
             my_theme +
             ylab("percentage")
 
-        print(p)
+        # return plot
+        p
     }
 
     # geom violin

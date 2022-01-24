@@ -171,12 +171,14 @@ plotMetrics <- function(scCNA,
         p <- p + color_lab +
             labs(fill = label)
 
-        print(p)
+        # return plot
+        p
     } else {
         # else just print the normal without colors
         p <- p +
             ggbeeswarm::geom_quasirandom()
 
-        print(p)
+        # return plot
+        p
     }
 }

@@ -67,12 +67,10 @@ plotUmap <- function(scCNA,
     # theme setup
     my_theme <- list(
         ggplot2::theme(
-            axis.title.x = element_text(colour = "gray28", size = 20),
-            axis.text.x = element_blank(),
-            axis.ticks.x = element_blank(),
-            axis.title.y = element_text(colour = "gray28", size = 20),
-            axis.text.y = element_blank(),
-            axis.ticks.y = element_blank(),
+            axis.title.x = element_text(size = 14),
+            axis.text.x = element_text(size = 12),
+            axis.title.y = element_text(size = 14),
+            axis.text.y = element_text(size = 12),
             axis.line = element_blank(),
             panel.border = element_rect(color = "black", fill = NA),
             legend.position = "right",
@@ -91,7 +89,8 @@ plotUmap <- function(scCNA,
         p <- p +
             geom_point()
 
-        return(print(p))
+        # return plot
+        return(p)
     }
 
     if (all(label == "subclones")) {
@@ -109,7 +108,8 @@ plotUmap <- function(scCNA,
                 limits = force
             )
 
-        return(print(p))
+        # return plot
+        return(p)
     }
 
     if (all(label == "superclones")) {
@@ -126,7 +126,8 @@ plotUmap <- function(scCNA,
                 limits = force
             )
 
-        return(print(p))
+        # return plot
+        return(p)
     }
 
     if ("subclones" %in% label && "superclones" %in% label) {
@@ -161,7 +162,8 @@ plotUmap <- function(scCNA,
                 limits = force
             )
 
-        return(print(p))
+        # return plot
+        return(p)
     }
 
     if (!is.null(label) && !("subclones" %in% label && "superclones" %in% label)) {
@@ -194,6 +196,7 @@ plotUmap <- function(scCNA,
                 ggplot2::scale_fill_viridis_c()
         }
 
-        print(p)
+        # return plot
+        p
     }
 }
