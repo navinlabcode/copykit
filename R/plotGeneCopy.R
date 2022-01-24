@@ -175,14 +175,14 @@ plotGeneCopy <- function(scCNA,
         p <- p +
             ggplot2::geom_violin()
 
-        print(p)
+        p
     } else if (geom == "violin" & !is.null(label)) {
         warning("Coloring by label argument is only available for geom = 'swarm'.")
 
         p <- p +
             ggplot2::geom_violin()
 
-        print(p)
+        p
     }
 
     # geom swarm
@@ -190,7 +190,7 @@ plotGeneCopy <- function(scCNA,
         p <- p +
             ggbeeswarm::geom_quasirandom()
 
-        print(p)
+        p
     } else if (geom == "swarm" & !is.null(label)) {
         # retrieving data
 
@@ -259,6 +259,6 @@ plotGeneCopy <- function(scCNA,
             p <- p + facet_wrap(vars(plot_facet))
         }
 
-        print(p)
+        p
     }
 }
