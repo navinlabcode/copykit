@@ -1,16 +1,21 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# CopyKit
+# CopyKit <a href='https://github.com/navinlabcode/copykit'><img src='images/copykit_hexsticker_v2.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
-
-![Copykit Logo](images/copykit_hexsticker_v2.png)
-
 <!-- badges: end -->
 
-*CopyKit* provides a suite of tools for pre-processing, quality control,
-analysis, and visualization of single cell DNA sequencing datasets.
+## Overview
+
+The goal of **CopyKit** is to help you analyze single cell DNA
+sequencing datasets for copy number. For that, CopyKit presents four
+modules:
+
+1.  Pre-processing
+2.  Quality Control
+3.  Data Analysis
+4.  Visualization
 
 ## Installation
 
@@ -20,7 +25,9 @@ You can install the development version of CopyKit from github with:
 devtools::install_github("navinlabcode/copykit")
 ```
 
-## Tutorial
+CopyKit requires R version 4.0 or later.
+
+## Documentation
 
 The complete documentation can be found at:
 <https://navinlabcode.github.io/CopyKit-UserGuide/>

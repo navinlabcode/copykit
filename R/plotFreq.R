@@ -15,10 +15,10 @@
 #'
 #' @details \code{plotFreq} retrieves the data from the desired assay and creates
 #' an event matrix based on the high and low thresholds arguments. Values above
-#' the high threshold will be classified as gains whereas values below are classified
-#' as deletions. The resulting plot is a frequency plot where values above 0
-#' represent the frequency of gains and values below 0 represent the frequency of
-#' deletions.
+#' the high threshold will be classified as gains whereas values below are
+#' classified as deletions. The resulting plot is a frequency plot where values
+#' above 0 represent the frequency of gains and values below 0 represent the
+#' frequency of deletions.
 #'
 #' If the argument 'label' is provided the frequency plot will be calculated
 #' separately for each label. Labels can be any string column from
