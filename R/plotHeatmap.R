@@ -530,6 +530,8 @@ plotHeatmap <- function(scCNA,
             )))
         } else {
             # if assay is integer
+            # avoiding duplicated col argument
+            complex_args <- complex_args[which(names(complex_args) != 'col')]
 
             if (rounding_error == FALSE) {
                 do.call(ComplexHeatmap::Heatmap, c(
@@ -542,6 +544,9 @@ plotHeatmap <- function(scCNA,
                 ))
             } else {
                 # if rounding_error == TRUE
+                # avoiding duplicated col argument
+                complex_args <- complex_args[which(names(complex_args) != 'col')]
+
                 do.call(ComplexHeatmap::Heatmap, c(
                     list(
                         matrix = t(err),
@@ -718,6 +723,8 @@ plotHeatmap <- function(scCNA,
                     )
                 } else {
                     # if assay is integer
+                    # avoiding duplicated col argument
+                    complex_args <- complex_args[which(names(complex_args) != 'col')]
 
                     do.call(
                         ComplexHeatmap::Heatmap,
@@ -753,6 +760,9 @@ plotHeatmap <- function(scCNA,
                 # otherwise it will plot the rounding error matrix
 
                 if (rounding_error == FALSE) {
+                    # avoiding duplicated col argument
+                    complex_args <- complex_args[which(names(complex_args) != 'col')]
+
                     do.call(ComplexHeatmap::Heatmap, c(
                         list(
                             matrix = seg_data_int,
@@ -764,6 +774,9 @@ plotHeatmap <- function(scCNA,
                     ))
                 } else {
                     # if rounding_error == TRUE
+                    # avoiding duplicated col argument
+                    complex_args <- complex_args[which(names(complex_args) != 'col')]
+
                     do.call(ComplexHeatmap::Heatmap, c(
                         list(
                             matrix = t(err),
