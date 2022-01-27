@@ -7,7 +7,7 @@
 #'  considered deletions.
 #' @param assay String with the name of the assay to pull data from to plot
 #' the frequency plot.
-#' @param label A string with the name of the columns from
+#' @param group A string with the name of the columns from
 #' \code{\link[SummarizedExperiment]{colData}} to separate each frequency plot.
 #' @param geom A character with the desired geom
 #' @param BPPARAM A \linkS4class{BiocParallelParam} specifying how the function
@@ -20,19 +20,19 @@
 #' above 0 represent the frequency of gains and values below 0 represent the
 #' frequency of deletions.
 #'
-#' If the argument 'label' is provided the frequency plot will be calculated
-#' separately for each label. Labels can be any string column from
+#' If the argument 'group' is provided the frequency plot will be calculated
+#' separately for each group. Group can be any string column from
 #' \code{\link[SummarizedExperiment]{colData}}
 #'
 #' The following geoms are available:
 #'
 #' \itemize{
 #' \item{area}: If geom = 'area' an area plot with the frequency is plotted.
-#' If the label argument is provided a different facet will be plotted for each
-#' label.
+#' If the group argument is provided a different facet will be plotted for each
+#' group
 #'
 #' \item{line}: If geom = 'line' a line plot with the frequency is plotted.
-#' If the label argument lines are overlapped with different colors.
+#' If the group argument lines are overlapped with different colors.
 #'
 #' }
 #'
@@ -49,10 +49,10 @@
 #' copykit_obj <- copykit_example_filtered()[, sample(40)]
 #' plotFreq(copykit_obj)
 plotFreq <- function(scCNA,
-                     high_threshold = 1.3,
-                     low_threshold = 0.7,
+                     high_threshold = 1.1,
+                     low_threshold = 0.9,
                      assay = "segment_ratios",
-                     label = NULL,
+                     group = NULL,
                      geom = c("area", "line"),
                      BPPARAM = bpparam()) {
     geom <- match.arg(geom)
@@ -170,10 +170,10 @@ plotFreq <- function(scCNA,
             labels = c("loss", "neutral", "gain")
         ))
 
-    # if label is provided the dataframe will be split according to the label
+    # if group is provided the dataframe will be split according to the group
     # otherwise use the full dataset
-    if (!is.null(label)) {
-        meta_vector <- dplyr::pull(meta, label)
+    if (!is.null(group)) {
+        meta_vector <- dplyr::pull(meta, group)
         dat_split <- split(dat_class, meta_vector)
     } else {
         dat_split <- list(frequency_plot = dat_class)
@@ -196,7 +196,7 @@ plotFreq <- function(scCNA,
             tidyr::complete(abspos, value, fill = list(freq = 0, n = 0))
     }, BPPARAM = BPPARAM)
 
-    freq_df <- dplyr::bind_rows(freq_table, .id = "label")
+    freq_df <- dplyr::bind_rows(freq_table, .id = "group")
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # plot
@@ -216,25 +216,25 @@ plotFreq <- function(scCNA,
                 aes(abspos, -freq),
                 fill = "dodgerblue3"
             ) +
-            facet_wrap(vars(label), ncol = 1)
+            facet_wrap(vars(group), ncol = 1)
     }
 
-    if (geom == "line" && !is.null(label)) {
+    if (geom == "line" && !is.null(group)) {
         p <- ggplot() +
             ggchr_back +
             ggaes +
             geom_line(
                 data = subset(freq_df, value == "gain"),
-                aes(abspos, freq, color = label)
+                aes(abspos, freq, color = group)
             ) +
             geom_line(
                 data = subset(freq_df, value == "loss"),
-                aes(abspos, -freq, color = label)
+                aes(abspos, -freq, color = group)
             ) +
             theme(legend.position = "bottom")
     }
 
-    if (geom == "line" && is.null(label)) {
+    if (geom == "line" && is.null(group)) {
         p <- ggplot() +
             ggchr_back +
             ggaes +
