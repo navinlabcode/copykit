@@ -8,7 +8,7 @@
 #' @param dir A path for the directory containing BAM files from short-read
 #' sequencing.
 #' @param genome Name of the genome assembly. Default: 'hg38'.
-#' @param resolution The resolution of the VarBin method. Default: '200kb'.
+#' @param resolution The resolution of the VarBin method. Default: '220kb'.
 #' @param remove_Y (default == FALSE) If set to TRUE, removes information from
 #' the chrY from the dataset.
 #' @param min_bincount A numerical indicating the minimum mean bin counts a
@@ -62,14 +62,14 @@
 runCountReads <- function(dir,
                           genome = c("hg38", "hg19"),
                           resolution = c(
-                              "200kb",
-                              "50kb",
-                              "100kb",
-                              "175kb",
-                              "250kb",
+                              "220kb",
+                              "55kb",
+                              "110kb",
+                              "195kb",
+                              "280kb",
                               "500kb",
                               "1Mb",
-                              "2.5Mb"
+                              "2.8Mb"
                           ),
                           remove_Y = FALSE,
                           min_bincount = 10,
@@ -115,14 +115,14 @@ runCountReads <- function(dir,
         hg38_grangeslist <- hg38_grangeslist
 
         hg38_rg <- switch(resolution,
-            "50kb" = hg38_grangeslist[["hg38_50kb"]],
-            "100kb" = hg38_grangeslist[["hg38_100kb"]],
-            "175kb" = hg38_grangeslist[["hg38_175kb"]],
-            "200kb" = hg38_grangeslist[["hg38_200kb"]],
-            "250kb" = hg38_grangeslist[["hg38_250kb"]],
+            "55kb" = hg38_grangeslist[["hg38_50kb"]],
+            "110kb" = hg38_grangeslist[["hg38_100kb"]],
+            "195kb" = hg38_grangeslist[["hg38_175kb"]],
+            "220kb" = hg38_grangeslist[["hg38_200kb"]],
+            "280kb" = hg38_grangeslist[["hg38_250kb"]],
             "500kb" = hg38_grangeslist[["hg38_500kb"]],
             "1Mb" = hg38_grangeslist[["hg38_1Mb"]],
-            "2.5Mb" = hg38_grangeslist[["hg38_2Mb"]]
+            "2.8Mb" = hg38_grangeslist[["hg38_2Mb"]]
         )
 
         hg38_rg <- as.data.frame(hg38_rg)

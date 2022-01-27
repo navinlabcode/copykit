@@ -7,7 +7,7 @@
 runVarbin(
   dir,
   genome = c("hg38", "hg19"),
-  resolution = c("200kb", "50kb", "100kb", "175kb", "250kb", "500kb", "1Mb", "2.5Mb"),
+  resolution = c("220kb", "55kb", "110kb", "195kb", "280kb", "500kb", "1Mb", "2.8Mb"),
   remove_Y = FALSE,
   is_paired_end = FALSE,
   method = c("CBS", "multipcf"),

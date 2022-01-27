@@ -4,7 +4,7 @@ copykit_obj_50kb <- mock_bincounts(
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "50kb"
+    resolution = "55kb"
 )
 copykit_obj_50kb <- runVst(copykit_obj_50kb)
 
@@ -13,7 +13,7 @@ copykit_obj_100kb <- mock_bincounts(
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "100kb"
+    resolution = "110kb"
 )
 copykit_obj_100kb <- runVst(copykit_obj_100kb)
 
@@ -22,7 +22,7 @@ copykit_obj_175kb <- mock_bincounts(
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "175kb"
+    resolution = "195kb"
 )
 copykit_obj_175kb <- runVst(copykit_obj_175kb)
 
@@ -31,7 +31,7 @@ copykit_obj_200kb <- mock_bincounts(
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "200kb"
+    resolution = "220kb"
 )
 copykit_obj_200kb <- runVst(copykit_obj_200kb)
 
@@ -40,7 +40,7 @@ copykit_obj_250kb <- mock_bincounts(
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "250kb"
+    resolution = "280kb"
 )
 copykit_obj_250kb <- runVst(copykit_obj_250kb)
 
@@ -67,7 +67,7 @@ copykit_obj_2Mb <- mock_bincounts(
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "2.5Mb"
+    resolution = "2.8Mb"
 )
 copykit_obj_2Mb <- runVst(copykit_obj_2Mb)
 

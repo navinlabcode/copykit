@@ -599,16 +599,16 @@ mock_bincounts <- function(ncells = 30,
                            position_gain = 4900:5493,
                            position_del = 6523:7056,
                            genome = "hg38",
-                           resolution = "200kb") {
+                           resolution = "220kb") {
     hg38_rg <- switch(resolution,
-        "50kb" = hg38_grangeslist[["hg38_50kb"]],
-        "100kb" = hg38_grangeslist[["hg38_100kb"]],
-        "175kb" = hg38_grangeslist[["hg38_175kb"]],
-        "200kb" = hg38_grangeslist[["hg38_200kb"]],
-        "250kb" = hg38_grangeslist[["hg38_250kb"]],
+        "55kb" = hg38_grangeslist[["hg38_50kb"]],
+        "110kb" = hg38_grangeslist[["hg38_100kb"]],
+        "195kb" = hg38_grangeslist[["hg38_175kb"]],
+        "220kb" = hg38_grangeslist[["hg38_200kb"]],
+        "280kb" = hg38_grangeslist[["hg38_250kb"]],
         "500kb" = hg38_grangeslist[["hg38_500kb"]],
         "1Mb" = hg38_grangeslist[["hg38_1Mb"]],
-        "2.5Mb" = hg38_grangeslist[["hg38_2Mb"]]
+        "2.8Mb" = hg38_grangeslist[["hg38_2Mb"]]
     )
 
     hg38_rg <- subset(hg38_rg, seqnames != "chrY")
