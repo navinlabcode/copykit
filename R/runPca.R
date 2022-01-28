@@ -7,9 +7,10 @@
 #' @param scCNA The CopyKit object.
 #' @param assay String with the name of the assay to pull data from to make the
 #'embedding.
-#' @param seed Sets a seed for reproducibility.
 #' @param name String specifying the name to be used to store the result in the
 #' reducedDims of the output.
+#' @param scale A logical value indicating whether the variables should be
+#' scaled to have unit variance before the analysis takes place.
 #' @param ... Additional parameters passed to \code{\link[stats]{prcomp}}.
 #'
 #' @importFrom stats prcomp

@@ -8,6 +8,8 @@
 #' @return A ggplot object with The variance explained per principal component.
 #' @export
 #'
+#' @importFrom scales percent_format
+#'
 #' @examples
 plotScree <- function(scCNA,
                       ncomponents = 20) {
