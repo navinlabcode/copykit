@@ -11,6 +11,7 @@ runUmap(
   min_dist = 0,
   n_neighbors = 50,
   name = "umap",
+  ncomponents = 2,
   ...
 )
 }
@@ -38,6 +39,9 @@ See \code{\link[uwot]{umap}}.}
 
 \item{name}{String specifying the name to be used to store the result in the
 reducedDims of the output.}
+
+\item{ncomponents}{The dimension of the space to embed into. See
+\code{\link[uwot]{umap}}.}
 
 \item{...}{Additional parameters passed to \code{\link[uwot]{umap}}.}
 }

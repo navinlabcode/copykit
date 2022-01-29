@@ -57,7 +57,7 @@ runUmap <- function(scCNA,
         dat_umap <- uwot::umap(seg_data,
                                min_dist = min_dist,
                                n_neighbors = n_neighbors,
-                               ncomponents = n_components,
+                               n_components = ncomponents,
                                ...)
     )
 
