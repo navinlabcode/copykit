@@ -10,6 +10,7 @@
 findSuggestedK(
   scCNA,
   embedding = "umap",
+  ncomponents = 2,
   k_range = NULL,
   method = c("hdbscan", "leiden", "louvain"),
   metric = c("median", "mean"),
@@ -25,9 +26,12 @@ leidenCBI(data, k, seed_leid, diss = inherits(data, "dist"), ...)
 louvainCBI(data, k, seed_leid, diss = inherits(data, "dist"), ...)
 }
 \arguments{
-\item{scCNA}{scCNA object.}
+\item{scCNA}{The CopyKit object.}
 
-\item{embedding}{String with the name of the reducedDim embedding to pull data from.}
+\item{embedding}{String with the name of the reducedDim embedding.}
+
+\item{ncomponents}{An integer with the number of components dimensions to
+use from the embedding.}
 
 \item{k_range}{A numeric range of values to be tested.}
 

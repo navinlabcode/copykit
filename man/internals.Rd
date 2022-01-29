@@ -88,7 +88,7 @@ mock_bincounts(
   position_gain = 4900:5493,
   position_del = 6523:7056,
   genome = "hg38",
-  resolution = "200kb"
+  resolution = "220kb"
 )
 }
 \arguments{

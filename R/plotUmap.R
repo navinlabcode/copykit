@@ -5,18 +5,15 @@
 #'
 #' @author Darlan Conterno Minussi
 #'
-#' @param scCNA scCNA object.
+#' @param scCNA The CopyKit object.
 #' @param embedding String with the name of the reducedDim to pull data from.
 #' @param label A string with the elements from
 #' \code{\link[SummarizedExperiment]{colData}} to color the umap points.
 #'
 #' @details A reduced dimension representation with UMAP in the slot
 #' \code{\link[SingleCellExperiment]{reducedDim}} from the scCNA object.
-#' \code{plotUmap} automatically searches for cluster information in the
-#' \code{\link[SummarizedExperiment]{colData}} and colors the clusters according
-#' to that information.
 #'
-#' Otherwise a column from \code{\link[SummarizedExperiment]{colData}} can
+#' Columns from \code{\link[SummarizedExperiment]{colData}} can
 #' be used as an argument for 'label' to color the points on the plot.
 #'
 #' @return A ggplot object containing the reduced dimensions UMAP plot.
@@ -26,7 +23,8 @@
 #' @importFrom ggnewscale new_scale_color
 #' @import ggplot2
 #' @examples
-#' copykit_obj <- copykit_example_filtered()
+#' set.seed(1000)
+#' copykit_obj <- copykit_example_filtered()[,sample(300)]
 #' copykit_obj <- runUmap(copykit_obj)
 #'
 #' plotUmap(copykit_obj)

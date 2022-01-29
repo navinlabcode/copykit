@@ -6,6 +6,8 @@
 #'
 #' @param scCNA scCNA object.
 #' @param embedding String with the name of the reducedDim to pull data from.
+#' @param ncomponents An integer with the number of components dimensions to
+#' use from the embedding.
 #' @param method A string with method used for clustering.
 #' @param k_superclones A numeric k-nearest-neighbor value.
 #' Used to find the superclones.
@@ -75,20 +77,15 @@
 #' copykit_obj <- findClusters(copykit_obj)
 findClusters <- function(scCNA,
     embedding = "umap",
+    ncomponents = 2,
     method = c("hdbscan", "leiden", "louvain"),
     k_superclones = NULL,
     k_subclones = NULL,
     seed = 17) {
     method <- match.arg(method)
 
-    # obtaining data from reducedDim slot
-    if (!is.null(SingleCellExperiment::reducedDim(scCNA, embedding))) {
-        umap_df <-
-            SingleCellExperiment::reducedDim(scCNA, embedding) %>%
-            as.data.frame()
-    } else {
-        stop("Reduced dimensions slot is NULL. Use runUmap() to create it.")
-    }
+    # Obtain reduced dim embedding subset by the number of components.
+    red_dim <- as.data.frame(reducedDim(scCNA, embedding)[,1:ncomponents])
 
     # checks
     if (is.null(k_subclones) &&
@@ -119,7 +116,7 @@ findClusters <- function(scCNA,
         }
 
         g_major <-
-            scran::buildSNNGraph(umap_df, k = k_superclones, transposed = TRUE)
+            scran::buildSNNGraph(red_dim, k = k_superclones, transposed = TRUE)
         superclones <-
             as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
         # storing info
@@ -131,7 +128,7 @@ findClusters <- function(scCNA,
     # subclones using leiden
     if (method == "leiden" || method == "louvain") {
         g_minor <-
-            scran::buildSNNGraph(umap_df, k = k_subclones, transposed = TRUE)
+            scran::buildSNNGraph(red_dim, k = k_subclones, transposed = TRUE)
 
         # saving g_minor graph
         copykit::graph(scCNA) <- g_minor
@@ -159,13 +156,13 @@ findClusters <- function(scCNA,
     # subclones using hdbscan
     if (method == "hdbscan") {
         withr::with_seed(seed,
-                         hdb <- dbscan::hdbscan(umap_df,
+                         hdb <- dbscan::hdbscan(red_dim,
                                                 minPts = k_subclones))
 
         hdb_clusters <- as.character(hdb$cluster)
 
         hdb_df <- data.frame(
-            cell = rownames(umap_df),
+            cell = rownames(red_dim),
             hdb = hdb_clusters
         )
 

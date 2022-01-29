@@ -7,6 +7,7 @@
 findClusters(
   scCNA,
   embedding = "umap",
+  ncomponents = 2,
   method = c("hdbscan", "leiden", "louvain"),
   k_superclones = NULL,
   k_subclones = NULL,
@@ -17,6 +18,9 @@ findClusters(
 \item{scCNA}{scCNA object.}
 
 \item{embedding}{String with the name of the reducedDim to pull data from.}
+
+\item{ncomponents}{An integer with the number of components dimensions to
+use from the embedding.}
 
 \item{method}{A string with method used for clustering.}
 

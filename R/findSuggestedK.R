@@ -2,8 +2,10 @@
 #'
 #' Performs a grid search over a range of k values to assess cluster stability.
 #'
-#' @param scCNA  scCNA object.
-#' @param embedding String with the name of the reducedDim embedding to pull data from.
+#' @param scCNA  The CopyKit object.
+#' @param embedding String with the name of the reducedDim embedding.
+#' @param ncomponents An integer with the number of components dimensions to
+#' use from the embedding.
 #' @param k_range A numeric range of values to be tested.
 #' @param method A string with the method of clustering to be tested.
 #' @param metric A string with the function to summarize the jaccard similarity
@@ -54,6 +56,7 @@
 #' copykit_obj <- findSuggestedK(copykit_obj)
 findSuggestedK <- function(scCNA,
     embedding = "umap",
+    ncomponents = 2,
     k_range = NULL,
     method = c("hdbscan", "leiden", "louvain"),
     metric = c("median", "mean"),
@@ -79,10 +82,8 @@ findSuggestedK <- function(scCNA,
         }
     }
 
-    # obtaining data from reducedDim slot
-    if (is.null(SingleCellExperiment::reducedDim(scCNA, embedding))) {
-        stop("Reduced dimensions slot is NULL. Use runUmap().")
-    }
+    # obtaining embedding subset by the ncomponents.
+    red_dim <- as.data.frame(reducedDim(scCNA, embedding)[,1:ncomponents])
 
     message(cat("Calculating jaccard similarity for k range:", k_range))
 
@@ -95,7 +96,7 @@ findSuggestedK <- function(scCNA,
             df_clusterboot <-
                 .quiet(
                     fpc::clusterboot(
-                        SingleCellExperiment::reducedDim(scCNA, "umap"),
+                        red_dim,
                         B = B,
                         clustermethod = leidenCBI,
                         seed_leid = seed_val,
@@ -124,7 +125,7 @@ findSuggestedK <- function(scCNA,
             df_clusterboot <-
                 .quiet(
                     fpc::clusterboot(
-                        SingleCellExperiment::reducedDim(scCNA, "umap"),
+                        red_dim,
                         B = B,
                         clustermethod = louvainCBI,
                         seed_leid = seed_val,
@@ -149,7 +150,7 @@ findSuggestedK <- function(scCNA,
             df_clusterboot <-
                 .quiet(
                     fpc::clusterboot(
-                        SingleCellExperiment::reducedDim(scCNA, "umap"),
+                        red_dim,
                         B = B,
                         clustermethod = hdbscanCBI,
                         seed = seed,
@@ -195,7 +196,7 @@ findSuggestedK <- function(scCNA,
 
     if (metric == "median") {
         jc_df_opt <- jc_df %>%
-            filter(median == max(jc_df$median))
+            dplyr::filter(median == max(jc_df$median))
 
         selected_k_jac_value <- jc_df_opt$median
     }

@@ -6,10 +6,10 @@
 \usage{
 plotFreq(
   scCNA,
-  high_threshold = 1.3,
-  low_threshold = 0.7,
+  high_threshold = 1.1,
+  low_threshold = 0.9,
   assay = "segment_ratios",
-  label = NULL,
+  group = NULL,
   geom = c("area", "line"),
   BPPARAM = bpparam()
 )
@@ -26,7 +26,7 @@ considered deletions.}
 \item{assay}{String with the name of the assay to pull data from to plot
 the frequency plot.}
 
-\item{label}{A string with the name of the columns from
+\item{group}{A string with the name of the columns from
 \code{\link[SummarizedExperiment]{colData}} to separate each frequency plot.}
 
 \item{geom}{A character with the desired geom}
@@ -48,19 +48,19 @@ classified as deletions. The resulting plot is a frequency plot where values
 above 0 represent the frequency of gains and values below 0 represent the
 frequency of deletions.
 
-If the argument 'label' is provided the frequency plot will be calculated
-separately for each label. Labels can be any string column from
+If the argument 'group' is provided the frequency plot will be calculated
+separately for each group. Group can be any string column from
 \code{\link[SummarizedExperiment]{colData}}
 
 The following geoms are available:
 
 \itemize{
 \item{area}: If geom = 'area' an area plot with the frequency is plotted.
-If the label argument is provided a different facet will be plotted for each
-label.
+If the group argument is provided a different facet will be plotted for each
+group
 
 \item{line}: If geom = 'line' a line plot with the frequency is plotted.
-If the label argument lines are overlapped with different colors.
+If the group argument lines are overlapped with different colors.
 
 }
 }

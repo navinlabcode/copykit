@@ -23,6 +23,8 @@
 #' while smaller values result in more local data being preserved.
 #' In general values should be in the range 2 to 100.
 #' See \code{\link[uwot]{umap}}.
+#' @param ncomponents The dimension of the space to embed into. See
+#' \code{\link[uwot]{umap}}.
 #' @param ... Additional parameters passed to \code{\link[uwot]{umap}}.
 #'
 #' @importFrom uwot umap
@@ -43,6 +45,7 @@ runUmap <- function(scCNA,
                     min_dist = 0,
                     n_neighbors = 50,
                     name = "umap",
+                    ncomponents = 2,
                     ...) {
     seg_data <- t(SummarizedExperiment::assay(scCNA, assay)) %>%
         as.data.frame()
@@ -54,13 +57,14 @@ runUmap <- function(scCNA,
         dat_umap <- uwot::umap(seg_data,
                                min_dist = min_dist,
                                n_neighbors = n_neighbors,
+                               n_components = ncomponents,
                                ...)
     )
 
     SingleCellExperiment::reducedDim(scCNA, type = name) <- dat_umap
 
     message(
-        "Access reduced dimensions slot with: SingleCellExperiment::reducedDim(scCNA, 'umap')."
+        "Access reduced dimensions slot with: reducedDim(scCNA, 'umap')."
     )
     message("Done.")
 
