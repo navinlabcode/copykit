@@ -22,6 +22,9 @@
 #' @export
 #'
 #' @examples
+#' set.seed(1000)
+#' copykit_obj <- copykit_example_filtered()[,sample(100)]
+#' copykit_obj <- runPca(copykit_obj)
 
 runPca <- function(scCNA,
                     assay = "logr",

@@ -11,6 +11,10 @@
 #' @importFrom scales percent_format
 #'
 #' @examples
+#' copykit_obj <- copykit_example_filtered()
+#' copykit_obj <- runPca(copykit_obj)
+#' plotScree(copykit_obj)
+#'
 plotScree <- function(scCNA,
                       ncomponents = 20) {
 
