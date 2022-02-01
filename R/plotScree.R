@@ -18,6 +18,9 @@
 plotScree <- function(scCNA,
                       ncomponents = 20) {
 
+  # Bindings for NSE
+  pcacomponents <- varexp <- NULL
+
   # sdev attribute is saved with the PCA redDim
   sdev <- attr(reducedDim(scCNA, "PCA"), 'var_explained')
 

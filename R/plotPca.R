@@ -40,7 +40,7 @@ plotPca <- function(scCNA,
 
 
   # bindings for NSE objects
-  V1 <- V2 <- NULL
+  PC1 <- PC2 <- NULL
 
   message("Plotting PCA.")
 

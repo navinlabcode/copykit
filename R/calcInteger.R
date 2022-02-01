@@ -46,19 +46,19 @@ calcInteger <- function(scCNA,
     df <- SummarizedExperiment::assay(scCNA, assay)
     seg <- SummarizedExperiment::assay(scCNA, 'segment_ratios')
 
+
     if (!is.null(ploidy_value)) {
         if (method == "fixed") {
             if (is.null(ploidy_value) && !is.numeric(ploidy_value)) {
                 stop("Method fixed requires a numeric value for ploidy_value.")
             }
 
-            message(
-                "Scaling ratio values by ploidy value ",
-                ploidy_value
-            )
+            message("Scaling ratio values by ploidy value ",
+                    ploidy_value)
 
             # ploidy values are added to colData information
-            SummarizedExperiment::colData(scCNA)$ploidy <- ploidy_value
+            SummarizedExperiment::colData(scCNA)$ploidy <-
+                ploidy_value
 
             # saving ploidy scaling method
             S4Vectors::metadata(scCNA)$ploidy_method <- "fixed"
@@ -79,11 +79,19 @@ calcInteger <- function(scCNA,
                 BPPARAM = BPPARAM
             )
 
-        sc_ploidies <- sapply(sc_quants, function(x) x$ploidy)
-        sc_confidence <- sapply(sc_quants, function(x) x$confidence_ratio)
+        # extracting ploidies from sc_quantum object
+        sc_ploidies <-
+            vapply(sc_quants, function(x)
+                x$ploidy, numeric(1))
+
+        # extracting ploidies from sc_quantum object
+        sc_confidence <-
+            vapply(sc_quants, function(x)
+                x$confidence_ratio, numeric(1))
 
         SummarizedExperiment::colData(scCNA)$ploidy <- sc_ploidies
-        SummarizedExperiment::colData(scCNA)$ploidy_confidence <- sc_confidence
+        SummarizedExperiment::colData(scCNA)$ploidy_confidence <-
+            sc_confidence
     }
 
     # check to guarantee multiplication

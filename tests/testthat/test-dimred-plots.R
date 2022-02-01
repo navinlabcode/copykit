@@ -1,5 +1,5 @@
 set.seed(1000)
-copykit_obj <- copykit_example_filtered()[,sample(300)]
+copykit_obj <- copykit_example_filtered()[,sample(200)]
 copykit_obj <- findClusters(copykit_obj)
 copykit_obj <- runPca(copykit_obj)
 

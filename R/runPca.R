@@ -36,8 +36,8 @@ runPca <- function(scCNA,
   seg_data <- t(SummarizedExperiment::assay(scCNA, assay)) %>%
     as.data.frame()
 
-  message(paste("Using assay:", assay))
-  message(paste("Embedding data with PCA."))
+  message(sprintf("Using assay: %s", assay))
+  message(sprintf("Embedding data with PCA."))
 
   pca <- prcomp(seg_data,
                      scale. = scale,

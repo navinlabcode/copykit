@@ -1,11 +1,11 @@
 #' Plot ratio
 #'
-#' plotRatio allows for a visualization of the segment ratios together with the ratios.
-#' It is helpful to observe the fit of the segmentation to the data.
+#' plotRatio allows for a visualization of the segment ratios together with the
+#' ratios.
 #'
 #' @author Darlan Conterno Minussi
 #'
-#' @param scCNA scCNA object.
+#' @param scCNA The CopyKit object.
 #' @param sample_name Optional character vector with the name of the sample to
 #' be visualized
 #'
@@ -169,11 +169,11 @@ plotRatio <- function(scCNA,
       }
 
     if (!is.null(colData(scCNA)$ploidy)) {
-        # multiplying by the integer. match() creates a vector that repeates the
+        # multiplying by the integer. match() creates a vector that repeat the
         # value from the ploidy column the same amount of times as the long df
         # on the sample with the same sample name
         df <- df %>%
-            dplyr::mutate(integer = round(df$segment_ratio * (colData(scCNA)$ploidy[match(df$sample, colData(scCNA)$sample)])))
+          dplyr::mutate(integer = round(df$segment_ratio * (colData(scCNA)$ploidy[match(df$sample, colData(scCNA)$sample)])))
     }
 
     choice <- unique(df$sample)
@@ -217,7 +217,8 @@ plotRatio <- function(scCNA,
                 names = 0:(2 * round(cell_ploidy))
                 )
 
-                color_ratio[which(names(color_ratio) == round(cell_ploidy))] <- "gray"
+                color_ratio[which(names(color_ratio) == round(cell_ploidy))] <-
+                  "gray"
 
                 max_int_value <- round(max(df_plot$ratio) * cell_ploidy)
                 mean_bin_cell <- mean(df_plot$ratio)
@@ -232,7 +233,7 @@ plotRatio <- function(scCNA,
 
                 # truncating maximum value due to color scale
                 df_plot$integer[df_plot$integer > 2 * (round(mean(df_plot$integer)))] <-
-                    2 * (round(mean(df_plot$integer)))
+                  2 * (round(mean(df_plot$integer)))
             }
 
             ggline <-

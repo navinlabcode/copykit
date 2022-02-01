@@ -7,7 +7,7 @@
 plotRatio(scCNA, sample_name = NULL)
 }
 \arguments{
-\item{scCNA}{scCNA object.}
+\item{scCNA}{The CopyKit object.}
 
 \item{sample_name}{Optional character vector with the name of the sample to
 be visualized}
@@ -18,8 +18,8 @@ the desired cell can be selected. If a 'sample_name' is provided,
 returns a ggplot object with the ratio plot for the selected cell.
 }
 \description{
-plotRatio allows for a visualization of the segment ratios together with the ratios.
-It is helpful to observe the fit of the segmentation to the data.
+plotRatio allows for a visualization of the segment ratios together with the
+ratios.
 }
 \details{
 plotRatio will return a ratio plot for the selected cell. If
