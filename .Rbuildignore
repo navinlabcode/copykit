@@ -4,5 +4,7 @@
 ^README\.Rmd$
 ^_pkgdown\.yml$
 ^docs$
+^images$
+^snakemake_pipelines$
 ^pkgdown$
 ^data-raw$
