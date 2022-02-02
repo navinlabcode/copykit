@@ -34,7 +34,7 @@
 #' @examples
 #' copykit_obj <- copykit_example()
 #' copykit_obj <- findAneuploidCells(copykit_obj)
-#' copykit_obj <- copykit_obj[, colData(copykit_obj)$is_aneuploit == TRUE]
+#' copykit_obj <- copykit_obj[, colData(copykit_obj)$is_aneuploid == TRUE]
 #' copykit_obj <- findOutliers(copykit_obj)
 findOutliers <- function(scCNA,
     assay = "segment_ratios",
