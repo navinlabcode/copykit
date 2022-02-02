@@ -27,6 +27,7 @@
 \alias{distMat<-,CopyKit-method}
 \alias{graph}
 \alias{graph,CopyKit-method}
+\alias{graph<-}
 \alias{graph<-,CopyKit-method}
 \alias{show}
 \alias{show,CopyKit-method}
@@ -37,7 +38,6 @@
 \alias{l2e.normal.sd}
 \alias{overdispersion}
 \alias{parCor}
-\alias{mock_bincounts}
 \title{CopyKit internal functions.}
 \usage{
 \S4method{segment_ratios}{CopyKit}(x, withDimnames = TRUE)
@@ -68,7 +68,7 @@
 
 \S4method{show}{CopyKit}(object)
 
-... \%!in\% NA
+x \%!in\% table
 
 superclones_pal()
 
@@ -81,15 +81,6 @@ l2e.normal.sd(xs)
 overdispersion(v)
 
 parCor(x, BPPARAM = BiocParallel::bpparam())
-
-mock_bincounts(
-  ncells = 30,
-  ncells_diploid = 5,
-  position_gain = 4900:5493,
-  position_del = 6523:7056,
-  genome = "hg38",
-  resolution = "220kb"
-)
 }
 \arguments{
 \item{x}{CopyKit object.}
@@ -108,8 +99,6 @@ A numerci vector with the estimation of the index of dispersion,
 which is used when estimating standard errors for each segment mean
 
 A matrix with the pairwise correlation from the segment ratio means.
-
-A CopyKit object with simulated bincounts
 }
 \description{
 This document establish setters and getters to facilitate access

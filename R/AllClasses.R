@@ -9,7 +9,11 @@
 #' @keywords internal
 phylo <- structure(list(), class = "phylo")
 
+#' Placeholder for the igraph class
 #' @exportClass igraph
+#' @name igraph-class
+#' @rdname CopyKit-class
+#' @keywords internal
 setOldClass("igraph")
 
 ###################################################################
@@ -30,8 +34,8 @@ setOldClass("igraph")
 #' @references The Bioconductor SingleCellExperiment Class
 #' DOI: 10.18129/B9.bioc.SingleCellExperiment
 #' @import methods
-#' @name CopyKit
-#' @rdname CopyKit
+#' @name CopyKit-class
+#' @rdname CopyKit-class
 #' @importMethodsFrom SummarizedExperiment colData
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
@@ -50,6 +54,11 @@ setOldClass("igraph")
 )
 
 #' @export
+#' @rdname CopyKit-class
+#' @param consensus A data frame with the consensus information.
+#' @param phylo A phylo object with a phylogenetic tree.
+#' @param consensusPhylo A phylo object with a phylogenetic consensus tree.
+#' @param graph A graph object with a graph made from the umap data.
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
 CopyKit <- function(consensus = data.frame(),
                     phylo = structure(list(), class = "phylo"),
