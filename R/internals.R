@@ -22,6 +22,13 @@
 #' @rdname internals
 NULL
 
+# -------------------
+# global variables
+# -------------------
+utils::globalVariables(c('hg38_grangeslist', 'copykit_obj_filt_rle',
+                         'copykit_obj_filt_umap', 'hg19_genes', 'hg38_genes',
+                         'hg19_rg'))
+
 #' @export
 #' @rdname internals
 #' @name segment_ratios
@@ -709,4 +716,6 @@ mock_bincounts <- function(ncells = 30,
 
     return(copykit_obj_bincounts)
 }
+
+
 
