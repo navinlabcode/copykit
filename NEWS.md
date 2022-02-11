@@ -19,3 +19,9 @@ Resolutions are: '55kb', '110kb', '195kb', '220kb', '280kb', '500kb', '1Mb', '2.
  
 * Clustering functions can use n dimensions with either UMAP or PCA
  - added argument `ncomponents` to `findSuggestedK()` and `findClusters` 
+
+# copykit 0.0.0.9039
+
+* Fixed a critical bug in runSegmentation to set the correct log base call
+during merge levels.
+
