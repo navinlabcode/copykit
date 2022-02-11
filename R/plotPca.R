@@ -40,7 +40,7 @@ plotPca <- function(scCNA,
 
 
   # bindings for NSE objects
-  V1 <- V2 <- NULL
+  PC1 <- PC2 <- NULL
 
   message("Plotting PCA.")
 
@@ -127,8 +127,8 @@ plotPca <- function(scCNA,
     p <- p +
       geom_point(
         aes(
-          x = V1,
-          y = V2,
+          x = PC1,
+          y = PC2,
           color = SummarizedExperiment::colData(scCNA)$superclones
         ),
         alpha = 1,
@@ -141,8 +141,8 @@ plotPca <- function(scCNA,
       ) +
       ggnewscale::new_scale_color() +
       geom_point(aes(
-        x = V1,
-        y = V2,
+        x = PC1,
+        y = PC2,
         fill = as.factor(SummarizedExperiment::colData(scCNA)$subclones)
       ),
       size = 2.5,

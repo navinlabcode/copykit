@@ -22,6 +22,13 @@
 #' @rdname internals
 NULL
 
+# -------------------
+# global variables
+# -------------------
+utils::globalVariables(c('hg38_grangeslist', 'copykit_obj_filt_rle',
+                         'copykit_obj_filt_umap', 'hg19_genes', 'hg38_genes',
+                         'hg19_rg'))
+
 #' @export
 #' @rdname internals
 #' @name segment_ratios
@@ -155,7 +162,7 @@ setMethod("graph", "CopyKit", function(x) {
 
 #' @export
 #' @rdname internals
-#' @name graph
+#' @name graph<-
 #' @aliases graph<-,CopyKit-method
 #' @param x CopyKit object.
 setReplaceMethod("graph", "CopyKit", function(x, value) {
@@ -192,10 +199,14 @@ setMethod("show", "CopyKit", function(object) {
     )
 })
 
+#' Not in
+#'
 #' @export
 #' @rdname internals
 #' @keywords internal
-`%!in%` <- Negate(`%in%`)
+# thanks to https://peter.solymos.org/code/2016/11/26/
+#how-to-write-and-document-special-functions-in-r.html
+`%!in%` <- function(x, table) !(match(x, table, nomatch = 0) > 0)
 
 # suppress cat output from function
 # thanks to https://stackoverflow.com/a/54136863
@@ -519,6 +530,23 @@ parCor <- function(x, BPPARAM = BiocParallel::bpparam()) {
     return(res_parcor_reserve)
 }
 
+#' CopyKit Example
+#'
+#' @name copykit_example
+#' @aliases copykit_example
+#' @docType data
+#' @rdname data
+#' @return A CopyKit object with data from BL1 sample from the CopyKit
+#' manuscript.
+#' @details This function is largely used for examples of CopyKit functions.
+#'
+#' This function returns a CopyKit object with the unfiltered dataset
+#' of the sample BL1. This sample was processed with ACT and is a liver
+#' metastasis from a primary breast cancer patient.
+#'
+#' The CopyKit object contain only the segment ratio mean of each single cell
+#' and, therefore, is not compatible with the functions from the runVarbin
+#' module.
 #' @export
 #' @importFrom S4Vectors metadata<-
 #' @importFrom SummarizedExperiment colData<-
@@ -550,7 +578,26 @@ copykit_example <- function() {
     return(copykit_obj)
 }
 
+#' CopyKit Example
+#'
+#' @name copykit_example_filtered
+#' @aliases copykit_example_filtered
+#' @docType data
+#' @rdname data
+#' @return A CopyKit object with data from BL1 sample from the CopyKit
+#' manuscript with diploid and noise cells removed.
+#' @details This function is largely used for examples of CopyKit functions.
+#'
+#' This function returns a CopyKit object with the unfiltered dataset
+#' of the sample BL1. This sample was processed with ACT and is a liver
+#' metastasis from a primary breast cancer patient.
+#'
+#' The CopyKit object contain only the segment ratio mean of each single cell
+#' and, therefore, is not compatible with the functions from the runVarbin
+#' module.
 #' @export
+#' @importFrom S4Vectors metadata<-
+#' @importFrom SummarizedExperiment colData<-
 #' @keywords internal
 #' @importFrom S4Vectors metadata
 #' @importFrom SingleCellExperiment reducedDim<-
@@ -586,12 +633,23 @@ copykit_example_filtered <- function() {
     return(copykit_obj_filt)
 }
 
+#' mock_bincounts
+#'
 #' @name mock_bincounts
+#' @param ncells A numeric with the total number of cells to simulate.
+#' @param ncells_diploid A numeric with the number of diploid cells to simulate
+#' @param position_gain A vector with the index of the bin counts in which
+#' chromosomal gains will be added.
+#' @param position_del A vector with the index of the bin counts in which
+#' chromosomal deletions will be placed.
+#' @param genome The assembly genome information to add to the metadata.
+#' @param resolution The resolution of the scaffold to add to the object
+#' metadata
 #' @aliases mock_bincounts
 #' @export
-#' @docType methods
+#' @docType data
 #' @return A CopyKit object with simulated bincounts
-#' @rdname internals
+#' @rdname data
 #' @keywords internal
 #' @importFrom stats rpois runif
 mock_bincounts <- function(ncells = 30,
@@ -658,3 +716,6 @@ mock_bincounts <- function(ncells = 30,
 
     return(copykit_obj_bincounts)
 }
+
+
+

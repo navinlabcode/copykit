@@ -268,8 +268,8 @@ runSegmentation <- function(scCNA,
     if (S4Vectors::metadata(scCNA)$vst == "ft") {
         smooth_counts_df[smooth_counts_df == 0] <- 1e-4
         seg_df[seg_df == 0] <- 1e-4
-        smooth_counts_df <- log(smooth_counts_df)
-        seg_df <- log(seg_df)
+        smooth_counts_df <- log2(smooth_counts_df)
+        seg_df <- log2(seg_df)
     }
 
     seg_ml_list <- BiocParallel::bplapply(seq_along(seg_df), function(i) {
