@@ -227,6 +227,62 @@ setMethod("show", "CopyKit", function(object) {
 # color palettes
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# heatmaps ocean.balance
+# The default color scale for Heatmap is from the package pals by Kevin Wright
+# https://github.com/kwstat/pals (License GPL-3)
+# The ocean.balance color palette (Licence MIT) was developed by Kristen Thyng
+# http://dx.doi.org/10.5670/oceanog.2016.66
+# Both awesome palette packages and you should check them out.
+
+#' @name ocean_balance_hex
+#' @aliases ocean_balance_hex
+#' @export
+#' @docType methods
+#' @return Hexadecimal values for ocean.balance function
+#' @rdname internals
+ocean_balance_hex <- c(
+    "#181C43",
+    "#21295F",
+    "#27347D",
+    "#28409F",
+    "#1950BA",
+    "#0A65BD",
+    "#1F77BB",
+    "#3787BA",
+    "#4F96BA",
+    "#6AA4BC",
+    "#87B2C1",
+    "#A3BFC9",
+    "#BECDD3",
+    "#D8DCDE",
+    "#F0ECEB",
+    "#E8D7D2",
+    "#E1C1B8",
+    "#DAAD9E",
+    "#D49884",
+    "#CD8369",
+    "#C66E51",
+    "#BF583B",
+    "#B7412A",
+    "#AB2924",
+    "#991527",
+    "#830E29",
+    "#6B0E25",
+    "#530D1D",
+    "#3C0912"
+)
+
+#' @name ocean.balance
+#' @aliases ocean.balance
+#' @export
+#' @docType methods
+#' @return The default colors for heatmaps
+#' @importFrom grDevices colorRampPalette
+#' @rdname internals
+ocean.balance <- function(n) {
+    colorRampPalette(ocean_balance_hex)(n)
+}
+
 #' @name superclones_pal
 #' @aliases superclones_pal
 #' @export
@@ -717,5 +773,155 @@ mock_bincounts <- function(ncells = 30,
     return(copykit_obj_bincounts)
 }
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Merge Levels
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# mergeLevels and combine.func are present in https://doi.org/10.1038/ng.3641
+# They can also be found in the package aCGH from Peter Dimitrov
+# https://www.bioconductor.org/packages/release/bioc/html/aCGH.html
+# under GPL-2 licence
 
+#' @name mergeLevels
+#' @aliases mergeLevels
+#' @export
+#' @docType methods
+#' @rdname internals
+#' @keywords internal
+#' @importFrom stats ansari.test wilcox.test
+mergeLevels <- function (vecObs, vecPred, pv.thres = 1e-04, ansari.sign = 0.05,
+                         thresMin = 0.05, thresMax = 0.5, verbose = 1, scale = TRUE)
+{
+    if (thresMin > thresMax) {
+        cat("Error, thresMax should be equal to or larger than thresMin\n")
+        return()
+    }
+    thresAbs = thresMin
+    sq <- numeric()
+    j = 0
+    ansari = numeric()
+    lv = numeric()
+    flag = 0
+    if (thresMin == thresMax) {
+        flag = 2
+    }
+    else {
+        l.step <- signif((thresMax - thresMin)/10, 1)
+        s.step <- signif((thresMax - thresMin)/200, 1)
+    }
+    while (1) {
+        if (verbose >= 1) {
+            cat("\nCurrent thresAbs: ", thresAbs, "\n")
+        }
+        j = j + 1
+        sq[j] <- thresAbs
+        vecPredNow = vecPred
+        mnNow = unique(vecPred)
+        mnNow = mnNow[!is.na(mnNow)]
+        cont = 0
+        while (cont == 0 & length(mnNow) > 1) {
+            mnNow = sort(mnNow)
+            n <- length(mnNow)
+            if (verbose >= 2) {
+                cat("\r", n, ":", length(unique(vecPred)), "\t")
+            }
+            if (scale) {
+                d <- (2 * 2^mnNow)[-n] - (2 * 2^mnNow)[-1]
+            }
+            else {
+                d <- (mnNow)[-n] - (mnNow)[-1]
+            }
+            dst <- cbind(abs(d)[order(abs(d))], (2:n)[order(abs(d))],
+                         (1:(n - 1))[order(abs(d))])
+            for (i in 1:nrow(dst)) {
+                cont = 1
+                out = combine.func(diff = dst[i, 1], vecObs,
+                                   vecPredNow, mnNow, mn1 = mnNow[dst[i, 2]],
+                                   mn2 = mnNow[dst[i, 3]], pv.thres = pv.thres,
+                                   thresAbs = if (scale) {
+                                       2 * 2^thresAbs - 2
+                                   }
+                                   else {
+                                       thresAbs
+                                   })
+                if (out$pv > pv.thres) {
+                    cont = 0
+                    vecPredNow = out$vecPredNow
+                    mnNow = out$mnNow
+                    break
+                }
+            }
+        }
+        ansari[j] = ansari.test(sort(vecObs - vecPredNow), sort(vecObs -
+                                                                    vecPred))$p.value
+        if (is.na(ansari[j])) {
+            ansari[j] = 0
+        }
+        lv[j] = length(mnNow)
+        if (flag == 2) {
+            break
+        }
+        if (ansari[j] < ansari.sign) {
+            flag = 1
+        }
+        if (flag) {
+            if (ansari[j] > ansari.sign | thresAbs == thresMin) {
+                break
+            }
+            else {
+                thresAbs = signif(thresAbs - s.step, 3)
+                if (thresAbs <= thresMin) {
+                    thresAbs = thresMin
+                }
+            }
+        }
+        else {
+            thresAbs = thresAbs + l.step
+        }
+        if (thresAbs >= thresMax) {
+            thresAbs = thresMax
+            flag = 2
+        }
+    }
+    return(list(vecMerged = vecPredNow, mnNow = mnNow, sq = sq,
+                ansari = ansari))
+}
+
+#' @name combine.func
+#' @aliases combine.func
+#' @export
+#' @docType methods
+#' @rdname internals
+#' @keywords internal
+combine.func <- function (diff, vecObs, vecPredNow, mnNow, mn1, mn2, pv.thres = 1e-04,
+                          thresAbs = 0)
+{
+    vec1 = vecObs[which(vecPredNow == mn1)]
+    vec2 = vecObs[which(vecPredNow == mn2)]
+    if (diff <= thresAbs) {
+        pv = 1
+    }
+    else {
+        if ((length(vec1) > 10 & length(vec2) > 10) | sum(length(vec1),
+                                                          length(vec2)) > 100) {
+            pv = wilcox.test(vec1, vec2)$p.value
+        }
+        else {
+            pv = wilcox.test(vec1, vec2, exact = TRUE)$p.value
+        }
+        if (length(vec1) <= 3 | length(vec2) <= 3) {
+            pv = 0
+        }
+    }
+    index.merged <- numeric()
+    if (pv > pv.thres) {
+        vec = c(vec1, vec2)
+        index.merged = which((vecPredNow == mn1) | (vecPredNow ==
+                                                        mn2))
+        vecPredNow[index.merged] = median(vec, na.rm = TRUE)
+        mnNow[which((mnNow == mn1) | (mnNow == mn2))] = median(vec,
+                                                               na.rm = TRUE)
+        mnNow = unique(mnNow)
+    }
+    list(mnNow = mnNow, vecPredNow = vecPredNow, pv = pv)
+}
 

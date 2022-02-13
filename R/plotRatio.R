@@ -211,7 +211,7 @@ plotRatio <- function(scCNA,
                     pull(ploidy)
 
                 # ratio colors
-                color_ratio <- structure(pals::ocean.balance(length(0:(
+                color_ratio <- structure(ocean.balance(length(0:(
                     2 * round(cell_ploidy)
                 ))),
                 names = 0:(2 * round(cell_ploidy))
@@ -299,7 +299,7 @@ plotRatio <- function(scCNA,
                 pull(ploidy)
 
             # ratio colors
-            color_ratio <- structure(pals::ocean.balance(length(0:(
+            color_ratio <- structure(ocean.balance(length(0:(
                 2 * round(cell_ploidy)
             ))),
             names = 0:(2 * round(cell_ploidy))

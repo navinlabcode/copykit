@@ -32,13 +32,20 @@
 \alias{show}
 \alias{show,CopyKit-method}
 \alias{\%!in\%}
+\alias{ocean_balance_hex}
+\alias{ocean.balance}
 \alias{superclones_pal}
 \alias{subclones_pal}
 \alias{find_scaffold_genes}
 \alias{l2e.normal.sd}
 \alias{overdispersion}
 \alias{parCor}
+\alias{mergeLevels}
+\alias{combine.func}
 \title{CopyKit internal functions.}
+\format{
+An object of class \code{character} of length 29.
+}
 \usage{
 \S4method{segment_ratios}{CopyKit}(x, withDimnames = TRUE)
 
@@ -70,6 +77,10 @@
 
 x \%!in\% table
 
+ocean_balance_hex
+
+ocean.balance(n)
+
 superclones_pal()
 
 subclones_pal()
@@ -81,11 +92,37 @@ l2e.normal.sd(xs)
 overdispersion(v)
 
 parCor(x, BPPARAM = BiocParallel::bpparam())
+
+mergeLevels(
+  vecObs,
+  vecPred,
+  pv.thres = 1e-04,
+  ansari.sign = 0.05,
+  thresMin = 0.05,
+  thresMax = 0.5,
+  verbose = 1,
+  scale = TRUE
+)
+
+combine.func(
+  diff,
+  vecObs,
+  vecPredNow,
+  mnNow,
+  mn1,
+  mn2,
+  pv.thres = 1e-04,
+  thresAbs = 0
+)
 }
 \arguments{
 \item{x}{CopyKit object.}
 }
 \value{
+Hexadecimal values for ocean.balance function
+
+The default colors for heatmaps
+
 a named vector of default colors for CopyKit superclones.
 
 a named vector of default colors for CopyKit subclones.
@@ -128,4 +165,5 @@ Alexander Davis
 
 Junke Wang
 }
+\keyword{datasets}
 \keyword{internal}

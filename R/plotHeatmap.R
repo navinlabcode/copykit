@@ -85,7 +85,6 @@
 #'
 #' @import ComplexHeatmap
 #' @importFrom circlize colorRamp2
-#' @importFrom pals ocean.balance
 #' @importFrom S4Vectors metadata
 #' @importFrom grDevices colors
 #' @importFrom SummarizedExperiment assay
@@ -176,7 +175,7 @@ plotHeatmap <- function(scCNA,
 
         # colors
         color_heat <-
-            structure(pals::ocean.balance(length(0:ploidy_trunc)),
+            structure(ocean.balance(length(0:ploidy_trunc)),
                 names = 0:ploidy_trunc
             )
 
