@@ -25,3 +25,5 @@ Resolutions are: '55kb', '110kb', '195kb', '220kb', '280kb', '500kb', '1Mb', '2.
 * Fixed a critical bug in runSegmentation to set the correct log base call
 during merge levels.
 
+# copykit 0.0.0.9040
+* Adding raster arguments to plotHeatmap().
