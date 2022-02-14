@@ -16,6 +16,8 @@ plotHeatmap(
   genes = NULL,
   col = NULL,
   row_split = NULL,
+  use_raster = TRUE,
+  raster_quality = 10,
   n_threads = 1
 )
 }
@@ -51,6 +53,15 @@ help.}
 
 \item{row_split}{A string with the names of the columns from
 \code{\link[SummarizedExperiment]{colData}} to split the heatmap.}
+
+\item{use_raster}{Whether render the heatmap body as a raster image.
+It helps to reduce file size when the matrix is huge. If number of rows or
+columns is more than 2000, it is by default turned on. Note if cell_fun is
+set, use_raster is enforced to be FALSE.
+see \code{\link[ComplexHeatmap]{Heatmap}}.}
+
+\item{raster_quality}{A value larger than 1. Larger values increase the
+file size.}
 
 \item{n_threads}{Number of threads passed on to \code{runDistMat}.}
 }

@@ -26,6 +26,13 @@
 #' help.
 #' @param consensus A boolean indicating if the consensus heatmap should be
 #' plotted.
+#' @param use_raster Whether render the heatmap body as a raster image.
+#' It helps to reduce file size when the matrix is huge. If number of rows or
+#' columns is more than 2000, it is by default turned on. Note if cell_fun is
+#' set, use_raster is enforced to be FALSE.
+#' see \code{\link[ComplexHeatmap]{Heatmap}}.
+#' @param raster_quality A value larger than 1. Larger values increase the
+#' file size.
 #' @param n_threads Number of threads passed on to \code{runDistMat}.
 #'
 #' @return A \code{ComplexHeatmap} object with a heatmap of copy number data
@@ -117,6 +124,8 @@ plotHeatmap <- function(scCNA,
     genes = NULL,
     col = NULL,
     row_split = NULL,
+    use_raster = TRUE,
+    raster_quality = 10,
     n_threads = 1) {
     # args
     order_cells <- match.arg(order_cells)
@@ -483,7 +492,8 @@ plotHeatmap <- function(scCNA,
 
     # list with arguments for complexheatmap
     complex_args <- list(
-        use_raster = TRUE,
+        use_raster = use_raster,
+        raster_quality = raster_quality,
         col = col,
         bottom_annotation = mk,
         right_annotation = ha_barplot,
