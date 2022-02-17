@@ -134,14 +134,21 @@ findClusters <- function(scCNA,
 
         # subclones
         if (method == "leiden") {
-            leid_obj <- igraph::cluster_leiden(g_minor,
-                resolution_parameter = 0.2,
-                n_iterations = 100
+            withr::with_seed(
+                seed,
+                leid_obj <-
+                    igraph::cluster_leiden(
+                        g_minor,
+                        resolution_parameter = 0.2,
+                        n_iterations = 100
+                    )
             )
         }
 
         if (method == "louvain") {
-            leid_obj <- igraph::cluster_leiden(g_minor)
+            withr::with_seed(seed,
+                             leid_obj <- igraph::cluster_louvain(g_minor))
+
         }
 
         leid_obj_com <- igraph::membership(leid_obj)
