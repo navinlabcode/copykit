@@ -49,6 +49,6 @@ provided in the argument ploidy_value.
 }
 }
 \examples{
-copykit_obj <- mock_bincounts(ncells_diploid = 0)
+copykit_obj <- mock_bincounts(ncells_diploid = 0, ncells = 10)
 copykit_obj <- calcInteger(copykit_obj, method = "scquantum")
 }

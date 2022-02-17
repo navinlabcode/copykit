@@ -30,7 +30,8 @@ A rooted phylogenetic tree object in the slot \code{phylo} from scCNA object. Ac
 Performs phylogenetic analysis
 }
 \examples{
-copykit_obj <- copykit_example_filtered()
+set.seed(1000)
+copykit_obj <- copykit_example_filtered()[,sample(50)]
 copykit_obj <- runPhylo(copykit_obj)
 }
 \author{

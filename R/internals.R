@@ -461,7 +461,7 @@ find_scaffold_genes <- function(scCNA,
     blk_list <- genes[genes %!in% missing_genes]
     blk_list <- blk_list[blk_list %!in% df$gene]
 
-    if (!rlang::is_empty(blk_list)) {
+    if (length(blk_list) != 0) {
         warning(
             base::paste(
                 "Genes:",
