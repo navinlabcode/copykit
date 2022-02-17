@@ -46,6 +46,7 @@
 #' @importFrom fpc clusterboot
 #' @importFrom dplyr group_by summarise
 #' @importFrom dbscan hdbscan
+#' @importFrom bluster makeSNNGraph
 #' @importFrom S4Vectors metadata
 #' @importFrom SingleCellExperiment reducedDim
 #' @importFrom igraph cluster_leiden membership cluster_louvain
@@ -263,7 +264,7 @@ hdbscanCBI <-
 #' @rdname findSuggestedK
 leidenCBI <- function(data, k, seed_leid, diss = inherits(data, "dist"), ...) {
     g_minor <-
-        scran::buildSNNGraph(data, k = k, transposed = TRUE)
+        bluster::makeSNNGraph(data, k = k)
 
     if (diss) {
           c1 <- igraph::cluster_leiden(g_minor,
@@ -300,7 +301,7 @@ leidenCBI <- function(data, k, seed_leid, diss = inherits(data, "dist"), ...) {
 #' @rdname findSuggestedK
 louvainCBI <- function(data, k, seed_leid, diss = inherits(data, "dist"), ...) {
     g_minor <-
-        scran::buildSNNGraph(data, k = k, transposed = TRUE)
+        bluster::makeSNNGraph(data, k = k)
 
     if (diss) {
           c1 <- igraph::cluster_louvain(g_minor)

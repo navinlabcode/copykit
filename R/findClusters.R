@@ -20,7 +20,7 @@
 #'  referred to as superclones, and subclones. When clustering for superclones
 #'  findClusters creates a graph representation of the dataset reduced
 #'  dimension embedding using a shared nearest neighbor algorithm
-#'  (SNN) \code{\link[scran]{buildSNNGraph}}, from this graph the connected
+#'  (SNN) \code{\link[bluster]{makeSNNGraph}}, from this graph the connected
 #'  components are extracted and generally represent high-level structures
 #'  that share large, lineage defining copy number events. At a more
 #'  fine-grained resolution, CopyKit can also be used to detect subclones,
@@ -65,7 +65,7 @@
 #' @importFrom dplyr filter slice_min group_by right_join ungroup
 #' @importFrom SingleCellExperiment reducedDim
 #' @importFrom SummarizedExperiment colData
-#' @importFrom scran buildSNNGraph
+#' @importFrom bluster makeSNNGraph
 #' @importFrom dbscan hdbscan
 #' @importFrom forcats fct_reorder
 #' @importFrom gtools mixedsort
@@ -115,7 +115,7 @@ findClusters <- function(scCNA,
         }
 
         g_major <-
-            scran::buildSNNGraph(red_dim, k = k_superclones, transposed = TRUE)
+            bluster::makeSNNGraph(red_dim, k = k_superclones)
         superclones <-
             as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
         # storing info
@@ -127,7 +127,7 @@ findClusters <- function(scCNA,
     # subclones using leiden
     if (method == "leiden" || method == "louvain") {
         g_minor <-
-            scran::buildSNNGraph(red_dim, k = k_subclones, transposed = TRUE)
+            bluster::makeSNNGraph(red_dim, k = k_subclones)
 
         # saving g_minor graph
         copykit::graph(scCNA) <- g_minor

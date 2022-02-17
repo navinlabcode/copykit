@@ -47,7 +47,7 @@ Search for clusters in the scCNA data.
  referred to as superclones, and subclones. When clustering for superclones
  findClusters creates a graph representation of the dataset reduced
  dimension embedding using a shared nearest neighbor algorithm
- (SNN) \code{\link[scran]{buildSNNGraph}}, from this graph the connected
+ (SNN) \code{\link[bluster]{makeSNNGraph}}, from this graph the connected
  components are extracted and generally represent high-level structures
  that share large, lineage defining copy number events. At a more
  fine-grained resolution, CopyKit can also be used to detect subclones,
