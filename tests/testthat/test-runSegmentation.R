@@ -13,63 +13,64 @@ copykit_obj_100kb <- mock_bincounts(
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "110kb"
+    resolution = "110kb",
+    run_segmentation = FALSE
 )
-copykit_obj_100kb <- runVst(copykit_obj_100kb)
 
 copykit_obj_175kb <- mock_bincounts(
     ncells = 10,
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "195kb"
+    resolution = "195kb",
+    run_segmentation = FALSE
 )
-copykit_obj_175kb <- runVst(copykit_obj_175kb)
 
 copykit_obj_200kb <- mock_bincounts(
     ncells = 10,
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "220kb"
+    resolution = "220kb",
+    run_segmentation = FALSE
 )
-copykit_obj_200kb <- runVst(copykit_obj_200kb)
 
 copykit_obj_250kb <- mock_bincounts(
     ncells = 10,
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "280kb"
+    resolution = "280kb",
+    run_segmentation = FALSE
 )
-copykit_obj_250kb <- runVst(copykit_obj_250kb)
 
 copykit_obj_500kb <- mock_bincounts(
     ncells = 10,
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "500kb"
+    resolution = "500kb",
+    run_segmentation = FALSE
 )
-copykit_obj_500kb <- runVst(copykit_obj_500kb)
 
 copykit_obj_1Mb <- mock_bincounts(
     ncells = 10,
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "1Mb"
+    resolution = "1Mb",
+    run_segmentation = FALSE
 )
-copykit_obj_1Mb <- runVst(copykit_obj_1Mb)
 
 copykit_obj_2Mb <- mock_bincounts(
     ncells = 10,
     ncells_diploid = 5,
     position_gain = 1:50,
     position_del = 200:250,
-    resolution = "2.8Mb"
+    resolution = "2.8Mb",
+    run_segmentation = FALSE
 )
-copykit_obj_2Mb <- runVst(copykit_obj_2Mb)
+
 
 # test
 test_that("Testing CopyKit runSegmentation for different resolutions: ", {
