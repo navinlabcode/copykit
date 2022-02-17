@@ -32,7 +32,8 @@
 #' @export
 #'
 #' @examples
-#' copykit_obj <- copykit_example()
+#' set.seed(1000)
+#' copykit_obj <- copykit_example()[,sample(500)]
 #' copykit_obj <- findAneuploidCells(copykit_obj)
 #' copykit_obj <- copykit_obj[, colData(copykit_obj)$is_aneuploid == TRUE]
 #' copykit_obj <- findOutliers(copykit_obj)

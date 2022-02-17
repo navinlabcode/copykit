@@ -50,7 +50,5 @@ provided in the argument ploidy_value.
 }
 \examples{
 copykit_obj <- mock_bincounts(ncells_diploid = 0)
-copykit_obj <- runVst(copykit_obj)
-copykit_obj <- runSegmentation(copykit_obj)
 copykit_obj <- calcInteger(copykit_obj, method = "scquantum")
 }

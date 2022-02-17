@@ -713,7 +713,10 @@ mock_bincounts <- function(ncells = 30,
                            position_gain = 4900:5493,
                            position_del = 6523:7056,
                            genome = "hg38",
-                           resolution = "220kb") {
+                           resolution = "220kb",
+                           run_vst = TRUE,
+                           run_segmentation = TRUE,
+                           run_lognorm = TRUE) {
     hg38_rg <- switch(resolution,
         "55kb" = hg38_grangeslist[["hg38_50kb"]],
         "110kb" = hg38_grangeslist[["hg38_100kb"]],
@@ -759,6 +762,8 @@ mock_bincounts <- function(ncells = 30,
         assays = list(bincounts = mock_counts),
         rowRanges = hg38_rg
     )
+
+    # adding metadata elements
     metadata(copykit_obj_bincounts)$genome <- genome
     metadata(copykit_obj_bincounts)$resolution <- resolution
     colData(copykit_obj_bincounts)$sample <- names(bincounts(copykit_obj_bincounts))
@@ -769,6 +774,18 @@ mock_bincounts <- function(ncells = 30,
             ncells_aneuploid
         )
     )
+
+    if (run_vst == TRUE) {
+        copykit_obj_bincounts <- runVst(copykit_obj_bincounts)
+    }
+
+    if (run_segmentation == TRUE) {
+        copykit_obj_bincounts <- runSegmentation(copykit_obj_bincounts)
+    }
+
+    if (run_lognorm == TRUE) {
+        copykit_obj_bincounts <- logNorm(copykit_obj_bincounts)
+    }
 
     return(copykit_obj_bincounts)
 }

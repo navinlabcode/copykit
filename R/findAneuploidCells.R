@@ -36,7 +36,8 @@
 #' @importFrom stats rnorm sd
 #'
 #' @examples
-#' copykit_obj <- copykit_example()
+#' set.seed(1000)
+#' copykit_obj <- copykit_example()[,sample(500)]
 #' copykit_obj <- findAneuploidCells(copykit_obj)
 findAneuploidCells <- function(scCNA,
     assay = "segment_ratios",

@@ -50,6 +50,7 @@ performs a sample-wise calculation of the segment means coefficient
  the standard deviation of the normal cell distribution.
 }
 \examples{
-copykit_obj <- copykit_example()
+set.seed(1000)
+copykit_obj <- copykit_example()[,sample(500)]
 copykit_obj <- findAneuploidCells(copykit_obj)
 }
