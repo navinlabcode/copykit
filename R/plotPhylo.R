@@ -21,7 +21,6 @@
 #'
 #' @import ggtree
 #' @importFrom scales hue_pal
-#' @importFrom rlang sym
 #' @importFrom stringr str_remove
 #' @importFrom dplyr select
 #' @importFrom tidyr gather

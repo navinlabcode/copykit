@@ -76,7 +76,6 @@ Imports:
     ggalluvial,
     viridis,
     ggtree,
-    rlang,
     methods,
     withr
 RoxygenNote: 7.1.2

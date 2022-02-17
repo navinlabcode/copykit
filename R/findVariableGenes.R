@@ -25,7 +25,6 @@
 #' @importFrom BiocGenerics subset
 #' @importFrom S4Vectors metadata subjectHits queryHits
 #' @importFrom stats prcomp
-#' @importFrom rlang is_empty
 #' @importFrom GenomicRanges findOverlaps
 #'
 #' @export

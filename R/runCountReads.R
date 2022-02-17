@@ -50,7 +50,6 @@
 #' @importFrom dplyr rename mutate relocate
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom S4Vectors DataFrame metadata
-#' @importFrom rlang is_empty
 #'
 #' @export
 #'
@@ -102,7 +101,8 @@ runCountReads <- function(dir,
         stop("Directory does not contain .bam files.")
     }
 
-    if (rlang::is_empty(files)) {
+    # stop if files variable length is 0
+    if (length(files) == 0) {
         stop("No .bam files detected.")
     }
 

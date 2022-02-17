@@ -427,7 +427,7 @@ find_scaffold_genes <- function(scCNA,
 
     missing_genes <- genes[genes %!in% all_genes]
 
-    if (!rlang::is_empty(missing_genes)) {
+    if (length(missing_genes) != 0) {
         warning(
             base::paste(
                 "Genes:",
