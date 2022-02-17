@@ -40,12 +40,12 @@ Find cells that are not aneuploid in the dataset.
 performs a sample-wise calculation of the segment means coefficient
  of variation and fits a Gaussian mixture model to the observed distribution
  from all cells. To increase the sensitivity of the model, the expected
- distribution of the coefficient of variation for euploid cells is simulated
+ distribution of the coefficient of variation for diploid cells is simulated
  for a thousand cells (mean = 0, sd = 0.01). This way, CopyKit can adequately
- detect euploid cells even in datasets with limited amounts of euploid cells
+ detect diploid cells even in datasets with limited amounts of diploid cells
  and guarantees that no aneuploid cell will be removed from datasets without
- any euploid cells. The distribution with the smallest CV
- is assumed originate from normal cells. Cells are classified as euploid
+ any diploid cells. The distribution with the smallest CV
+ is assumed originate from normal cells. Cells are classified as diploid
  if they have a coefficient of variance smaller than the mean plus five times
  the standard deviation of the normal cell distribution.
 }

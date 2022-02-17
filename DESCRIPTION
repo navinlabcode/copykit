@@ -58,7 +58,6 @@ Imports:
     shiny,
     miniUI,
     tidyr,
-    tibble,
     igraph (>= 1.2.8),
     BiocGenerics,
     grid,

@@ -67,7 +67,6 @@
 #' @importFrom SummarizedExperiment colData
 #' @importFrom scran buildSNNGraph
 #' @importFrom dbscan hdbscan
-#' @importFrom tibble rownames_to_column
 #' @importFrom forcats fct_reorder
 #' @importFrom gtools mixedsort
 #' @importFrom igraph cluster_leiden membership cluster_louvain

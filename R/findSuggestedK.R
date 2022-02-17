@@ -44,7 +44,6 @@
 #' @export
 #'
 #' @importFrom fpc clusterboot
-#' @importFrom tibble enframe
 #' @importFrom dplyr group_by summarise
 #' @importFrom dbscan hdbscan
 #' @importFrom S4Vectors metadata
@@ -52,7 +51,8 @@
 #' @importFrom igraph cluster_leiden membership cluster_louvain
 #'
 #' @examples
-#' copykit_obj <- copykit_example_filtered()
+#' set.seed(1000)
+#' copykit_obj <- copykit_example_filtered()[,sample(300)]
 #' copykit_obj <- findSuggestedK(copykit_obj)
 findSuggestedK <- function(scCNA,
     embedding = "umap",
