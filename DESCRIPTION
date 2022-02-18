@@ -2,7 +2,7 @@ Package: copykit
 Title: CopyKit
 URL: https://github.com/navinlabcode/copykit
 BugReports: https://github.com/navinlabcode/copykit/issues
-Version: 0.0.0.9041
+Version: 0.0.0.9042
 Authors@R: c(
     person(given = "Darlan",
            family = "Conterno Minussi",
@@ -76,7 +76,8 @@ Imports:
     viridis,
     ggtree,
     methods,
-    withr
+    withr,
+    bluster
 RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 Depends: 

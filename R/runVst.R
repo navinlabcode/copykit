@@ -24,7 +24,7 @@
 #' @export
 #'
 #' @examples
-#' copykit_obj <- mock_bincounts()
+#' copykit_obj <- mock_bincounts(ncells = 10)
 #' copykit_obj <- runVst(copykit_obj)
 runVst <- function(scCNA,
                    transformation = c("ft", "log")) {

@@ -65,6 +65,6 @@ The resulting segment means are further refined with MergeLevels to join
 adjacent segments with non-significant differences in segmented means.
 }
 \examples{
-copykit_obj <- mock_bincounts(n_cells = 10)
+copykit_obj <- mock_bincounts(ncells = 10)
 copykit_obj <- runSegmentation(copykit_obj)
 }
