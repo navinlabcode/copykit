@@ -44,15 +44,16 @@
 #' @export
 #'
 #' @importFrom fpc clusterboot
-#' @importFrom tibble enframe
 #' @importFrom dplyr group_by summarise
 #' @importFrom dbscan hdbscan
+#' @importFrom bluster makeSNNGraph
 #' @importFrom S4Vectors metadata
 #' @importFrom SingleCellExperiment reducedDim
 #' @importFrom igraph cluster_leiden membership cluster_louvain
 #'
 #' @examples
-#' copykit_obj <- copykit_example_filtered()
+#' set.seed(1000)
+#' copykit_obj <- copykit_example_filtered()[,sample(300)]
 #' copykit_obj <- findSuggestedK(copykit_obj)
 findSuggestedK <- function(scCNA,
     embedding = "umap",
@@ -263,7 +264,7 @@ hdbscanCBI <-
 #' @rdname findSuggestedK
 leidenCBI <- function(data, k, seed_leid, diss = inherits(data, "dist"), ...) {
     g_minor <-
-        scran::buildSNNGraph(data, k = k, transposed = TRUE)
+        bluster::makeSNNGraph(data, k = k)
 
     if (diss) {
           c1 <- igraph::cluster_leiden(g_minor,
@@ -300,7 +301,7 @@ leidenCBI <- function(data, k, seed_leid, diss = inherits(data, "dist"), ...) {
 #' @rdname findSuggestedK
 louvainCBI <- function(data, k, seed_leid, diss = inherits(data, "dist"), ...) {
     g_minor <-
-        scran::buildSNNGraph(data, k = k, transposed = TRUE)
+        bluster::makeSNNGraph(data, k = k)
 
     if (diss) {
           c1 <- igraph::cluster_louvain(g_minor)

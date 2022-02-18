@@ -18,7 +18,7 @@
 #' @importFrom SummarizedExperiment seqnames
 #'
 #' @examples
-#' copykit_obj <- copykit_example_filtered()
+#' copykit_obj <- copykit_example_filtered()[,1:300]
 #' copykit_obj <- findClusters(copykit_obj)
 #' copykit_obj <- calcConsensus(copykit_obj)
 #' copykit_obj <- inferMrca(copykit_obj)

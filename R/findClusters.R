@@ -20,7 +20,7 @@
 #'  referred to as superclones, and subclones. When clustering for superclones
 #'  findClusters creates a graph representation of the dataset reduced
 #'  dimension embedding using a shared nearest neighbor algorithm
-#'  (SNN) \code{\link[scran]{buildSNNGraph}}, from this graph the connected
+#'  (SNN) \code{\link[bluster]{makeSNNGraph}}, from this graph the connected
 #'  components are extracted and generally represent high-level structures
 #'  that share large, lineage defining copy number events. At a more
 #'  fine-grained resolution, CopyKit can also be used to detect subclones,
@@ -65,9 +65,8 @@
 #' @importFrom dplyr filter slice_min group_by right_join ungroup
 #' @importFrom SingleCellExperiment reducedDim
 #' @importFrom SummarizedExperiment colData
-#' @importFrom scran buildSNNGraph
+#' @importFrom bluster makeSNNGraph
 #' @importFrom dbscan hdbscan
-#' @importFrom tibble rownames_to_column
 #' @importFrom forcats fct_reorder
 #' @importFrom gtools mixedsort
 #' @importFrom igraph cluster_leiden membership cluster_louvain
@@ -116,7 +115,7 @@ findClusters <- function(scCNA,
         }
 
         g_major <-
-            scran::buildSNNGraph(red_dim, k = k_superclones, transposed = TRUE)
+            bluster::makeSNNGraph(red_dim, k = k_superclones)
         superclones <-
             as.factor(paste0("s", igraph::membership(igraph::components(g_major))))
         # storing info
@@ -128,21 +127,28 @@ findClusters <- function(scCNA,
     # subclones using leiden
     if (method == "leiden" || method == "louvain") {
         g_minor <-
-            scran::buildSNNGraph(red_dim, k = k_subclones, transposed = TRUE)
+            bluster::makeSNNGraph(red_dim, k = k_subclones)
 
         # saving g_minor graph
         copykit::graph(scCNA) <- g_minor
 
         # subclones
         if (method == "leiden") {
-            leid_obj <- igraph::cluster_leiden(g_minor,
-                resolution_parameter = 0.2,
-                n_iterations = 100
+            withr::with_seed(
+                seed,
+                leid_obj <-
+                    igraph::cluster_leiden(
+                        g_minor,
+                        resolution_parameter = 0.2,
+                        n_iterations = 100
+                    )
             )
         }
 
         if (method == "louvain") {
-            leid_obj <- igraph::cluster_leiden(g_minor)
+            withr::with_seed(seed,
+                             leid_obj <- igraph::cluster_louvain(g_minor))
+
         }
 
         leid_obj_com <- igraph::membership(leid_obj)

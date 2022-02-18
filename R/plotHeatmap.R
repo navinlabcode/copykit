@@ -125,7 +125,7 @@ plotHeatmap <- function(scCNA,
     col = NULL,
     row_split = NULL,
     use_raster = TRUE,
-    raster_quality = 10,
+    raster_quality = 5,
     n_threads = 1) {
     # args
     order_cells <- match.arg(order_cells)
@@ -207,6 +207,11 @@ plotHeatmap <- function(scCNA,
 
     # obtaining data
     seg_data <- t(SummarizedExperiment::assay(scCNA, assay))
+
+    #checking for duplicated names and making names unique if so
+    if (any(duplicated(row.names(seg_data)))) {
+        row.names(seg_data) <- make.names(row.names(seg_data), unique = TRUE)
+    }
 
     # chromosome bar aesthetic
     chr_ranges <-
@@ -330,7 +335,7 @@ plotHeatmap <- function(scCNA,
                 tree$tip.label[ordered_tips_index] %>% rev()
 
             meta_o <- meta[order(match(meta_info, tree_tips_order)), ]
-            seg_data_ordered <- seg_data[meta_o$sample, ]
+            seg_data_ordered <- seg_data[row.names(meta_o), ]
         }
     } else {
         # getting order from tree

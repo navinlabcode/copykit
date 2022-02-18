@@ -26,7 +26,7 @@ Calculates the MRCA by inferring, for every bin, the value across
 all groups that is closest to the number supplied in the argument value.
 }
 \examples{
-copykit_obj <- copykit_example_filtered()
+copykit_obj <- copykit_example_filtered()[,1:300]
 copykit_obj <- findClusters(copykit_obj)
 copykit_obj <- calcConsensus(copykit_obj)
 copykit_obj <- inferMrca(copykit_obj)

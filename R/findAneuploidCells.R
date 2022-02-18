@@ -14,12 +14,12 @@
 #' @details performs a sample-wise calculation of the segment means coefficient
 #'  of variation and fits a Gaussian mixture model to the observed distribution
 #'  from all cells. To increase the sensitivity of the model, the expected
-#'  distribution of the coefficient of variation for euploid cells is simulated
+#'  distribution of the coefficient of variation for diploid cells is simulated
 #'  for a thousand cells (mean = 0, sd = 0.01). This way, CopyKit can adequately
-#'  detect euploid cells even in datasets with limited amounts of euploid cells
+#'  detect diploid cells even in datasets with limited amounts of diploid cells
 #'  and guarantees that no aneuploid cell will be removed from datasets without
-#'  any euploid cells. The distribution with the smallest CV
-#'  is assumed originate from normal cells. Cells are classified as euploid
+#'  any diploid cells. The distribution with the smallest CV
+#'  is assumed originate from normal cells. Cells are classified as diploid
 #'  if they have a coefficient of variance smaller than the mean plus five times
 #'  the standard deviation of the normal cell distribution.
 #'
@@ -29,14 +29,14 @@
 #'
 #' @export
 #'
-#' @importFrom tibble enframe
 #' @importFrom SummarizedExperiment colData
 #' @importFrom dplyr filter bind_rows case_when
 #' @importFrom mixtools normalmixEM
 #' @importFrom stats rnorm sd
 #'
 #' @examples
-#' copykit_obj <- copykit_example()
+#' set.seed(1000)
+#' copykit_obj <- copykit_example()[,sample(500)]
 #' copykit_obj <- findAneuploidCells(copykit_obj)
 findAneuploidCells <- function(scCNA,
     assay = "segment_ratios",
@@ -115,10 +115,8 @@ findAneuploidCells <- function(scCNA,
         cv <- cv[!grepl("simul", names(cv))]
     }
 
-    cv_df <- tibble::enframe(cv,
-        name = "sample",
-        value = "CV"
-    )
+    cv_df <- data.frame(sample = names(cv),
+                        CV = cv)
 
     cv_df_low_cv <- cv_df %>%
         dplyr::mutate(is_aneuploid = case_when(
@@ -130,7 +128,7 @@ findAneuploidCells <- function(scCNA,
         "Copykit detected ",
         nrow(cv_df_low_cv %>%
             dplyr::filter(is_aneuploid == FALSE)),
-        " that are possibly euploid cells using a resolution of: ",
+        " that are possibly diploid cells using a resolution of: ",
         round(resolution, 3)
     )
 

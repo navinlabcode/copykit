@@ -17,7 +17,6 @@
 #'
 #' @examples
 #' copykit_obj <- mock_bincounts()
-#' copykit_obj <- runVst(copykit_obj)
 #' copykit_obj <- calcRatios(copykit_obj)
 calcRatios <- function(scCNA,
                        assay = c("ft", "bincounts", "smoothed_bincounts"),

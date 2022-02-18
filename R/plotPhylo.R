@@ -21,7 +21,6 @@
 #'
 #' @import ggtree
 #' @importFrom scales hue_pal
-#' @importFrom rlang sym
 #' @importFrom stringr str_remove
 #' @importFrom dplyr select
 #' @importFrom tidyr gather
@@ -29,7 +28,8 @@
 #' @importFrom ape Ntip
 #'
 #' @examples
-#' copykit_obj <- copykit_example_filtered()
+#' set.seed(1000)
+#' copykit_obj <- copykit_example_filtered()[,sample(100)]
 #' copykit_obj <- findClusters(copykit_obj)
 #' copykit_obj <- runPhylo(copykit_obj)
 #' plotPhylo(copykit_obj, label = "subclones")

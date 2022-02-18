@@ -16,7 +16,8 @@
 #'
 #' @importFrom ape nj fastme.bal ladderize
 #' @examples
-#' copykit_obj <- copykit_example_filtered()
+#' set.seed(1000)
+#' copykit_obj <- copykit_example_filtered()[,sample(50)]
 #' copykit_obj <- runPhylo(copykit_obj)
 runPhylo <- function(scCNA,
                      method = "nj",

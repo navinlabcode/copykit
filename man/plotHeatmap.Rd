@@ -17,7 +17,7 @@ plotHeatmap(
   col = NULL,
   row_split = NULL,
   use_raster = TRUE,
-  raster_quality = 10,
+  raster_quality = 5,
   n_threads = 1
 )
 }

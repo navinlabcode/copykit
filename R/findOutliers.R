@@ -32,7 +32,8 @@
 #' @export
 #'
 #' @examples
-#' copykit_obj <- copykit_example()
+#' set.seed(1000)
+#' copykit_obj <- copykit_example()[,sample(500)]
 #' copykit_obj <- findAneuploidCells(copykit_obj)
 #' copykit_obj <- copykit_obj[, colData(copykit_obj)$is_aneuploid == TRUE]
 #' copykit_obj <- findOutliers(copykit_obj)
@@ -64,13 +65,12 @@ findOutliers <- function(scCNA,
 
     dst <- parCor(seg, BPPARAM = BPPARAM)
 
-    dst_knn_df <- apply(as.matrix(dst), 1, function(x) {
+    dst_knn <- apply(as.matrix(dst), 1, function(x) {
         mean(sort(x, decreasing = TRUE)[2:(k + 1)])
-    }) %>%
-        tibble::enframe(
-            name = "sample",
-            value = "cor"
-        )
+    })
+
+    dst_knn_df <- data.frame(sample = names(dst_knn),
+                             cor = dst_knn)
 
     dst_knn_df <- dst_knn_df %>%
         dplyr::mutate(outlier = dplyr::case_when(

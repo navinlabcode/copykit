@@ -11,7 +11,8 @@
 #' @importFrom scales percent_format
 #'
 #' @examples
-#' copykit_obj <- copykit_example_filtered()
+#' set.seed(1000)
+#' copykit_obj <- copykit_example_filtered()[,sample(400)]
 #' copykit_obj <- runPca(copykit_obj)
 #' plotScree(copykit_obj)
 #'

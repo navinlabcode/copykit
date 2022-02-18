@@ -69,7 +69,8 @@ in the scCNA object. If sqrt(n_cells) is smaller than 7 a range of 5 to 15
 is tested.
 }
 \examples{
-copykit_obj <- copykit_example_filtered()
+set.seed(1000)
+copykit_obj <- copykit_example_filtered()[,sample(300)]
 copykit_obj <- findSuggestedK(copykit_obj)
 }
 \references{

@@ -28,9 +28,6 @@ Plots swarm plots from selected elements of \code{\link[SummarizedExperiment]{co
 }
 \examples{
 copykit_obj <- mock_bincounts()
-copykit_obj <- runVst(copykit_obj)
-copykit_obj <- calcRatios(copykit_obj)
-copykit_obj <- runSegmentation(copykit_obj)
 copykit_obj <- runMetrics(copykit_obj)
 }
 \author{
