@@ -755,7 +755,7 @@ mock_bincounts <- function(ncells = 30,
 
     # adding some uniform error to avoid all cells having the same variance.
     mock_counts <- mock_counts + withr::with_seed(123,
-                                                  runif(nbins * ncells, -5, 5))
+                                                  runif(nbins * ncells, -1, 1))
 
     # creating copykit object with mock counts
     copykit_obj_bincounts <- CopyKit(
