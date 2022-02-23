@@ -42,12 +42,11 @@
 #' @importFrom DNAcopy CNA smooth.CNA segment
 #' @importFrom dplyr mutate bind_cols
 #' @importFrom withr with_seed
-#' @importFrom stringr str_detect str_remove str_replace
 #' @importFrom S4Vectors metadata
 #' @importFrom SummarizedExperiment assay
 #' @importFrom BiocParallel bplapply bpparam
 #' @importFrom stats median lowess approx
-#' @importMethodsFrom SummarizedExperiment assay
+#' @importMethodsFrom SummarizedExperiment assay rowRanges
 #' @export
 #'
 #' @examples
@@ -106,18 +105,18 @@ runSegmentation <- function(scCNA,
         hg38_rg_mod <- hg38_rg
         # match for chrY presence
         chr_sccna <-
-            as.character(as.data.frame(SummarizedExperiment::rowRanges(scCNA))$seqnames)
+            as.character(as.data.frame(rowRanges(scCNA))$seqnames)
         hg38_rg_mod <-
             hg38_rg_mod[which(hg38_rg_mod$chr %in% chr_sccna), ]
 
         hg38_rg_mod <- hg38_rg_mod %>%
             dplyr::mutate(
-                chr = stringr::str_replace(chr, "X", "23"),
-                chr = stringr::str_replace(chr, "Y", "24")
+                chr = gsub("X", "23", chr),
+                chr = gsub("Y", "24", chr)
             )
 
         chr_info <-
-            as.numeric(stringr::str_remove(hg38_rg_mod$chr, "chr"))
+            as.numeric(gsub("chr", "", hg38_rg_mod$chr))
 
         ref <- hg38_rg_mod
     }
@@ -133,19 +132,18 @@ runSegmentation <- function(scCNA,
 
         hg19_rg_mod <- hg19_rg_mod %>%
             dplyr::mutate(
-                chr = stringr::str_replace(chr, "X", "23"),
-                chr = stringr::str_replace(chr, "Y", "24")
+                chr = gsub("X", "23", chr),
+                chr = gsub("Y", "24", chr)
             )
 
         chr_info <-
-            as.numeric(stringr::str_remove(hg19_rg_mod$chr, "chr"))
+            as.numeric(gsub("chr", "", hg19_rg_mod$chr))
 
         ref <- hg19_rg_mod
     }
 
     ref_chrarm <- ref %>%
-        dplyr::mutate(chrarm = paste0(stringr::str_remove(chr, "chr"), arm)) %>%
-        dplyr::mutate(chrarm = chrarm)
+        dplyr::mutate(chrarm = paste0(gsub("chr", "", chr), arm))
 
     levels_chrarm <- gtools::mixedsort(unique(ref_chrarm$chrarm))
 
@@ -240,13 +238,20 @@ runSegmentation <- function(scCNA,
 
     if (method == "multipcf") {
         smooth_multipcf <- cbind(
-            as.numeric(str_remove(ref_chrarm$chr, "chr")),
+            as.numeric(gsub("chr", "", ref_chrarm$chr)),
             ref_chrarm$start,
             smooth_counts_df
         )
 
         mpcf <- copynumber::multipcf(smooth_multipcf,
-            arms = str_extract(ref_chrarm$chrarm, "[pq]")
+                                     arms = vapply(
+                                         regmatches(ref_chrarm$chrarm,
+                                                    regexec("[pq]",
+                                                            ref_chrarm$chrarm)),
+                                         FUN =  "[",
+                                         1,
+                                         FUN.VALUE = character(1)
+                                     )
         )
 
         seg_df <- apply(mpcf[, 6:ncol(mpcf)], 2, function(x) {

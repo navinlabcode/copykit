@@ -18,7 +18,6 @@
 #' the desired cell can be selected. If a 'sample_name' is provided,
 #' returns a ggplot object with the ratio plot for the selected cell.
 #'
-#' @importFrom stringr str_extract
 #' @importFrom miniUI miniPage miniContentPanel gadgetTitleBar
 #' @importFrom dplyr filter arrange ungroup group_by select row_number
 #' @importFrom shiny checkboxGroupInput plotOutput stopApp fillCol

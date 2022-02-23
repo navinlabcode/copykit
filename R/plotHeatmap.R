@@ -6,7 +6,7 @@
 #' @author Darlan Conterno Minussi
 #'
 #' @param scCNA scCNA object.
-#' @param assay String with the name of the assay to pull data from to plot heatmap.
+#' @param assay String with the assay to pull data from to plot heatmap.
 #' @param order_cells A string with the desired method to order the cells within
 #' @param label A vector with the string names of the columns from
 #' \code{\link[SummarizedExperiment]{colData}} for heatmap annotation.
@@ -19,7 +19,7 @@
 #' \code{\link[SummarizedExperiment]{colData}} to split the heatmap.
 #' @param rounding_error A boolean indicating if the rounding error matrix
 #' should be plotted.
-#' @param genes A character vector with the HUGO symbol for genes to be annotated
+#' @param genes A character vector with the HUGO symbol for genes to annotate
 #' on the heatmap.
 #' @param col A colorRamp2 vector that controls the color scale of the heatmap.
 #' See \code{\link[ComplexHeatmap]{Heatmap}} or ComplexHeatmap online docs for
@@ -44,7 +44,7 @@
 #'    \code{\link{plotHeatmap}} checks for the existence of a consensus matrix.
 #'    From the consensus matrix, a minimum evolution tree is built and cells are
 #'     ordered following the order of their respective groups from the tree.
-#'     If order_cells is set to 'hclust' cells are ordered according to hierarchical
+#'     If order_cells is 'hclust' cells are ordered according to hierarchical
 #'      clustering. 'hclust' calculation can be sped up by changing the parameter
 #'      'n_threads' if you have more threads available to use. If order_cells
 #'      is set to 'phylogeny' \code{\link{plotHeatmap}} will use the tree stored
@@ -648,17 +648,18 @@ plotHeatmap <- function(scCNA,
                 c("superclones", "subclones", "outlier", "is_aneuploid")
 
             for (i in 1:length(label)) {
-                if (any(str_detect(
-                    label[i],
-                    default_labels
+                if (any(grepl(
+                    paste(default_labels, collapse = "|"),
+                    label[i]
                 ))) {
                     # if label is one of the four above,
                     # uses the default specified colors above
                     label_colors[i] <-
-                        label_colors[default_labels[stringr::str_detect(
-                            label[i],
-                            default_labels
-                        )]]
+                        label_colors[default_labels[
+                            vapply(default_labels,
+                                   function(x) grepl(x, label[i]),
+                                   logical(1))
+                        ]]
                     names(label_colors)[i] <- label[i]
                 } else if (is.numeric(dplyr::pull(metadata_anno_df, label[i]))) {
                     # if current i metadata element is a numeric vector

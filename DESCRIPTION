@@ -2,7 +2,7 @@ Package: copykit
 Title: CopyKit
 URL: https://github.com/navinlabcode/copykit
 BugReports: https://github.com/navinlabcode/copykit/issues
-Version: 0.0.0.9042
+Version: 0.0.0.9043
 Authors@R: c(
     person(given = "Darlan",
            family = "Conterno Minussi",
@@ -36,7 +36,8 @@ Suggests:
     spelling,
     knitr,
     scquantum,
-    rmarkdown
+    rmarkdown,
+    stringr
 Language: en-US
 biocViews: Software, SingleCell, DNASeq, Sequencing, 
            Visualization, Normalization, Clustering,
@@ -60,7 +61,6 @@ Imports:
     igraph (>= 1.2.8),
     BiocGenerics,
     grid,
-    stringr,
     ggbeeswarm,
     dbscan,
     mixtools,

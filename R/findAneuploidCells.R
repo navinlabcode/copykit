@@ -64,8 +64,8 @@ findAneuploidCells <- function(scCNA,
     if (remove_XY == TRUE) {
         rg <- rg %>%
             dplyr::filter(
-                !stringr::str_detect(seqnames, "X"),
-                !stringr::str_detect(seqnames, "Y")
+                !grepl("X", seqnames),
+                !grepl("Y", seqnames)
             )
 
         seg <- seg[1:nrow(rg), ]

@@ -46,7 +46,6 @@
 #' Genome research, 25(5), 714–724. https://doi.org/10.1101/gr.188060.114
 #'
 #' @importFrom Rsubread featureCounts
-#' @importFrom stringr str_replace str_remove str_detect fixed
 #' @importFrom dplyr rename mutate relocate
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom S4Vectors DataFrame metadata
@@ -88,18 +87,16 @@ runCountReads <- function(dir,
             ignore.case = TRUE
         )
 
-    # managing .bai files
-    if (any(sapply(files, function(x) {
-          !stringr::str_detect(x, ".bai")
-      }))) {
-        files <- files[!stringr::str_detect(files, ".bai")]
+    if (!any(grepl(".bam", files, ignore.case = TRUE))) {
+      stop("Directory does not contain .bam files.")
     }
 
-    if (any(sapply(files, function(x) {
-          !stringr::str_detect(x, ".bam")
-      }))) {
-        stop("Directory does not contain .bam files.")
+    # managing .bai files
+    if (any(grepl(".bai", files, ignore.case = TRUE))) {
+      files <- files[!grepl(".bai", files)]
     }
+
+    files_names <- basename(gsub(pattern = ".bam", "", files))
 
     # stop if files variable length is 0
     if (length(files) == 0) {
@@ -152,17 +149,6 @@ runCountReads <- function(dir,
         }
     }
 
-    files_names <- list.files(dir, pattern = "*.bam", full.names = FALSE)
-    files_names <- stringr::str_remove(files_names, ".bam")
-
-    # managing .bai files on filenames
-    if (any(sapply(files_names, function(x) {
-          !stringr::str_detect(x, ".bai")
-      }))) {
-        files_names <-
-            files_names[!stringr::str_detect(files_names, ".bai")]
-    }
-
     message(
         "Counting reads for genome ",
         genome,
@@ -185,12 +171,7 @@ runCountReads <- function(dir,
             )
         )
 
-    names(varbin_counts_list_all_fields) <- stringr::str_remove(
-        files_names,
-        stringr::fixed(".bam",
-            ignore_case = TRUE
-        )
-    )
+    names(varbin_counts_list_all_fields) <- files_names
 
     varbin_counts_list <- lapply(
         varbin_counts_list_all_fields,
