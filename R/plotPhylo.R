@@ -174,9 +174,9 @@ plotPhylo <- function(scCNA,
                 )
             )
 
-            if (any(str_detect(
-                label,
-                c("superclones", "subclones", "outlier", "is_aneuploid")
+            if (any(grepl(
+                c("superclones", "subclones", "outlier", "is_aneuploid"),
+                label
             ))) {
                 # if label is one of the four above, uses the default specified colors above
                 label_colors <- label_colors[[label]]
