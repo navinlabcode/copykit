@@ -52,7 +52,8 @@ plotPhylo <- function(scCNA,
             consensusPhylo(scCNA),
             error = function(e) {
                 stop(
-                    "No consensus phylogeny detected in scCNA object. Please run runConsensusPhylo() first."
+                    "No consensus phylogeny detected in scCNA object.
+                    Please run runConsensusPhylo() first."
                 )
             }
         )
@@ -174,10 +175,12 @@ plotPhylo <- function(scCNA,
             )
 
             if (any(grepl(
-                c("superclones", "subclones", "outlier", "is_aneuploid"),
+                paste(c("superclones", "subclones", "outlier", "is_aneuploid"),
+                      collapse = "|"),
                 label
             ))) {
-                # if label is one of the four above, uses the default specified colors above
+                # if label is one of the four above, uses the default specified
+                # colors above
                 label_colors <- label_colors[[label]]
             } else {
                 elements <- metadata_anno_df %>%

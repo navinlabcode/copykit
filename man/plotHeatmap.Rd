@@ -24,7 +24,7 @@ plotHeatmap(
 \arguments{
 \item{scCNA}{scCNA object.}
 
-\item{assay}{String with the name of the assay to pull data from to plot heatmap.}
+\item{assay}{String with the assay to pull data from to plot heatmap.}
 
 \item{order_cells}{A string with the desired method to order the cells within}
 
@@ -44,7 +44,7 @@ plotted.}
 \item{rounding_error}{A boolean indicating if the rounding error matrix
 should be plotted.}
 
-\item{genes}{A character vector with the HUGO symbol for genes to be annotated
+\item{genes}{A character vector with the HUGO symbol for genes to annotate
 on the heatmap.}
 
 \item{col}{A colorRamp2 vector that controls the color scale of the heatmap.
@@ -79,7 +79,7 @@ Each row is a cell and colums represent genomic positions.
    \code{\link{plotHeatmap}} checks for the existence of a consensus matrix.
    From the consensus matrix, a minimum evolution tree is built and cells are
     ordered following the order of their respective groups from the tree.
-    If order_cells is set to 'hclust' cells are ordered according to hierarchical
+    If order_cells is 'hclust' cells are ordered according to hierarchical
      clustering. 'hclust' calculation can be sped up by changing the parameter
      'n_threads' if you have more threads available to use. If order_cells
      is set to 'phylogeny' \code{\link{plotHeatmap}} will use the tree stored
