@@ -166,8 +166,17 @@ plotHeatmap <- function(scCNA,
 
     # Uses the hidden consensus_by attribute from the calcConsensus function
     # to plot integer color scheme in case consensus = TRUE
+
+
     if (consensus == TRUE) {
-        if (attr(consensus(scCNA), "consensus_assay") == "integer") {
+
+        consensus_assay <- attr(consensus(scCNA), "consensus_assay")
+
+        if (assay == "integer" & consensus_assay != "integer") {
+            stop("Consensus must be calculated from the integer assay.")
+        }
+
+        if (consensus_assay == "integer") {
             assay <- "integer"
         }
     }
