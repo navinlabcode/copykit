@@ -1,4 +1,6 @@
-# copykit (development version)
+# copykit 0.1.0
+
+* CopyKit goes 0.1.0.
 
 # copykit 0.0.0.9036
 

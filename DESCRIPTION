@@ -2,7 +2,7 @@ Package: copykit
 Title: CopyKit
 URL: https://github.com/navinlabcode/copykit
 BugReports: https://github.com/navinlabcode/copykit/issues
-Version: 0.0.0.9043
+Version: 0.1.0
 Authors@R: c(
     person(given = "Darlan",
            family = "Conterno Minussi",
@@ -28,7 +28,7 @@ Description: A suite of tools for single cell copy number analysis
         can be applied to a broad applications for studying diverse areas of 
         cancer biology, including intratumor heterogeneity, premalignant 
         progression, and metastasis. 
-License: MIT + file LICENSE
+License: AGPL (>= 3) + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
