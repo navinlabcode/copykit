@@ -125,7 +125,7 @@ plotHeatmap <- function(scCNA,
     col = NULL,
     row_split = NULL,
     use_raster = TRUE,
-    raster_quality = 5,
+    raster_quality = 2,
     n_threads = 1) {
     # args
     order_cells <- match.arg(order_cells)
