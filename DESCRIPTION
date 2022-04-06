@@ -2,7 +2,7 @@ Package: copykit
 Title: CopyKit
 URL: https://github.com/navinlabcode/copykit
 BugReports: https://github.com/navinlabcode/copykit/issues
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person(given = "Darlan",
            family = "Conterno Minussi",
