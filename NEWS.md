@@ -1,3 +1,8 @@
+# copykit 0.1.1
+
+* Reduced quality of heatmap raster that could quickly use all magick cache
+* Fixed hg38 scaffold issue for lower resolutions 500kb, 1Mb and 2.8Mb in which the quality control of low quality bins was too strict and causing problems especially on chromosome X. 
+
 # copykit 0.1.0
 
 * CopyKit goes 0.1.0.
