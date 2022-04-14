@@ -21,9 +21,9 @@
 #' from hg19 comes from package \code{TxDb.Hsapiens.UCSC.hg19.knownGene} whereas
 #' for hg38 package \code{TxDb.Hsapiens.UCSC.hg38.knownGene}.
 #'
-#' If the argument geom is set to 'barplot' plotGeneCopy calculates the gene-wise
+#' If the argument geom is set to 'barplot' plotGeneCopy calculates gene-wise
 #'  frequencies of each copy number state for the selected genes across all of
-#'  the cells. For this reason, geom 'barplot' can only be used with the argument
+#'  the cells. Geom 'barplot' can only be used with the argument
 #'  assay set to 'integer'.
 #'
 #' @return A ggplot object with a plot of the gene-wise copy number states.
@@ -50,31 +50,41 @@
 #'     label = "subclones", dodge.width = 0.8
 #' )
 plotGeneCopy <- function(scCNA,
-    genes,
-    geom = c("swarm", "barplot", "violin"),
-    label = NULL,
-    facet = NULL,
-    dodge.width = 0,
-    assay = "segment_ratios") {
+                         genes,
+                         geom = c("swarm", "barplot", "violin"),
+                         label = NULL,
+                         facet = NULL,
+                         dodge.width = 0,
+                         assay = "segment_ratios") {
     geom <- match.arg(geom)
 
     # bindings for NSE
     gene <- segratio <- plot_label <- plot_facet <- NULL
 
     # checks
-    # check if label exists
-    if (!is.null(label)) {
-        metadata <- as.data.frame(SummarizedExperiment::colData(scCNA))
-
-        message("Coloring by: ", label)
-    }
-
-    if (!is.null(label) && !(label %in% colnames(metadata))) {
-        stop("Label ", label, " is not a column of the scCNA object.")
-    }
-
     if (geom == "barplot" && assay != "integer") {
         stop("Argument geom 'barplot' can only be used with assay == 'integer'")
+    }
+
+    # check for duplicated column names
+    if (any(duplicated(colnames(scCNA)))) {
+        colnames(scCNA) <- make.names(colnames(scCNA),
+                                            unique = TRUE)
+
+        warning("Warning: Detected and corrected duplicated cell names.")
+
+    }
+
+    # check if label is provided
+    if (!is.null(label)) {
+        metadata <- as.data.frame(SummarizedExperiment::colData(scCNA))
+        message("Coloring by: ", label)
+        metadata$sample <- colnames(scCNA)
+    }
+
+    # check if label exists
+    if (!is.null(label) && !(label %in% colnames(metadata))) {
+        stop("Label ", label, " is not a column of the scCNA object.")
     }
 
     # theme setup
@@ -101,7 +111,7 @@ plotGeneCopy <- function(scCNA,
     # obtaining df with genes positions
     # find_scaffold_genes in internals.R
     df <- find_scaffold_genes(scCNA,
-        genes = genes
+                              genes = genes
     )
 
     # obtaining seg ratios and sbsetting for the genes
@@ -114,13 +124,15 @@ plotGeneCopy <- function(scCNA,
         seg_data <- SummarizedExperiment::assay(scCNA, "integer")
     }
 
-    seg_data_genes <- seg_data[df$pos, ] %>%
-        dplyr::mutate(gene = df$gene)
+    seg_data_genes <- seg_data[df$pos,]
+    seg_data_genes$gene <- df$gene
+
+
 
     # long format for plotting
     seg_long <- tidyr::gather(seg_data_genes,
-        key = "sample",
-        value = "segratio", -gene
+                              key = "sample",
+                              value = "segratio", -gene
     )
 
     # adding metadata if provided
@@ -156,7 +168,7 @@ plotGeneCopy <- function(scCNA,
         )) +
             ggplot2::theme_classic() +
             geom_bar(aes(fill = as.factor(segratio)),
-                position = "fill", stat = "identity"
+                     position = "fill", stat = "identity"
             ) +
             scale_y_continuous(
                 labels = scales::percent_format(accuracy = 1),
@@ -167,7 +179,7 @@ plotGeneCopy <- function(scCNA,
             ylab("percentage")
 
         # return plot
-        p
+        return(p)
     }
 
     # geom violin
@@ -175,14 +187,14 @@ plotGeneCopy <- function(scCNA,
         p <- p +
             ggplot2::geom_violin()
 
-        p
+        return(p)
     } else if (geom == "violin" & !is.null(label)) {
         warning("Coloring by label argument is only available for geom = 'swarm'.")
 
         p <- p +
             ggplot2::geom_violin()
 
-        p
+        return(p)
     }
 
     # geom swarm
@@ -198,10 +210,10 @@ plotGeneCopy <- function(scCNA,
             # coloring for discrete variable label
             p <- p +
                 ggbeeswarm::geom_quasirandom(aes(fill = plot_label),
-                    shape = 21,
-                    size = 2.2,
-                    dodge.width = dodge.width,
-                    stroke = 0.2
+                                             shape = 21,
+                                             size = 2.2,
+                                             dodge.width = dodge.width,
+                                             stroke = 0.2
                 )
 
             color_lab <-
@@ -215,10 +227,10 @@ plotGeneCopy <- function(scCNA,
             # coloring for discrete variable label
             p <- p +
                 ggbeeswarm::geom_quasirandom(aes(fill = plot_label),
-                    shape = 21,
-                    size = 2.2,
-                    dodge.width = dodge.width,
-                    stroke = 0.2
+                                             shape = 21,
+                                             size = 2.2,
+                                             dodge.width = dodge.width,
+                                             stroke = 0.2
                 )
 
             color_lab <-
@@ -231,9 +243,9 @@ plotGeneCopy <- function(scCNA,
         } else if (is.numeric(metadata[[label]])) {
             p <- p +
                 ggbeeswarm::geom_quasirandom(aes(fill = plot_label),
-                    shape = 21,
-                    size = 2.2,
-                    stroke = 0.2
+                                             shape = 21,
+                                             size = 2.2,
+                                             stroke = 0.2
                 )
 
             color_lab <- list(ggplot2::scale_color_viridis_c())
@@ -243,10 +255,10 @@ plotGeneCopy <- function(scCNA,
             # coloring for discrete variable label
             p <- p +
                 ggbeeswarm::geom_quasirandom(aes(fill = plot_label),
-                    shape = 21,
-                    size = 2.2,
-                    dodge.width = dodge.width,
-                    stroke = 0.2
+                                             shape = 21,
+                                             size = 2.2,
+                                             dodge.width = dodge.width,
+                                             stroke = 0.2
                 )
 
             color_lab <- list(ggplot2::scale_fill_viridis_d(limits = force))
