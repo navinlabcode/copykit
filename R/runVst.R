@@ -5,6 +5,8 @@
 #' @param scCNA The scCNA object
 #' @param transformation A character indicating the variance stabilization
 #' transformation to be performed. See \link{runVst} details.
+#' @param assay A character indicating the assay slot to extract the bincounts
+#' for variance stabilization
 #'
 #' @details \code{runVst} performs variance stabilization to reduce the overdispersion
 #' from the negative binomial distribution nature of the bin counts and reduce
@@ -27,10 +29,15 @@
 #' copykit_obj <- mock_bincounts(ncells = 10)
 #' copykit_obj <- runVst(copykit_obj)
 runVst <- function(scCNA,
-                   transformation = c("ft", "log")) {
+                   transformation = c("ft", "log"),
+                   assay = 'bincounts') {
     transformation <- match.arg(transformation)
 
-    varbin_counts_df <- bincounts(scCNA)
+    message(paste("Running variance stabilization transformation:",
+                  transformation))
+
+    # recovering assay
+    varbin_counts_df <- assay(scCNA, assay)
 
     if (transformation == "ft") {
         counts_df_ft <- as.data.frame(apply(varbin_counts_df,

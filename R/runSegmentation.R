@@ -164,7 +164,7 @@ runSegmentation <- function(scCNA,
     }
 
     # smoothing data
-    message("Smoothing bin counts.")
+    message("Smoothing outlier bins.")
     smooth_counts <-
         BiocParallel::bplapply(as.data.frame(counts_df), function(x) {
             CNA_object <-
