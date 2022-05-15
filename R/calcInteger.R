@@ -23,12 +23,13 @@
 #' \item{fixed:} When method argument is set to 'fixed' copykit extracts the
 #' segment means from the scCNA object and multiplies those means by the value
 #' provided in the argument ploidy_value.
-#' }
+#'
 #'
 #' \item{scquantum:} When the method argument is set to 'scquantum', CopyKit
 #' applies \code{\link[scquantum]{ploidy.inference}} function to perform a
 #' sample wise calculation returning the estimated compuational ploidy for
 #' every single cell
+#' }
 #'
 #' @return The CopyKit object with an assay slot named 'integer' that contains
 #' a data frame with cells as columns and integerized segments as rows. And, in

@@ -4,6 +4,10 @@
 * New cell smoothing method with the function `knnSmooth()`. Uses k-nearest neighbors to smooth cells profiles and re-segments the datasets obtaining cleaner copy number profiles, with reduced overdispersion and improving downstream analysis. (Thanks to [Runmin Wei]([)https://github.com/WandeRum) for the helpful discussion.)
 * scquantum method is available for `calcInteger()` and is now a CopyKit import ([scquantum](https://github.com/navinlabcode/scquantum) is a single cell ploidy estimation tool developed by [Alexander Davis](https://github.com/alex-l-m))
 * runVst allows selection of the assay for the transformation
+* `plotHeatmap()` order_cells argument now defaults to NULL. NULL option respects the order of the CopyKit object. order_cells argument can be set to 'consensus_tree' and 'hclust'.
+
+**Removed**
+* option 'phylogeny' from function argument `plotHeatmap()' 'order_cells' has been removed.
 
 **Bug Fixes**
 * Fixed error in plotGeneCopy not returning plots with geom violin and barplot. (Thanks to @Romeo1-1)

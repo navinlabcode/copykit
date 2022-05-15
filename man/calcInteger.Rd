@@ -51,12 +51,13 @@ matrices
 \item{fixed:} When method argument is set to 'fixed' copykit extracts the
 segment means from the scCNA object and multiplies those means by the value
 provided in the argument ploidy_value.
-}
+
 
 \item{scquantum:} When the method argument is set to 'scquantum', CopyKit
 applies \code{\link[scquantum]{ploidy.inference}} function to perform a
 sample wise calculation returning the estimated compuational ploidy for
 every single cell
+}
 }
 \examples{
 copykit_obj <- mock_bincounts(ncells_diploid = 0, ncells = 10)
