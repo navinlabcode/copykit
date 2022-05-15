@@ -129,6 +129,13 @@ plotHeatmap <- function(scCNA,
     # bindings for NSE
     group_value <- NULL
 
+    if (is.null(order_cells)) {
+      message("order_cells argument is NULL. Samples are ordered according to
+              colnames(CopyKit)")
+    } else {
+      message("Ordering cells by:", order_cells)
+    }
+
     # args
     if (!is.null(order_cells) &&
         order_cells %!in% c('consensus_tree', 'hclust')) {
