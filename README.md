@@ -34,9 +34,12 @@ The complete documentation can be found at:
 
 ## Issues
 
-We do our best to provide a bug free software, however CopyKit is in its
+CopyKit has not yet been peer-reviewed so please use it with caution. We
+do our best to provide a bug free software, however CopyKit is in its
 infancy and some growing pains are expected. Please let us know of any
-issues and we will be happy to take a look at it.
+issues and we will be happy to take a look at it. We greatly appreciate
+suggestions. Please make sure to, if possible, include a reproducible
+example and the output of your sessionInfo() when opening an issue.
 
 ## Logo
 
