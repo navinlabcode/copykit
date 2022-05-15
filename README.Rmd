@@ -43,4 +43,11 @@ CopyKit requires R version 4.0 or later.
 The complete documentation can be found at:
 [https://navinlabcode.github.io/CopyKit-UserGuide/](https://navinlabcode.github.io/CopyKit-UserGuide/)
 
+## Issues
+
+We do our best to provide a bug free software, however CopyKit is in its infancy and some growing pains are expected. Please let us know of any issues and we will be happy to take a look at it.
+
+## Logo
+
+Thanks to [Aislyn Schalck](https://github.com/aislyn) for the awesome CopyKit logo design.
 

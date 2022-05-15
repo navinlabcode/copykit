@@ -6,7 +6,7 @@
 \usage{
 calcInteger(
   scCNA,
-  assay = "bincounts",
+  assay = c("bincounts", "smoothed_bincounts", "segment_ratios"),
   method = "fixed",
   ploidy_value = NULL,
   name = "integer",
@@ -35,18 +35,28 @@ penalty argument}
 should be parallelized.}
 }
 \value{
-The scCNA object with an assay slot named 'integer' that contains
-a data frame with cells as columns and integerized segments as rows.
+The CopyKit object with an assay slot named 'integer' that contains
+a data frame with cells as columns and integerized segments as rows. And, in
+case of method = 'scquantum' CopyKit adds  two new elements to \code{colData}
+ named 'ploidy' and 'ploidy_confidence' with the respective values for
+ each cell.
 }
 \description{
-Calculates the integer copy number profile for each single-cell
+Calculates the integer copy number profile for each single cell
 }
 \details{
+CopyKit support the following methods for calculating integer copy number
+matrices
 \itemize{
 \item{fixed:} When method argument is set to 'fixed' copykit extracts the
 segment means from the scCNA object and multiplies those means by the value
 provided in the argument ploidy_value.
 }
+
+\item{scquantum:} When the method argument is set to 'scquantum', CopyKit
+applies \code{\link[scquantum]{ploidy.inference}} function to perform a
+sample wise calculation returning the estimated compuational ploidy for
+every single cell
 }
 \examples{
 copykit_obj <- mock_bincounts(ncells_diploid = 0, ncells = 10)

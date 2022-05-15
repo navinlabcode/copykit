@@ -1,5 +1,11 @@
 # copykit 0.1.2
 
+**New features**
+* New cell smoothing method with the function `knnSmooth()`. Uses k-nearest neighbors to smooth cells profiles and re-segments the datasets obtaining cleaner copy number profiles, with reduced overdispersion and improving downstream analysis. (Thanks to [Runmin Wei]([)https://github.com/WandeRum) for the helpful discussion.)
+* scquantum method is available for `calcInteger()` and is now a CopyKit import ([scquantum](https://github.com/navinlabcode/scquantum) is a single cell ploidy estimation tool developed by [Alexander Davis](https://github.com/alex-l-m))
+* runVst allows selection of the assay for the transformation
+
+**Bug Fixes**
 * Fixed error in plotGeneCopy not returning plots with geom violin and barplot. (Thanks to @Romeo1-1)
 * Fixed error in plotGeneCopy with duplicated sample names on a merged object. Now it warns the user of merged sample names. (Thanks to @Romeo1-1)
 

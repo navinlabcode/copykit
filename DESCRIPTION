@@ -35,7 +35,6 @@ Suggests:
     testthat,
     spelling,
     knitr,
-    scquantum,
     rmarkdown,
     stringr
 Language: en-US
@@ -77,7 +76,8 @@ Imports:
     ggtree,
     methods,
     withr,
-    bluster
+    bluster,
+    scquantum
 RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 Depends: 
