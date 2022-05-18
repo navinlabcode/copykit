@@ -59,10 +59,9 @@ calcInteger <- function(scCNA,
   # args
   assay = match.arg(assay)
 
-
-  if (!is.null(assay(scCNA, 'smoothed_bincounts'))) {
+  if (!is.null(assay(scCNA, 'smoothed_bincounts')) && assay == 'bincounts') {
     warning("CopyKit detected that knnSmooth() has been performed.
-If working with knnSmooth datasets we recommend using assay segment_ratios:
+If working with knnSmooth datasets we recommend using assay 'segment_ratios':
 calcInteger(copykit, assay = 'segment_ratios')")
   }
 
@@ -71,7 +70,7 @@ calcInteger(copykit, assay = 'segment_ratios')")
     bin <- SummarizedExperiment::assay(scCNA, 'bincounts')
   }
 
-  if (assay == 'smoothed_bincounts') {
+  if (assay %in% c('smoothed_bincounts','segment_ratios')) {
     bin <- SummarizedExperiment::assay(scCNA, 'smoothed_bincounts')
   }
 
@@ -123,8 +122,13 @@ calcInteger(copykit, assay = 'segment_ratios')")
 
         # extracting segment-wise means and index of dispersion
         seg_bins_mean <- tapply(bin[, z], segnums, mean)
-        iod.est <-
-          tapply(bin[, z], segnums, scquantum::timeseries.iod)
+
+        if (any(seg_length <= 3)) {
+          iod.est <- scquantum::timeseries.iod(bin[,z])
+        } else {
+          iod.est <-
+            tapply(bin[, z], segnums, scquantum::timeseries.iod)
+        }
 
         # bincount mean estimate
         mean.est <- mean(bin[, z])
