@@ -94,6 +94,17 @@ calcInteger(copykit, assay = 'segment_ratios')")
     }
   }
 
+  if (method == "metadata") {
+    # method metadata just allows the segment ratios to be integerized based
+    # on the values for each cell in the colData(scCNA)$ploidy information.
+    if (!is.null(colData(scCNA)$ploidy)) {
+      message('Calculating integer values based on colData(scCNA)$ploidy info.')
+    } else {
+      stop("Method 'metadata' requires colData(scCNA)$ploidy information.")
+    }
+
+  }
+
   # logic for scquantum method
   if (method == "scquantum") {
     rg <- as.data.frame(SummarizedExperiment::rowRanges(scCNA))

@@ -37,7 +37,7 @@
 #'
 #'
 knnSmooth <- function(scCNA,
-                      k = 3,
+                      k = 4,
                       BPPARAM = bpparam()) {
   # setup data
   bin <- bincounts(scCNA)
