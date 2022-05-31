@@ -68,6 +68,14 @@ knnSmooth <- function(scCNA,
   scCNA <- runVst(scCNA, assay = 'smoothed_bincounts')
   scCNA <- runSegmentation(scCNA)
 
+  message("Replacing segment_ratios assay.")
+  message("Replacing logr assay.")
+
+  # re-normalizing
+  scCNA <- logNorm(scCNA)
+
+  message("Done.")
+
   return(scCNA)
 
 }

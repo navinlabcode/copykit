@@ -197,7 +197,7 @@ plotHeatmap <- function(scCNA,
 
     if (assay == "integer") {
         # truncate ploidy colors to 2* the mean ploidy
-        mean_ploidy <- mean(SummarizedExperiment::colData(scCNA)$ploidy)
+        mean_ploidy <- median(SummarizedExperiment::colData(scCNA)$ploidy)
         ploidy_trunc <- 2 * round(mean_ploidy)
 
         # colors
