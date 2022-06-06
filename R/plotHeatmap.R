@@ -198,7 +198,12 @@ plotHeatmap <- function(scCNA,
     if (assay == "integer") {
         # truncate ploidy colors to 2* the mean ploidy
         mean_ploidy <- median(SummarizedExperiment::colData(scCNA)$ploidy)
-        ploidy_trunc <- 2 * round(mean_ploidy)
+
+        if (round(mean_ploidy) == 2) {
+          ploidy_trunc <- 6
+        } else {
+          ploidy_trunc <- 2 * round(mean_ploidy)
+        }
 
         # colors
         color_heat <-
