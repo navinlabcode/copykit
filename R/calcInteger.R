@@ -33,9 +33,9 @@
 #'
 #' @return The CopyKit object with an assay slot named 'integer' that contains
 #' a data frame with cells as columns and integerized segments as rows. And, in
-#' case of method = 'scquantum' CopyKit adds  two new elements to \code{colData}
-#'  named 'ploidy' and 'ploidy_confidence' with the respective values for
-#'  each cell.
+#' case of method = 'scquantum' CopyKit adds three new elements to \code{colData}
+#'  named 'ploidy' and 'ploidy_score' and the 'confidence ratio' obtained from
+#'  scquantum for each cell.
 #'
 #' @export
 #'
@@ -171,9 +171,15 @@ calcInteger(copykit, assay = 'segment_ratios')")
       vapply(sc_quants, function(x)
         x$confidence_ratio, numeric(1))
 
+    # calculating ploidy score from scquantum confidence ratio
+    ploidy_score <- abs(1-sc_confidence)
+
     SummarizedExperiment::colData(scCNA)$ploidy <- sc_ploidies
-    SummarizedExperiment::colData(scCNA)$ploidy_confidence <-
+    SummarizedExperiment::colData(scCNA)$confidence_ratio <-
       sc_confidence
+    SummarizedExperiment::colData(scCNA)$ploidy_score <-
+      ploidy_score
+
   }
 
   # check to guarantee multiplication
