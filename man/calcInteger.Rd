@@ -37,9 +37,9 @@ should be parallelized.}
 \value{
 The CopyKit object with an assay slot named 'integer' that contains
 a data frame with cells as columns and integerized segments as rows. And, in
-case of method = 'scquantum' CopyKit adds  two new elements to \code{colData}
- named 'ploidy' and 'ploidy_confidence' with the respective values for
- each cell.
+case of method = 'scquantum' CopyKit adds three new elements to \code{colData}
+ named 'ploidy' and 'ploidy_score' and the 'confidence ratio' obtained from
+ scquantum for each cell.
 }
 \description{
 Calculates the integer copy number profile for each single cell

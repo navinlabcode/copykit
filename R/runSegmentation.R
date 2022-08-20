@@ -4,8 +4,10 @@
 #'
 #' @param scCNA The scCNA object
 #' @param method A character with the segmentation method of choice.
-#' @param alpha A numeric with the. significance levels for the test to accept
+#' @param alpha A numeric with the significance levels for the test to accept
 #' change-points for CBS segmentation. See \code{\link[DNAcopy]{segment}}.
+#' @param merge_levels_alpha A numeric with the significance levels for the
+#' merge levels test to accept two different segments.
 #' @param gamma A numeric passed on to 'multipcf' segmentation. Penalty for each
 #'  discontinuity in the curve. \code{\link[copynumber]{multipcf}}.
 #' @param seed Numeric. Set seed for CBS permutation reproducibility
@@ -56,6 +58,7 @@ runSegmentation <- function(scCNA,
                             method = c("CBS", "multipcf"),
                             seed = 17,
                             alpha = 1e-10,
+                            merge_levels_alpha = 1e-10,
                             gamma = 40,
                             undo.splits = "prune",
                             name = "segment_ratios",
@@ -281,7 +284,7 @@ runSegmentation <- function(scCNA,
         seg_means_ml <- mergeLevels(smoothed_cell_ct,
             seg_means_cell,
             verbose = 0,
-            pv.thres = 1e-10
+            pv.thres = merge_levels_alpha
         )$vecMerged
     })
 

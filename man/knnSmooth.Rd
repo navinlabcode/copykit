@@ -4,7 +4,7 @@
 \alias{knnSmooth}
 \title{knnSmooth}
 \usage{
-knnSmooth(scCNA, k = 3, BPPARAM = bpparam())
+knnSmooth(scCNA, k = 4, BPPARAM = bpparam())
 }
 \arguments{
 \item{scCNA}{The CopyKit object.}
