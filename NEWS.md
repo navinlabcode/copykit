@@ -19,6 +19,7 @@
 **Bug Fixes**
 * Fixed error in plotGeneCopy not returning plots with geom violin and barplot. (Thanks to @Romeo1-1)
 * Fixed error in plotGeneCopy with duplicated sample names on a merged object. Now it warns the user of merged sample names. (Thanks to @Romeo1-1)
+* Allowing control of parameter merge_levels_alpha on `runVarbin()` and `runSegmentation()` to control the significance level of merge levels when merging not significant segments.
 
 
 # copykit 0.1.1
