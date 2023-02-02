@@ -4,13 +4,16 @@
 \alias{runVst}
 \title{Variance Stabilizing Transformation}
 \usage{
-runVst(scCNA, transformation = c("ft", "log"))
+runVst(scCNA, transformation = c("ft", "log"), assay = "bincounts")
 }
 \arguments{
 \item{scCNA}{The scCNA object}
 
 \item{transformation}{A character indicating the variance stabilization
 transformation to be performed. See \link{runVst} details.}
+
+\item{assay}{A character indicating the assay slot to extract the bincounts
+for variance stabilization}
 }
 \value{
 A slot into the scCNA object containing the variance stabilized matrix.

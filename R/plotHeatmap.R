@@ -5,7 +5,7 @@
 #'
 #' @author Darlan Conterno Minussi
 #'
-#' @param scCNA scCNA object.
+#' @param scCNA The CopyKit object.
 #' @param assay String with the assay to pull data from to plot heatmap.
 #' @param order_cells A string with the desired method to order the cells within
 #' @param label A vector with the string names of the columns from
@@ -47,15 +47,13 @@
 #'     If order_cells is 'hclust' cells are ordered according to hierarchical
 #'      clustering. 'hclust' calculation can be sped up by changing the parameter
 #'      'n_threads' if you have more threads available to use. If order_cells
-#'      is set to 'phylogeny' \code{\link{plotHeatmap}} will use the tree stored
-#'      in the \code{\link{phylo}} slot of the scCNA object to order the cells.
-#'      If the \code{\link{phylo}} is empty \code{\link{plotHeatmap}} will run
-#'      \code{\link{runPhylo}} to generate the tree.
+#'      is NULL the order of cells will be the same as the current order inside
+#'      the CopyKit object (colnames(CopyKit)).
 #'
 #'    \item{label}: A vector with the string names of the columns from
-#'    \code{\link[SummarizedExperiment]{colData}} for heatmap annotation. The 'label'
-#'    argument can take as many columns as desired as argument as long as they
-#'    are elements from \code{\link[SummarizedExperiment]{colData}}.
+#'    \code{\link[SummarizedExperiment]{colData}} for heatmap annotation. The
+#'    'label' argument can take as many columns as desired as argument as long
+#'     as they are elements from \code{\link[SummarizedExperiment]{colData}}.
 #'
 #'    \item{label_colors}: A named list, list element names must match column
 #'    names for \code{\link[SummarizedExperiment]{colData}} and list elements
@@ -63,25 +61,25 @@
 #'     'label'. For example: to set colors for column 'outlier' containing
 #'     elements 'TRUE' or 'FALSE' a valid input would be:
 #'     'list(outlier = c('FALSE' = 'green', 'TRUE' = 'red))'.
-#'      Default colors are provided for 'superclones', 'subclones', 'is_aneuploid',
-#'      and 'outlier' that can be override with 'label_colors'.
+#'      Default colors are provided for 'superclones', 'subclones',
+#'      'is_aneuploid', and 'outlier' that can be override with 'label_colors'.
 #'
 #'    \item{rounding_error}: Must be used with assay = 'integer'.
-#'    \code{plotHeatmap} will access the ploidies stored into colData(scCNA)$ploidy
-#'     that are generated from \code{\link{calcInteger}} and scale rounded integer
-#'      values to the segment means. Later this scaled matrix will be subtracted
-#'      from the 'integer' assay from \code{\link{calcInteger}} and the resulting
-#'       matrix from this subtraction will be plotted. Useful to visualize regions
-#'       of high rounding error. Such regions can indicate issues with the ploidy
-#'       scaling in use.
+#'    \code{plotHeatmap} will access the ploidies into colData(scCNA)$ploidy
+#'    that are generated from \code{\link{calcInteger}} and scale rounded integer
+#'    values to the segment means. Later this scaled matrix will be subtracted
+#'    from the 'integer' assay from \code{\link{calcInteger}} and the resulting
+#'    matrix from this subtraction will be plotted. Useful to visualize regions
+#'    of high rounding error. Such regions can indicate issues with the ploidy
+#'    scaling in use.
 #'
-#'    \item{consensus}: If set to TRUE, \code{\link{plotHeatmap}} will search for
-#'     the consensus matrix in the slot \code{\link{consensus}} and plot the
-#'     resulting matrix. Labels annotations can be added with the argument 'label'.
+#'  \item{consensus}: If set to TRUE, \code{\link{plotHeatmap}} will search for
+#'  the consensus matrix in the slot \code{\link{consensus}} and plot the
+#'  resulting matrix. Labels annotations can be added with the argument 'label'.
 #'
 #' }
 #'
-#' @seealso \code{\link{calcInteger}} For methods of obtaning the 'integer' assay.
+#' @seealso \code{\link{calcInteger}}.
 #'
 #' @references Zuguang Gu, Roland Eils, Matthias Schlesner, Complex heatmaps
 #' reveal patterns and correlations in multidimensional genomic data,
@@ -115,7 +113,7 @@
 #' plotHeatmap(copykit_obj, label = c("section", "subclones"))
 plotHeatmap <- function(scCNA,
     assay = "segment_ratios",
-    order_cells = c("consensus_tree", "hclust", "phylogeny"),
+    order_cells = NULL,
     label = NULL,
     label_colors = NULL,
     group = NULL,
@@ -127,11 +125,22 @@ plotHeatmap <- function(scCNA,
     use_raster = TRUE,
     raster_quality = 2,
     n_threads = 1) {
-    # args
-    order_cells <- match.arg(order_cells)
 
     # bindings for NSE
     group_value <- NULL
+
+    if (is.null(order_cells)) {
+      message("order_cells argument is NULL. Samples are ordered according to
+              colnames(CopyKit)")
+    } else {
+      message("Ordering cells by:", order_cells)
+    }
+
+    # args
+    if (!is.null(order_cells) &&
+        order_cells %!in% c('consensus_tree', 'hclust')) {
+      stop("Arg order_cells must be 'consensus_tree' or 'hclust'")
+    }
 
     # check annotation colors
     if (is.null(label) & !is.null(label_colors)) {
@@ -153,7 +162,7 @@ plotHeatmap <- function(scCNA,
     }
 
     if (is.null(SummarizedExperiment::colData(scCNA)$subclones) &&
-        order_cells != "phylogeny") {
+        !is.null(order_cells)) {
         message("Ordering by consensus requires cluster information.")
         message("Switching to hclust.")
         order_cells <- "hclust"
@@ -188,8 +197,13 @@ plotHeatmap <- function(scCNA,
 
     if (assay == "integer") {
         # truncate ploidy colors to 2* the mean ploidy
-        mean_ploidy <- mean(SummarizedExperiment::colData(scCNA)$ploidy)
-        ploidy_trunc <- 2 * round(mean_ploidy)
+        mean_ploidy <- median(SummarizedExperiment::colData(scCNA)$ploidy)
+
+        if (round(mean_ploidy) == 2) {
+          ploidy_trunc <- 6
+        } else {
+          ploidy_trunc <- 2 * round(mean_ploidy)
+        }
 
         # colors
         color_heat <-
@@ -272,28 +286,14 @@ plotHeatmap <- function(scCNA,
     # consensus and not consensus logic
     if (consensus == FALSE) {
         # ordering cells
-        if (order_cells == "phylogeny") {
-            if (ape::Ntip(phylo(scCNA)) == 0) {
-                stop("No phylogeny detected in scCNA object. Use runPhylo")
-            }
 
-            if (ape::Ntip(consensusPhylo(scCNA)) == 0) {
-                stop("No consensus phylogeny detected in scCNA object.")
-            }
+      # if order_cells equals null, keep the order in the current copykit
+      # object
+        if (is.null(order_cells)) {
 
-            tree <- phylo(scCNA)
+          seg_data_ordered <- seg_data
 
-            # getting order
-            is_tip <- tree$edge[, 2] <= length(tree$tip.label)
-            ordered_tips_index <- tree$edge[is_tip, 2]
-            tree_tips_order <-
-                tree$tip.label[ordered_tips_index] %>% rev()
-
-            # ordering data
-            seg_data_ordered <- seg_data[tree_tips_order, ]
-        }
-
-        if (order_cells == "hclust") {
+        } else  if (order_cells == "hclust") {
             # checking distance matrix
             if (length(copykit::distMat(scCNA)) == 0) {
                 message("No distance matrix detected in the scCNA object.")
@@ -315,9 +315,7 @@ plotHeatmap <- function(scCNA,
             )
 
             seg_data_ordered <- seg_data[hc$order, ]
-        }
-
-        if (order_cells == "consensus_tree") {
+        } else if (order_cells == "consensus_tree") {
             if (nrow(consensus(scCNA)) == 0) {
                 scCNA <- calcConsensus(scCNA)
             }

@@ -2,7 +2,7 @@ Package: copykit
 Title: CopyKit
 URL: https://github.com/navinlabcode/copykit
 BugReports: https://github.com/navinlabcode/copykit/issues
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person(given = "Darlan",
            family = "Conterno Minussi",
@@ -35,7 +35,6 @@ Suggests:
     testthat,
     spelling,
     knitr,
-    scquantum,
     rmarkdown,
     stringr
 Language: en-US
@@ -77,7 +76,8 @@ Imports:
     ggtree,
     methods,
     withr,
-    bluster
+    bluster,
+    scquantum
 RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 Depends: 

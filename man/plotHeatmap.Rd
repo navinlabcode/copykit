@@ -7,7 +7,7 @@
 plotHeatmap(
   scCNA,
   assay = "segment_ratios",
-  order_cells = c("consensus_tree", "hclust", "phylogeny"),
+  order_cells = NULL,
   label = NULL,
   label_colors = NULL,
   group = NULL,
@@ -22,7 +22,7 @@ plotHeatmap(
 )
 }
 \arguments{
-\item{scCNA}{scCNA object.}
+\item{scCNA}{The CopyKit object.}
 
 \item{assay}{String with the assay to pull data from to plot heatmap.}
 
@@ -82,15 +82,13 @@ Each row is a cell and colums represent genomic positions.
     If order_cells is 'hclust' cells are ordered according to hierarchical
      clustering. 'hclust' calculation can be sped up by changing the parameter
      'n_threads' if you have more threads available to use. If order_cells
-     is set to 'phylogeny' \code{\link{plotHeatmap}} will use the tree stored
-     in the \code{\link{phylo}} slot of the scCNA object to order the cells.
-     If the \code{\link{phylo}} is empty \code{\link{plotHeatmap}} will run
-     \code{\link{runPhylo}} to generate the tree.
+     is NULL the order of cells will be the same as the current order inside
+     the CopyKit object (colnames(CopyKit)).
 
    \item{label}: A vector with the string names of the columns from
-   \code{\link[SummarizedExperiment]{colData}} for heatmap annotation. The 'label'
-   argument can take as many columns as desired as argument as long as they
-   are elements from \code{\link[SummarizedExperiment]{colData}}.
+   \code{\link[SummarizedExperiment]{colData}} for heatmap annotation. The
+   'label' argument can take as many columns as desired as argument as long
+    as they are elements from \code{\link[SummarizedExperiment]{colData}}.
 
    \item{label_colors}: A named list, list element names must match column
    names for \code{\link[SummarizedExperiment]{colData}} and list elements
@@ -98,21 +96,21 @@ Each row is a cell and colums represent genomic positions.
     'label'. For example: to set colors for column 'outlier' containing
     elements 'TRUE' or 'FALSE' a valid input would be:
     'list(outlier = c('FALSE' = 'green', 'TRUE' = 'red))'.
-     Default colors are provided for 'superclones', 'subclones', 'is_aneuploid',
-     and 'outlier' that can be override with 'label_colors'.
+     Default colors are provided for 'superclones', 'subclones',
+     'is_aneuploid', and 'outlier' that can be override with 'label_colors'.
 
    \item{rounding_error}: Must be used with assay = 'integer'.
-   \code{plotHeatmap} will access the ploidies stored into colData(scCNA)$ploidy
-    that are generated from \code{\link{calcInteger}} and scale rounded integer
-     values to the segment means. Later this scaled matrix will be subtracted
-     from the 'integer' assay from \code{\link{calcInteger}} and the resulting
-      matrix from this subtraction will be plotted. Useful to visualize regions
-      of high rounding error. Such regions can indicate issues with the ploidy
-      scaling in use.
+   \code{plotHeatmap} will access the ploidies into colData(scCNA)$ploidy
+   that are generated from \code{\link{calcInteger}} and scale rounded integer
+   values to the segment means. Later this scaled matrix will be subtracted
+   from the 'integer' assay from \code{\link{calcInteger}} and the resulting
+   matrix from this subtraction will be plotted. Useful to visualize regions
+   of high rounding error. Such regions can indicate issues with the ploidy
+   scaling in use.
 
-   \item{consensus}: If set to TRUE, \code{\link{plotHeatmap}} will search for
-    the consensus matrix in the slot \code{\link{consensus}} and plot the
-    resulting matrix. Labels annotations can be added with the argument 'label'.
+ \item{consensus}: If set to TRUE, \code{\link{plotHeatmap}} will search for
+ the consensus matrix in the slot \code{\link{consensus}} and plot the
+ resulting matrix. Labels annotations can be added with the argument 'label'.
 
 }
 }
@@ -136,7 +134,7 @@ Bioinformatics, Volume 32, Issue 18, 15 September 2016, Pages 2847–2849,
 https://doi.org/10.1093/bioinformatics/btw313
 }
 \seealso{
-\code{\link{calcInteger}} For methods of obtaning the 'integer' assay.
+\code{\link{calcInteger}}.
 }
 \author{
 Darlan Conterno Minussi

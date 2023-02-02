@@ -22,6 +22,8 @@
 #' reproducibility.
 #' @param alpha A numeric with the. significance levels for the test to accept
 #' change-points for CBS segmentation. See \code{\link[DNAcopy]{segment}}.
+#' @param merge_levels_alpha A numeric with the significance levels for the
+#' merge levels test to accept two different segments.
 #' @param gamma A numeric passed on to 'multipcf' segmentation. Penalty for each
 #'  discontinuity in the curve, default is 40. See \code{\link[copynumber]{multipcf}}.
 #' @param name A character with the name for the slot returned by \code{runVarbin}
@@ -125,7 +127,8 @@ runVarbin <- function(dir,
                       vst = c("ft", "log"),
                       seed = 17,
                       min_bincount = 10,
-                      alpha = 1e-9,
+                      alpha = 1e-5,
+                      merge_levels_alpha = 1e-5,
                       gamma = 40,
                       name = "segment_ratios",
                       BPPARAM = bpparam()) {
@@ -151,6 +154,7 @@ runVarbin <- function(dir,
         seed = seed,
         name = name,
         alpha = alpha,
+        merge_levels_alpha = merge_levels_alpha,
         gamma = gamma,
         method = method,
         BPPARAM = BPPARAM
