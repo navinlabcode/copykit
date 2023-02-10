@@ -99,7 +99,6 @@ plotGeneCopy <- function(scCNA,
             ),
             axis.title.y = element_text(colour = "gray28", size = 20),
             axis.text.y = element_text(size = 15),
-            axis.line.x = element_blank(),
             legend.position = "right",
             legend.title = element_blank(),
             legend.text = element_text(size = 16)
