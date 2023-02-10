@@ -61,9 +61,8 @@ calcInteger <- function(scCNA,
 
   if (!is.null(assay(scCNA, 'smoothed_bincounts')) && assay == 'bincounts'
       && method == 'scquantum') {
-    warning("CopyKit detected that knnSmooth() has been performed.
-If working with knnSmooth datasets we recommend using assay 'segment_ratios':
-calcInteger(copykit, assay = 'segment_ratios')")
+    warning("CopyKit detected that knnSmooth() has been performed.")
+    warning("If working with knnSmooth datasets we recommend using the assay 'smoothed_bincounts'")
   }
 
   # getting datasets
