@@ -1,3 +1,8 @@
+# copykit devel
+
+**Bug Fixes**
+Fixed gamma segmentation argument not being used when applying multipcf segmentation [#94](https://github.com/navinlabcode/copykit/issues/94)
+
 # copykit 0.1.2
 
 **New features**
