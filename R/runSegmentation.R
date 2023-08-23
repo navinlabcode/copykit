@@ -247,6 +247,7 @@ runSegmentation <- function(scCNA,
         )
 
         mpcf <- copynumber::multipcf(smooth_multipcf,
+                                     gamma = gamma,
                                      arms = vapply(
                                          regmatches(ref_chrarm$chrarm,
                                                     regexec("[pq]",
