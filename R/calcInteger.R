@@ -71,7 +71,7 @@ calcInteger <- function(scCNA,
   }
 
   if (assay %in% c('smoothed_bincounts','segment_ratios')) {
-    bin <- SummarizedExperiment::assay(scCNA, 'smoothed_bincounts')
+    bin <- SummarizedExperiment::assay(scCNA, 'segment_ratios')
   }
 
   seg <- SummarizedExperiment::assay(scCNA, 'segment_ratios')
