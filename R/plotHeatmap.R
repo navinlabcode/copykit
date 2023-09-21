@@ -519,7 +519,7 @@ plotHeatmap <- function(scCNA,
         border = TRUE,
         cluster_columns = FALSE,
         show_column_names = FALSE,
-        show_row_names = FALSE,
+        show_row_names = ifelse(consensus, TRUE, FALSE),
         show_heatmap_legend = TRUE
     )
 

@@ -40,7 +40,7 @@
 #' @export
 #'
 #' @importFrom S4Vectors metadata
-#' @importFrom SummarizedExperiment assay colData rowRanges
+#' @importFrom SummarizedExperiment assay assayNames colData rowRanges
 #' @importFrom scquantum ploidy.inference timeseries.iod
 #'
 #' @examples
@@ -59,7 +59,7 @@ calcInteger <- function(scCNA,
   # args
   assay = match.arg(assay)
 
-  if (!is.null(assay(scCNA, 'smoothed_bincounts')) && assay == 'bincounts'
+  if ('smoothed_bincounts' %in% assayNames(scCNA) && assay == 'bincounts'
       && method == 'scquantum') {
     warning("CopyKit detected that knnSmooth() has been performed.")
     warning("If working with knnSmooth datasets we recommend using the assay 'smoothed_bincounts'")
@@ -71,7 +71,7 @@ calcInteger <- function(scCNA,
   }
 
   if (assay %in% c('smoothed_bincounts','segment_ratios')) {
-    bin <- SummarizedExperiment::assay(scCNA, 'smoothed_bincounts')
+    bin <- SummarizedExperiment::assay(scCNA, 'segment_ratios')
   }
 
   seg <- SummarizedExperiment::assay(scCNA, 'segment_ratios')
