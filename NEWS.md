@@ -2,6 +2,7 @@
 
 **Bug Fixes**
 Fixed gamma segmentation argument not being used when applying multipcf segmentation [#94](https://github.com/navinlabcode/copykit/issues/94)
+Fixed 'smoothed_bincounts' check [#97](https://github.com/navinlabcode/copykit/pull/98). Thanks @Puriney
 
 # copykit 0.1.2
 
