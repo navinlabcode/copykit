@@ -10,7 +10,7 @@
 #' should be parallelized.
 #'
 #' @details Consensus profiles are calculated by averaging or taking the median
-#'  of the ith segment mean of all single cells assigned to the same element of
+#'  of the i^th segment mean of all single cells assigned to the same element of
 #'  \link{colData},
 #'
 #' @return A consensus matrix stored in the consensus slot of the CopyKit object

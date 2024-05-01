@@ -27,7 +27,7 @@ NULL
 # -------------------
 utils::globalVariables(c('hg38_grangeslist', 'copykit_obj_filt_rle',
                          'copykit_obj_filt_umap', 'hg19_genes', 'hg38_genes',
-                         'hg19_rg'))
+                         'hg19_rg', 'mm10_grangeslist', 'mm10_genes'))
 
 #' @export
 #' @rdname internals
@@ -410,6 +410,10 @@ find_scaffold_genes <- function(scCNA,
 
     if (S4Vectors::metadata(scCNA)$genome == "hg38") {
         genes_assembly <- hg38_genes
+    }
+    
+    if (S4Vectors::metadata(scCNA)$genome == "mm10") {
+      genes_assembly <- mm10_genes
     }
 
     # getting ranges from scCNA object

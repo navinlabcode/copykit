@@ -38,7 +38,7 @@ the_sp_semiabb <- paste0(substring(the_species,1,1),strsplit(the_species," ")[[1
 
 # may need to be edits for different genomes
 # however this should work for more than just mouse
-hub <- AnnotationHub()
+hub <- AnnotationHub(localHub = FALSE)
 my_genome_files <- query(hub, the_species, the_genome)
 #EnsemblTxDb <- makeTxDbFromEnsembl(organism = the_species, release = 99)
 #the_database_name <- paste0("TxDb.",the_sp_abb,".",the_genome,".ensembl.reg")
@@ -324,8 +324,8 @@ GenomeInfoDb::seqinfo(varbin_genome_grangeslist) <- genome_seqinfo
 
 assign(paste0(the_genome, "_grangeslist"), value=varbin_genome_grangeslist )
 
-my_grangelist <- get(paste0(the_genome, "_grangeslist"))
-save(my_grangelist, file=paste0("data/",the_genome,"_grangeslist.rda"))
+#my_grangelist <- get(paste0(the_genome, "_grangeslist"))
+save(get(paste0(the_genome, "_grangeslist")), file=paste0("data/",the_genome,"_grangeslist.rda"))
 
 # in order to create different genome varbins of about these sizes we need to 
 # get the GC content and from the genome of interest

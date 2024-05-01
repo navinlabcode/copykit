@@ -17,9 +17,11 @@
 #'
 #' @details plotGeneCopy finds overlaps of the varbin scaffolds genomic ranges
 #' which can be accessed with \code{\link[SummarizedExperiment]{rowRanges}}
-#' with the genes from the assemblies of either hg19 or hg38. The genomic ranges
-#' from hg19 comes from package \code{TxDb.Hsapiens.UCSC.hg19.knownGene} whereas
-#' for hg38 package \code{TxDb.Hsapiens.UCSC.hg38.knownGene}.
+#' with the genes from the human genome assemblies of either hg19 or hg38, 
+#' or the mouse genome assembly mm10. All are from TxDb.Hsapiens.UCSC packages.
+#' hg19 package \code{TxDb.Hsapiens.UCSC.hg19.knownGene}.
+#' hg38 package \code{TxDb.Hsapiens.UCSC.hg38.knownGene}.
+#' mm10 package \code{TxDb.Mmusculus.UCSC.mm10.knownGene}.
 #'
 #' If the argument geom is set to 'barplot' plotGeneCopy calculates gene-wise
 #'  frequencies of each copy number state for the selected genes across all of

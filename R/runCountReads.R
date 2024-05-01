@@ -4,6 +4,7 @@
 #' BAM files resulting from short-read sequencing.
 #'
 #' @author Darlan Conterno Minussi
+#' @author Anna Kristina Casasent
 #'
 #' @param dir A path for the directory containing BAM files from short-read
 #' sequencing.
@@ -58,7 +59,7 @@
 #' }
 #'
 runCountReads <- function(dir,
-                          genome = c("hg38", "hg19"),
+                          genome = c("hg38", "hg19", "mm10"),
                           resolution = c(
                               "220kb",
                               "55kb",
@@ -148,6 +149,36 @@ runCountReads <- function(dir,
             )
         }
     }
+    
+    # Reading mm10 VarBin ranges
+    if (genome == "mm10") {
+      mm10_grangeslist <- mm10_grangeslist
+      
+      mm10_rg <- switch(resolution,
+                        "55kb" = mm10_grangeslist[["mm10_50kb"]],
+                        "110kb" = mm10_grangeslist[["mm10_100kb"]],
+                        "195kb" = mm10_grangeslist[["mm10_175kb"]],
+                        "220kb" = mm10_grangeslist[["mm10_200kb"]],
+                        "280kb" = mm10_grangeslist[["mm10_250kb"]],
+                        "500kb" = mm10_grangeslist[["mm10_500kb"]],
+                        "1Mb" = mm10_grangeslist[["mm10_1Mb"]],
+                        "2.8Mb" = mm10_grangeslist[["mm10_2Mb"]]
+      )
+      
+      mm10_rg <- as.data.frame(mm10_rg)
+      
+      rg <- mm10_rg %>%
+        dplyr::rename(chr = "seqnames") %>%
+        dplyr::mutate(GeneID = 1:nrow(mm10_rg))
+      
+      if (remove_Y == TRUE) {
+        rg <- dplyr::filter(
+          rg,
+          chr != "chrY"
+        )
+      }
+    }
+    
 
     message(
         "Counting reads for genome ",

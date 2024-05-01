@@ -1,4 +1,4 @@
-### all clases for the copykit package
+### all classes for the copykit package
 
 ###################################################################
 # ape has no formal definition of the phylo-class

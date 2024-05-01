@@ -26,6 +26,18 @@
 #' @keywords internal
 "hg38_grangeslist"
 
+#' mm10_grangeslist
+#'
+#' @name mm10_grangeslist
+#' @aliases mm10_rg
+#' @docType data
+#' @return Contains a GrangesList object with the scaffolds for each of the
+#' resolutions used by runVarbin, runCountReads and runSegmentation on the mm10
+#' genome assembly.
+#' @rdname data
+#' @keywords internal
+"mm10_grangeslist"
+
 
 #' copykit_obj_rle
 #'
@@ -61,6 +73,18 @@
 #' @keywords internal
 "copykit_obj_filt_umap"
 
+#' hg38_genes
+#'
+#' @name hg38_genes
+#' @aliases hg38_genes
+#' @docType data
+#' @details Contains the GrangesObject for the genomic positions of genes in the
+#' hg38 genome assembly
+#' @source library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+#' @rdname data
+#' @keywords internal
+"hg38_genes"
+
 #' hg19_genes
 #'
 #' @name hg19_genes
@@ -73,14 +97,14 @@
 #' @keywords internal
 "hg19_genes"
 
-#' hg38_genes
+#' mm10_genes
 #'
-#' @name hg38_genes
-#' @aliases hg38_genes
+#' @name mm10_genes
+#' @aliases mm10_genes
 #' @docType data
 #' @details Contains the GrangesObject for the genomic positions of genes in the
-#' hg38 genome assembly
-#' @source library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+#' mm10 genome assembly
+#' @source library(TxDb.Mmusculus.UCSC.mm10.knownGene)
 #' @rdname data
 #' @keywords internal
-"hg38_genes"
+"mm10_genes"

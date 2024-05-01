@@ -4,6 +4,7 @@
 #' Each row is a cell and colums represent genomic positions.
 #'
 #' @author Darlan Conterno Minussi
+#' @author Anna Kristina Casasent
 #'
 #' @param scCNA The CopyKit object.
 #' @param assay String with the assay to pull data from to plot heatmap.
@@ -235,18 +236,19 @@ plotHeatmap <- function(scCNA,
     if (any(duplicated(row.names(seg_data)))) {
         row.names(seg_data) <- make.names(row.names(seg_data), unique = TRUE)
     }
-
+      
     # chromosome bar aesthetic
     chr_ranges <-
         as.data.frame(SummarizedExperiment::rowRanges(scCNA))
     chr_lengths <- rle(as.numeric(chr_ranges$seqnames))$lengths
 
-    if (any(chr_ranges$seqnames == "24") ||
-        any(chr_ranges$seqnames == "Y") ||
-        any(chr_ranges$seqnames == "chrY")) {
-        chr_binary <- rep(c(2, 1), length(chr_lengths) / 2)
+    # even number of chromosomes
+    if (length(unique(chr_ranges$seqnames)) %% 2 == 0) {
+      # Do handle like human chromosomes if the length is even
+      chr_binary <- rep(c(2, 1), length(chr_lengths) / 2)
     } else {
-        chr_binary <- c(rep(c(2, 1), (length(chr_lengths) / 2)), 2)
+      # Do handle like mouse if the length is odd
+      chr_binary <- c(rep(c(2, 1), (length(chr_lengths) / 2)), 2)
     }
 
     chr <-
@@ -263,7 +265,8 @@ plotHeatmap <- function(scCNA,
         )
     chr_l_means <- round(rowMeans(chr_df))
 
-    chrom.names <- c(1:22, "X", "Y")
+    chrom.names <-  sapply(levels(chr_ranges$seqnames), function(x)
+    {strsplit(x,"chr")[[1]][2]})
 
     # creating the vector for chr number annotations
     v <- vector(length = sum(chr_lengths), mode = "character")
