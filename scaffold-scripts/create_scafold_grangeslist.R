@@ -7,14 +7,20 @@
 ##########################################
 # Author: Anna K. Casasent
 ##########################################
+bcMverion="3.19"
+library(BiocManager)
+
+library(AnnotationHub)
+#library(dbplyr)
+#library(BiocFileCache)
+
 library(IRanges)
 library(GenomicRanges)
-library(AnnotationHub)
-library(BiocManager)
-library(annotatr)
-#library(bioframe)
-library(GenomicFeatures)
 library(dplyr)
+library(annotatr)
+library(GenomicFeatures)
+
+
 #library(CNEr)
 #library(RMariaDB)
 #library(TxDb.Mm.mm10.ensembl.reg)
@@ -25,7 +31,6 @@ library(dplyr)
 #test
 #the_size_list <- c(50000, 2000000)
 #names(the_size_list) <- c("50kb","2Mb")
-
 
 the_size_list <-c(50000, 100000, 175000, 200000, 250000, 500000, 1000000, 2000000) #c(50000, 100000, 175000, 250000, 500000, 1000000)
 names(the_size_list) <- c("50kb", "100kb", "175kb","200kb", "250kb", "500kb", "1Mb","2Mb") #c("50kb", "100kb", "175kb", "250kb", "500kb", "1Mb")
@@ -38,7 +43,7 @@ the_sp_semiabb <- paste0(substring(the_species,1,1),strsplit(the_species," ")[[1
 
 # may need to be edits for different genomes
 # however this should work for more than just mouse
-hub <- AnnotationHub(localHub = FALSE)
+hub <- AnnotationHub()
 my_genome_files <- query(hub, the_species, the_genome)
 #EnsemblTxDb <- makeTxDbFromEnsembl(organism = the_species, release = 99)
 #the_database_name <- paste0("TxDb.",the_sp_abb,".",the_genome,".ensembl.reg")
@@ -46,13 +51,13 @@ my_genome_files <- query(hub, the_species, the_genome)
 the_database_name <- paste0("TxDb.",the_sp_semiabb,".UCSC.",the_genome,".knownGene")
 
 if (!require(the_database_name, character.only = TRUE)) {
-  BiocManager::install(the_database_name, force = TRUE)
+  BiocManager::install(the_database_name, version = bcMverion,  force = TRUE)
   library(the_database_name, character.only = TRUE)
 }
 
 the_BS_name <- paste0("BSgenome.",the_sp_semiabb,".UCSC.",the_genome)
 if (!require(the_BS_name, character.only = TRUE)) {
-  BiocManager::install(the_BS_name, force = TRUE)
+  BiocManager::install(the_BS_name, version = bcMverion, force = TRUE)
   library(the_BS_name, character.only = TRUE)
 }
   
@@ -324,8 +329,17 @@ GenomeInfoDb::seqinfo(varbin_genome_grangeslist) <- genome_seqinfo
 
 assign(paste0(the_genome, "_grangeslist"), value=varbin_genome_grangeslist )
 
-#my_grangelist <- get(paste0(the_genome, "_grangeslist"))
-save(get(paste0(the_genome, "_grangeslist")), file=paste0("data/",the_genome,"_grangeslist.rda"))
+# you will need to edit the name manual
+my_grangelist <- get(paste0(the_genome, "_grangeslist"))
+# note this will save the list as my_grangelist, 
+# if you want it named something else you have change the name
+save(my_grangelist, file=paste0("data/",the_genome,"_grangeslist.rda"))
+
+# still working on fix this... 
+# example for mm10
+#save(mm10_grangeslist, file=paste0("data/",the_genome,"_grangeslist.rda"))
+#saveRDS(mm10_grangeslist, "data/mm10_grangeslist.rda")
+#usethis::use_data(mm10_grangeslist)
 
 # in order to create different genome varbins of about these sizes we need to 
 # get the GC content and from the genome of interest
