@@ -14,8 +14,8 @@ runVarbin(
   vst = c("ft", "log"),
   seed = 17,
   min_bincount = 10,
-  alpha = 1e-09,
-  merge_levels_alpha = 1e-10,
+  alpha = 1e-05,
+  merge_levels_alpha = 1e-05,
   gamma = 40,
   name = "segment_ratios",
   BPPARAM = bpparam()

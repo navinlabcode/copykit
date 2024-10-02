@@ -161,8 +161,6 @@ phylogenetic tree from the consensus matrix.}
 \author{
 Alexander Davis
 
-Alexander Davis
-
 Junke Wang
 }
 \keyword{datasets}

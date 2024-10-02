@@ -246,7 +246,7 @@ runSegmentation <- function(scCNA,
             smooth_counts_df
         )
 
-        mpcf <- copynumber::multipcf(smooth_multipcf,
+        mpcf <- .multipcf(smooth_multipcf,
                                      gamma = gamma,
                                      arms = vapply(
                                          regmatches(ref_chrarm$chrarm,

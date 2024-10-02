@@ -70,7 +70,6 @@ Imports:
     BiocParallel,
     fpc,
     ggnewscale,
-    copynumber,
     ggalluvial,
     viridis,
     ggtree,
@@ -78,7 +77,7 @@ Imports:
     withr,
     bluster,
     scquantum
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 Depends: 
     SingleCellExperiment,
