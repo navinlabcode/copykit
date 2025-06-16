@@ -8,10 +8,13 @@
 
 **Changes**
 * `plotHeatmap()` order_cells argument now defaults to NULL. NULL option respects the order of the CopyKit object. order_cells argument can be set to 'consensus_tree' and 'hclust'.
+
 * Method 'scquantum' from `calcInteger()` adds 3 elements to the colData.
 1. ploidy: contanining the inferred ploidy call for each cell
 2. confidence_ratio: ratio from scquantum inferred ploidy to scquantum theoretical ploidy
 3. ploidy_score: Score derived from the confidence ratio. Values closer to 0 indicate a better fit of the ploidy call
+
+* Significance thresholds for CBS alpha segmentation and Merge levels were reduced to increase sensitivity to focal amplifications.
 
 **Removed**
 * option 'phylogeny' from function argument `plotHeatmap()' 'order_cells' has been removed.
