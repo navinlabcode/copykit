@@ -20,7 +20,7 @@
 #' copykit_obj <- runDistMat(copykit_obj)
 runDistMat <- function(scCNA,
                        metric = "euclidean",
-                       n_threads = 1) {
+                       n_threads = BiocParallel::bpnworkers(BiocParallel::bpparam())) {
     # cores check
     if (n_threads < 1) {
         n_threads <- 1

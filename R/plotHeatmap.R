@@ -124,7 +124,9 @@ plotHeatmap <- function(scCNA,
     row_split = NULL,
     use_raster = TRUE,
     raster_quality = 2,
-    n_threads = 1) {
+    n_threads = BiocParallel::bpnworkers(BiocParallel::bpparam())) {
+    # args
+    order_cells <- match.arg(order_cells)
 
     # bindings for NSE
     group_value <- NULL

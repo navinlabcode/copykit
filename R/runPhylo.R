@@ -23,12 +23,7 @@ runPhylo <- function(scCNA,
                      method = "nj",
                      metric = "euclidean",
                      assay = "segment_ratios",
-                     n_threads = parallel::detectCores() / 4) {
-    # cores check
-    if (n_threads < 1) {
-        n_threads <- 1
-    }
-
+                     n_threads = BiocParallel::bpnworkers(BiocParallel::bpparam())) {
 
     # getting data
     if (!assay %in% names(SummarizedExperiment::assays(scCNA))) {
