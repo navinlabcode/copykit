@@ -49,7 +49,7 @@ runVst <- function(scCNA,
         varbin_counts_df[varbin_counts_df == 0] <- 1e-4
         counts_df_ft <- as.data.frame(apply(varbin_counts_df,
                                             2,
-                                            function(x) log(x)))
+                                            function(x) log(x, base = 2)))
     }
 
     counts_df_ft <- as.data.frame(counts_df_ft)
